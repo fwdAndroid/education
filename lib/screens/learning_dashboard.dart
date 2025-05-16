@@ -1,5 +1,7 @@
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
+import 'package:education/screens/quiz_screen.dart';
+import 'package:education/screens/webpage.dart';
 import 'package:education/widgets/chatpter_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -155,6 +157,48 @@ class _LearningDashboardState extends State<LearningDashboard>
                 "assets/chemxi_Page033.jpg",
               ],
               chapterNumber: 8,
+            ),
+            Container(
+              height: 90,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(8),
+                color: Colors.white,
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.grey.withOpacity(0.5),
+                    spreadRadius: 1,
+                    blurRadius: 1,
+                    offset: Offset(0, 3),
+                  ),
+                ],
+              ),
+              child: Center(
+                child: ListTile(
+                  title: Text("Chapter 9", style: TextStyle(fontSize: 14)),
+
+                  trailing: ElevatedButton(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Color(0xffab77ff),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(2),
+                      ),
+                    ),
+                    onPressed: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (builder) => PdfViewerPage(
+                                pdfUrl:
+                                    "https://www.poemsforfree.com/LovePoems2.pdf",
+                              ),
+                        ),
+                      );
+                    },
+                    child: Text("Open", style: TextStyle(color: Colors.white)),
+                  ),
+                ),
+              ),
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),

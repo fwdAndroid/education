@@ -12,19 +12,19 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   InterstitialAd? _interstitialAd;
+  bool _navigated = false;
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    Future.delayed(Duration(seconds: 2), _loadInterstitialAd);
+    // Start splash delay and then load ad
+    Future.delayed(const Duration(seconds: 2), _loadInterstitialAd);
   }
 
   void _loadInterstitialAd() {
     InterstitialAd.load(
-      adUnitId:
-          'ca-app-pub-3940256099942544/1033173712', // Replace with your real ID or test ID
-      request: AdRequest(),
+      adUnitId: 'ca-app-pub-3940256099942544/1033173712', // Test ad unit
+      request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (InterstitialAd ad) {
           _interstitialAd = ad;
@@ -32,52 +32,52 @@ class _SplashScreenState extends State<SplashScreen> {
               .fullScreenContentCallback = FullScreenContentCallback(
             onAdDismissedFullScreenContent: (InterstitialAd ad) {
               ad.dispose();
-              _checkAuth();
+              _goToMainDashboard();
             },
             onAdFailedToShowFullScreenContent: (
               InterstitialAd ad,
               AdError error,
             ) {
               ad.dispose();
-              _checkAuth();
+              _goToMainDashboard();
             },
           );
+
           _interstitialAd!.show();
           _interstitialAd = null;
         },
         onAdFailedToLoad: (LoadAdError error) {
           print('Interstitial ad failed to load: $error');
-          _checkAuth();
+          _goToMainDashboard();
         },
       ),
     );
   }
 
-  void _checkAuth() async {
-    Navigator.pushReplacement(
-      context,
-      MaterialPageRoute(builder: (context) => MainDashboard()),
-    );
+  void _goToMainDashboard() {
+    if (!_navigated) {
+      _navigated = true;
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MainDashboard()),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage('assets/bg.png'),
-            fit: BoxFit.cover,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          Image.asset('assets/bg.png', fit: BoxFit.cover),
+          Center(
+            child: Image.asset(
+              'assets/bgalim-removebg-preview.png',
+              filterQuality: FilterQuality.high,
+            ),
           ),
-        ),
-        child: Image.asset(
-          'assets/bgalim-removebg-preview.png',
-          filterQuality: FilterQuality.high,
-          height: MediaQuery.of(context).size.height,
-          width: MediaQuery.of(context).size.width,
-        ),
+        ],
       ),
     );
   }

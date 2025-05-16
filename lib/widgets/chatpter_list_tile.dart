@@ -1,4 +1,4 @@
-import 'package:education/chapter.dart';
+import 'package:education/screens/chapter.dart';
 import 'package:education/screens/quiz_screen.dart';
 import 'package:education/widgets/quiz_widget.dart';
 import 'package:flutter/material.dart';
