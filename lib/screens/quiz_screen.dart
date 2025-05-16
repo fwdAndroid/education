@@ -1,4 +1,5 @@
 import 'package:education/constant/ad_keys.dart';
+import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/widgets/quiz_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -12,10 +13,13 @@ class QuizPage extends StatefulWidget {
   State<QuizPage> createState() => _QuizPageState();
 }
 
-class _QuizPageState extends State<QuizPage> {
+class _QuizPageState extends State<QuizPage>
+    with AnalyticsScreenTracker<QuizPage> {
   int currentQuestionIndex = 0;
   int correctAnswers = 0;
   int? selectedIndex;
+
+  String get screenName => 'QuizPage${widget.chapterNumber}';
 
   BannerAd? _bannerAd;
   bool _isAdLoaded = false;

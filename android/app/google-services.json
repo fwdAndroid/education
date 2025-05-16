@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "97196989131",
+    "project_id": "alim-55374",
+    "storage_bucket": "alim-55374.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:97196989131:android:32e275358603fdc167594e",
+        "android_client_info": {
+          "package_name": "com.example.education"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCCmtqPkHN9rGMUuScszRXwqi-MdqrGPb0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

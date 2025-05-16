@@ -1,4 +1,5 @@
 import 'package:education/constant/ad_keys.dart';
+import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -12,8 +13,11 @@ class Chapter extends StatefulWidget {
   State<Chapter> createState() => _ChapterState();
 }
 
-class _ChapterState extends State<Chapter> {
+class _ChapterState extends State<Chapter>
+    with AnalyticsScreenTracker<Chapter> {
   BannerAd? _bannerAd;
+  String get screenName => 'Chapter';
+
   bool _isAdLoaded = false;
   @override
   void initState() {

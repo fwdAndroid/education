@@ -1,4 +1,5 @@
 import 'package:education/constant/ad_keys.dart';
+import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/screens/learning_dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -12,9 +13,12 @@ class MainDashboard extends StatefulWidget {
   State<MainDashboard> createState() => _MainDashboardState();
 }
 
-class _MainDashboardState extends State<MainDashboard> {
+class _MainDashboardState extends State<MainDashboard>
+    with AnalyticsScreenTracker<MainDashboard> {
   BannerAd? _bannerAd;
   bool _isAdLoaded = false;
+  String get screenName => 'MainDashboard';
+
   @override
   void initState() {
     // TODO: implement initState
