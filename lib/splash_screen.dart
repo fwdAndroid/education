@@ -13,47 +13,44 @@ class SplashScreen extends StatefulWidget {
 class _SplashScreenState extends State<SplashScreen> {
   InterstitialAd? _interstitialAd;
 
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    Future.delayed(Duration(seconds: 2), _loadInterstitialAd);
+  }
+
   void _loadInterstitialAd() {
     InterstitialAd.load(
       adUnitId:
           'ca-app-pub-3940256099942544/1033173712', // Replace with your real ID or test ID
       request: AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
-        onAdLoaded: (ad) {
+        onAdLoaded: (InterstitialAd ad) {
           _interstitialAd = ad;
-          _showInterstitialAd();
+          _interstitialAd!
+              .fullScreenContentCallback = FullScreenContentCallback(
+            onAdDismissedFullScreenContent: (InterstitialAd ad) {
+              ad.dispose();
+              _checkAuth();
+            },
+            onAdFailedToShowFullScreenContent: (
+              InterstitialAd ad,
+              AdError error,
+            ) {
+              ad.dispose();
+              _checkAuth();
+            },
+          );
+          _interstitialAd!.show();
+          _interstitialAd = null;
         },
-        onAdFailedToLoad: (error) {
+        onAdFailedToLoad: (LoadAdError error) {
           print('Interstitial ad failed to load: $error');
-          _checkAuth(); // fallback
+          _checkAuth();
         },
       ),
     );
-  }
-
-  void _showInterstitialAd() {
-    if (_interstitialAd != null) {
-      _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
-        onAdDismissedFullScreenContent: (ad) {
-          ad.dispose();
-          _checkAuth();
-        },
-        onAdFailedToShowFullScreenContent: (ad, error) {
-          ad.dispose();
-          _checkAuth();
-        },
-      );
-      _interstitialAd!.show();
-    } else {
-      _checkAuth();
-    }
-  }
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    Future.delayed(Duration(seconds: 2), _loadInterstitialAd);
   }
 
   void _checkAuth() async {
