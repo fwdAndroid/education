@@ -1,42 +1,43 @@
+import 'package:education/widgets/quiz_widget.dart';
 import 'package:flutter/material.dart';
 
 class QuizPage extends StatefulWidget {
-  final String question;
-  final List<String> options;
-  final String correctAnswer;
+  final int chapterNumber;
 
-  const QuizPage({
-    required this.question,
-    required this.options,
-    required this.correctAnswer,
-  });
+  const QuizPage({required this.chapterNumber});
 
   @override
-  _QuizPageState createState() => _QuizPageState();
+  State<QuizPage> createState() => _QuizPageState();
 }
 
 class _QuizPageState extends State<QuizPage> {
-  String? selectedOption;
-  String result = "";
-
-  void submitAnswer() {
-    if (selectedOption == widget.correctAnswer) {
-      setState(() {
-        result = "Correct!";
-      });
-    } else {
-      setState(() {
-        result = "Wrong. Try again.";
-      });
-    }
-  }
+  int currentQuestionIndex = 0;
+  int correctAnswers = 0;
+  bool isAnswered = false;
+  int? selectedIndex;
 
   @override
   Widget build(BuildContext context) {
+    final quizzes = chapterQuizzes[widget.chapterNumber];
+    if (quizzes == null || quizzes.isEmpty) {
+      return Scaffold(
+        appBar: AppBar(title: Text("Quiz")),
+        body: Center(child: Text("No quizzes available.")),
+      );
+    }
+
+    final currentQuiz = quizzes[currentQuestionIndex];
+    final question = currentQuiz['question'] as String;
+    final options = currentQuiz['options'] as List<String>;
+    final correctAnswer = currentQuiz['correctAnswer'] as String;
+
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
-        title: Text("Quiz", style: TextStyle(color: Colors.white)),
+        title: Text(
+          "Chapter ${widget.chapterNumber} Quiz",
+          style: TextStyle(color: Colors.white),
+        ),
         backgroundColor: Color(0xffab77ff),
       ),
       body: Padding(
@@ -45,26 +46,88 @@ class _QuizPageState extends State<QuizPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              widget.question,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+              "Q${currentQuestionIndex + 1}: $question",
+              style: TextStyle(fontSize: 18),
             ),
             SizedBox(height: 20),
-            ...widget.options.map(
-              (option) => RadioListTile<String>(
-                title: Text(option),
-                value: option,
-                groupValue: selectedOption,
-                onChanged: (value) {
-                  setState(() {
-                    selectedOption = value;
-                    result = "";
-                  });
-                },
+            ...List.generate(options.length, (index) {
+              return ListTile(
+                title: Text(options[index]),
+                leading: Radio<int>(
+                  value: index,
+                  groupValue: selectedIndex,
+                  onChanged:
+                      isAnswered
+                          ? null
+                          : (value) {
+                            setState(() {
+                              selectedIndex = value;
+                              isAnswered = true;
+
+                              final isCorrect =
+                                  options[value!] == correctAnswer;
+                              if (isCorrect) correctAnswers++;
+
+                              ScaffoldMessenger.of(context).showSnackBar(
+                                SnackBar(
+                                  content: Text(
+                                    isCorrect
+                                        ? 'Correct!'
+                                        : 'Wrong! Correct answer: $correctAnswer',
+                                  ),
+                                  duration: Duration(seconds: 2),
+                                ),
+                              );
+                            });
+                          },
+                ),
+              );
+            }),
+            SizedBox(height: 20),
+            if (isAnswered)
+              Center(
+                child: ElevatedButton(
+                  child: Text(
+                    currentQuestionIndex < quizzes.length - 1
+                        ? 'Next Question'
+                        : 'Finish Quiz',
+                  ),
+                  onPressed: () {
+                    if (currentQuestionIndex < quizzes.length - 1) {
+                      setState(() {
+                        currentQuestionIndex++;
+                        selectedIndex = null;
+                        isAnswered = false;
+                      });
+                    } else {
+                      showDialog(
+                        context: context,
+                        builder:
+                            (_) => AlertDialog(
+                              title: Text('Quiz Complete'),
+                              content: Text(
+                                'You got $correctAnswers out of ${quizzes.length} correct.',
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () => Navigator.pop(context),
+                                  child: Text('OK'),
+                                ),
+                                TextButton(
+                                  onPressed:
+                                      () => Navigator.popUntil(
+                                        context,
+                                        (route) => route.isFirst,
+                                      ),
+                                  child: Text('Back to Home'),
+                                ),
+                              ],
+                            ),
+                      );
+                    }
+                  },
+                ),
               ),
-            ),
-            ElevatedButton(onPressed: submitAnswer, child: Text("Submit")),
-            SizedBox(height: 20),
-            Text(result, style: TextStyle(fontSize: 16, color: Colors.blue)),
           ],
         ),
       ),

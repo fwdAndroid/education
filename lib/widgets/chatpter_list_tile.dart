@@ -1,6 +1,7 @@
 import 'package:education/chapter.dart';
 import 'package:education/learning_dashboard.dart';
 import 'package:education/quiz_screen.dart';
+import 'package:education/widgets/quiz_widget.dart';
 import 'package:flutter/material.dart';
 
 class ChapterTile extends StatelessWidget {
@@ -20,7 +21,9 @@ class ChapterTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final bool hasQuiz = chapterQuizzes.containsKey(chapterNumber);
+    bool hasQuiz =
+        chapterQuizzes.containsKey(chapterNumber) &&
+        chapterQuizzes[chapterNumber]!.isNotEmpty;
 
     return SingleChildScrollView(
       child: Padding(
@@ -57,16 +60,17 @@ class ChapterTile extends StatelessWidget {
                             MaterialPageRoute(
                               builder:
                                   (context) => QuizPage(
-                                    question: quizData['question'],
-                                    options: quizData['options'],
-                                    correctAnswer: quizData['correctAnswer'],
+                                    chapterNumber: chapterNumber,
+                                    // question: quizData['question'],
+                                    // options: quizData['options'],
+                                    // correctAnswer: quizData['correctAnswer'],
                                   ),
                             ),
                           );
                         },
                         child: Text(
                           "Quiz",
-                          style: TextStyle(color: Colors.white),
+                          style: TextStyle(color: Colors.blue),
                         ),
                       ),
                     ),
