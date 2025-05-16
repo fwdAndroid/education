@@ -1,5 +1,3 @@
-import 'package:education/learning_dashboard.dart';
-import 'package:education/main_dashboard.dart';
 import 'package:education/splash_screen.dart';
 import 'package:flutter/material.dart';
 

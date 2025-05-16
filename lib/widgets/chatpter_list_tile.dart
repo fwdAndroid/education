@@ -1,6 +1,5 @@
 import 'package:education/chapter.dart';
-import 'package:education/learning_dashboard.dart';
-import 'package:education/quiz_screen.dart';
+import 'package:education/screens/quiz_screen.dart';
 import 'package:education/widgets/quiz_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -54,7 +53,6 @@ class ChapterTile extends StatelessWidget {
                       padding: const EdgeInsets.only(left: 8.0),
                       child: TextButton(
                         onPressed: () {
-                          final quizData = chapterQuizzes[chapterNumber]!;
                           Navigator.push(
                             context,
                             MaterialPageRoute(
