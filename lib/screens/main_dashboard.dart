@@ -1,6 +1,8 @@
+import 'package:education/constant/ad_keys.dart';
 import 'package:education/screens/learning_dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:share_plus/share_plus.dart';
 
 class MainDashboard extends StatefulWidget {
@@ -11,6 +13,30 @@ class MainDashboard extends StatefulWidget {
 }
 
 class _MainDashboardState extends State<MainDashboard> {
+  BannerAd? _bannerAd;
+  bool _isAdLoaded = false;
+  @override
+  void initState() {
+    // TODO: implement initState
+    super.initState();
+    _bannerAd = BannerAd(
+      adUnitId: bannerKey, // Test Ad Unit ID
+      size: AdSize.banner,
+      request: AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+          setState(() {
+            _isAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          ad.dispose();
+          print('Ad load failed (code=${error.code} message=${error.message})');
+        },
+      ),
+    )..load();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -279,7 +305,7 @@ class _MainDashboardState extends State<MainDashboard> {
                 padding: const EdgeInsets.all(8.0),
                 child: Center(
                   child: SizedBox(
-                    height: 160,
+                    height: 170,
                     width: 450,
                     child: Card(
                       color: Colors.blue,
@@ -304,10 +330,9 @@ class _MainDashboardState extends State<MainDashboard> {
                                     Text(
                                       "Our inside Success\nStory, 10 Years of Succ...\nIts not just app, its dream",
                                       style: TextStyle(
-                                        fontSize: 13.5,
+                                        fontSize: 12,
                                         fontWeight: FontWeight.w600,
                                         color: Colors.white,
-                                        height: 1.3,
                                       ),
                                     ),
                                     const SizedBox(height: 10),
@@ -341,8 +366,9 @@ class _MainDashboardState extends State<MainDashboard> {
                   ),
                 ),
               ),
+
               Padding(
-                padding: const EdgeInsets.all(8.0),
+                padding: EdgeInsets.all(8),
                 child: GestureDetector(
                   onTap: () {
                     SharePlus.instance.share(
@@ -351,64 +377,105 @@ class _MainDashboardState extends State<MainDashboard> {
                       ),
                     );
                   },
-                  child: Center(
-                    child: Container(
-                      width: 450,
-
-                      height: 150,
-                      decoration: BoxDecoration(
-                        gradient: LinearGradient(
-                          colors: [
-                            Color(0xFFFA9E32), // Purple
-                            Color(0xFFFA9E32), // Lighter purple
-                          ],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
-                        ),
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          Image.asset(
-                            "assets/icq_share.webp",
-                            height: 60,
-                          ), // Add your icons
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Text(
-                                'Share with Friends',
-                                style: GoogleFonts.poppins(
-                                  color: Colors.black,
-                                  fontSize: 18,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                              Text(
-                                'Help your friends fall in \nlove with learning through this ALIM!',
-                                style: GoogleFonts.poppins(
-                                  color: Colors.black,
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
-                            ],
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Image.asset(
-                              "assets/home_cta_img-removebg-preview.png",
-                              height: 50,
-                              width: 50,
-                            ),
-                          ),
+                  child: Container(
+                    height: 170,
+                    width: 460,
+                    decoration: BoxDecoration(
+                      gradient: LinearGradient(
+                        colors: [
+                          Color(0xFFFA9E32), // Purple
+                          Color(0xFFFA9E32), // Lighter purple
                         ],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
+                      ),
+                      borderRadius: BorderRadius.circular(8),
+                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Image.asset(
+                                "assets/icq_share.webp",
+                                height: 60,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                mainAxisAlignment: MainAxisAlignment.center,
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Share with Friends',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.black,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Help your friends fall in \nlove with learning through \nthis ALIM!',
+                                    style: GoogleFonts.poppins(
+                                      color: Colors.black,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Image.asset(
+                                "assets/home_cta_img-removebg-preview.png",
+                                height: 40,
+                                width: 40,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
                   ),
                 ),
+              ),
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child:
+                    _isAdLoaded
+                        ? Center(
+                          child: Container(
+                            alignment: Alignment.center,
+                            width: _bannerAd!.size.width.toDouble(),
+                            height: _bannerAd!.size.height.toDouble(),
+                            child: AdWidget(ad: _bannerAd!),
+                          ),
+                        )
+                        : Center(
+                          child: Container(
+                            height: 50,
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.block, color: Colors.red, size: 30),
+                                Text(
+                                  "Ad Blocked or Not Loaded",
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
               ),
             ],
           ),

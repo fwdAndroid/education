@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:education/screens/main_dashboard.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -10,16 +11,52 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
+  InterstitialAd? _interstitialAd;
+
+  void _loadInterstitialAd() {
+    InterstitialAd.load(
+      adUnitId:
+          'ca-app-pub-3940256099942544/1033173712', // Replace with your real ID or test ID
+      request: AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          _interstitialAd = ad;
+          _showInterstitialAd();
+        },
+        onAdFailedToLoad: (error) {
+          print('Interstitial ad failed to load: $error');
+          _checkAuth(); // fallback
+        },
+      ),
+    );
+  }
+
+  void _showInterstitialAd() {
+    if (_interstitialAd != null) {
+      _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+        onAdDismissedFullScreenContent: (ad) {
+          ad.dispose();
+          _checkAuth();
+        },
+        onAdFailedToShowFullScreenContent: (ad, error) {
+          ad.dispose();
+          _checkAuth();
+        },
+      );
+      _interstitialAd!.show();
+    } else {
+      _checkAuth();
+    }
+  }
+
   @override
   void initState() {
     // TODO: implement initState
     super.initState();
-    _checkAuth();
+    Future.delayed(Duration(seconds: 2), _loadInterstitialAd);
   }
 
   void _checkAuth() async {
-    await Future.delayed(const Duration(seconds: 3)); // Simulate splash time
-
     Navigator.pushReplacement(
       context,
       MaterialPageRoute(builder: (context) => MainDashboard()),
