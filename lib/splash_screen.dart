@@ -12,22 +12,33 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   InterstitialAd? _interstitialAd;
+  bool _isAdReady = false;
   bool _navigated = false;
 
   @override
   void initState() {
     super.initState();
-    // Start splash delay and then load ad
-    Future.delayed(const Duration(seconds: 2), _loadInterstitialAd);
+    _cacheInterstitialAd();
+
+    // Start timer and check for ad readiness after 2 seconds
+    Future.delayed(const Duration(seconds: 2), () {
+      if (_isAdReady && _interstitialAd != null) {
+        _interstitialAd!.show();
+      } else {
+        _goToMainDashboard();
+      }
+    });
   }
 
-  void _loadInterstitialAd() {
+  void _cacheInterstitialAd() {
     InterstitialAd.load(
-      adUnitId: 'ca-app-pub-3940256099942544/1033173712', // Test ad unit
+      adUnitId: 'ca-app-pub-3940256099942544/1033173712', // Test Ad
       request: const AdRequest(),
       adLoadCallback: InterstitialAdLoadCallback(
         onAdLoaded: (InterstitialAd ad) {
           _interstitialAd = ad;
+          _isAdReady = true;
+
           _interstitialAd!
               .fullScreenContentCallback = FullScreenContentCallback(
             onAdDismissedFullScreenContent: (InterstitialAd ad) {
@@ -42,9 +53,6 @@ class _SplashScreenState extends State<SplashScreen> {
               _goToMainDashboard();
             },
           );
-
-          _interstitialAd!.show();
-          _interstitialAd = null;
         },
         onAdFailedToLoad: (LoadAdError error) {
           print('Interstitial ad failed to load: $error');
@@ -57,11 +65,17 @@ class _SplashScreenState extends State<SplashScreen> {
   void _goToMainDashboard() {
     if (!_navigated) {
       _navigated = true;
-      Navigator.pushReplacement(
-        context,
+      Navigator.of(context).pushAndRemoveUntil(
         MaterialPageRoute(builder: (context) => const MainDashboard()),
+        (Route<dynamic> route) => false,
       );
     }
+  }
+
+  @override
+  void dispose() {
+    _interstitialAd?.dispose();
+    super.dispose();
   }
 
   @override
