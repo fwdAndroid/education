@@ -1,6 +1,5 @@
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
-import 'package:education/screens/quiz_screen.dart';
 import 'package:education/screens/webpage.dart';
 import 'package:education/widgets/chatpter_list_tile.dart';
 import 'package:flutter/material.dart';
@@ -174,7 +173,9 @@ class _LearningDashboardState extends State<LearningDashboard>
               ),
               child: Center(
                 child: ListTile(
-                  title: Text("Chapter 9", style: TextStyle(fontSize: 14)),
+                  leading: Image.asset("assets/abcd.png"),
+                  subtitle: Text("Chapter 9"),
+                  title: Text("PDF Book", style: TextStyle(fontSize: 14)),
 
                   trailing: ElevatedButton(
                     style: ElevatedButton.styleFrom(
@@ -187,11 +188,7 @@ class _LearningDashboardState extends State<LearningDashboard>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder:
-                              (builder) => PdfViewerPage(
-                                pdfUrl:
-                                    "https://www.poemsforfree.com/LovePoems2.pdf",
-                              ),
+                          builder: (builder) => PDFViewerFromAsset(),
                         ),
                       );
                     },
