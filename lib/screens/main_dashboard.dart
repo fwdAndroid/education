@@ -2,6 +2,7 @@ import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/screens/bookmark.dart';
 import 'package:education/screens/learning_dashboard.dart';
+import 'package:education/screens/privacy_policy.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -346,14 +347,70 @@ class _MainDashboardState extends State<MainDashboard>
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
-                  Image.asset("assets/privacy.png", height: 60),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => PrivacyPolicy(
+                                title: "Privacy Policy",
+                                imagePath: "assets/chemxi_Page027.jpg",
+                              ),
+                        ),
+                      );
+                    },
+                    child: Image.asset("assets/privacy.png", height: 60),
+                  ),
 
                   SizedBox(width: 10),
-                  Image.asset("assets/gdpr.png", height: 60),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => PrivacyPolicy(
+                                title: "GDPR",
+                                imagePath: "assets/chemxi_Page027.jpg",
+                              ),
+                        ),
+                      );
+                    },
+                    child: Image.asset("assets/gdpr.png", height: 60),
+                  ),
+
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => PrivacyPolicy(
+                                title: "Content License",
+                                imagePath: "assets/chemxi_Page027.jpg",
+                              ),
+                        ),
+                      );
+                    },
+                    child: Image.asset("assets/contentpolicy.png", height: 60),
+                  ),
                   SizedBox(width: 10),
-                  Image.asset("assets/contentpolicy.png", height: 60),
-                  SizedBox(width: 10),
-                  Image.asset("assets/adspolicy.png", height: 60),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder:
+                              (context) => PrivacyPolicy(
+                                title: "Ads Policy",
+                                imagePath: "assets/chemxi_Page027.jpg",
+                              ),
+                        ),
+                      );
+                    },
+                    child: Image.asset("assets/adspolicy.png", height: 60),
+                  ),
                 ],
               ),
 
@@ -361,16 +418,17 @@ class _MainDashboardState extends State<MainDashboard>
                 padding: const EdgeInsets.all(8.0),
                 child:
                     _isAdLoaded
-                        ? Container(
-                          alignment: Alignment.center,
-                          width: _bannerAd!.size.width.toDouble(),
-                          height: _bannerAd!.size.height.toDouble(),
-                          child: AdWidget(ad: _bannerAd!),
+                        ? Center(
+                          child: Container(
+                            alignment: Alignment.center,
+                            width: _bannerAd!.size.width.toDouble(),
+                            height: _bannerAd!.size.height.toDouble(),
+                            child: AdWidget(ad: _bannerAd!),
+                          ),
                         )
                         : Center(
                           child: Container(
                             height: 50,
-                            alignment: Alignment.center,
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               children: [
