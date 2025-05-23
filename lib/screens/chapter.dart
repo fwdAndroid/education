@@ -17,14 +17,16 @@ class _ChapterState extends State<Chapter>
     with AnalyticsScreenTracker<Chapter> {
   BannerAd? _bannerAd;
   String get screenName => 'Chapter';
+  final PageController _pageController = PageController();
+  int _currentPage = 0;
 
   bool _isAdLoaded = false;
+
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _bannerAd = BannerAd(
-      adUnitId: bannerKey, // Test Ad Unit ID
+      adUnitId: bannerKey,
       size: AdSize.banner,
       request: AdRequest(),
       listener: BannerAdListener(
@@ -39,6 +41,13 @@ class _ChapterState extends State<Chapter>
         },
       ),
     )..load();
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _bannerAd?.dispose();
+    super.dispose();
   }
 
   @override
@@ -61,22 +70,37 @@ class _ChapterState extends State<Chapter>
       ),
       body: Column(
         children: [
-          SizedBox(
-            height: MediaQuery.of(context).size.height * 0.8,
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
+          Expanded(
+            child: PageView.builder(
+              controller: _pageController,
               itemCount: widget.imagePaths.length,
+              onPageChanged: (int page) {
+                setState(() {
+                  _currentPage = page;
+                });
+              },
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.only(bottom: 16),
-                  child: Expanded(
+                  padding: const EdgeInsets.all(16.0),
+                  child: InteractiveViewer(
+                    panEnabled: true,
+                    minScale: 1.0,
+                    maxScale: 3.0,
                     child: Image.asset(
                       widget.imagePaths[index],
-                      fit: BoxFit.fitHeight,
+                      fit: BoxFit.contain,
                     ),
                   ),
                 );
               },
+            ),
+          ),
+          // Page number display (e.g. "1/5")
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 8.0),
+            child: Text(
+              '${_currentPage + 1}/${widget.imagePaths.length}',
+              style: TextStyle(fontSize: 18, color: Colors.black),
             ),
           ),
           Padding(
