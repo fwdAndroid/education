@@ -1,5 +1,6 @@
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
+import 'package:education/screens/bookmark.dart';
 import 'package:education/screens/learning_dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -128,9 +129,8 @@ class _MainDashboardState extends State<MainDashboard>
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Image.asset(
-                            "assets/onb.webp",
-                            height: 60,
+                          Center(
+                            child: Image.asset("assets/books.png", height: 50),
                           ), // Add your icons
                           SizedBox(height: 12),
                           Text(
@@ -146,59 +146,53 @@ class _MainDashboardState extends State<MainDashboard>
                   ),
 
                   SizedBox(width: 16),
-                  Container(
-                    width: 130,
-                    height: 130,
-                    decoration: BoxDecoration(
-                      color:
-                          Colors
-                              .white, // Equivalent to <solid android:color="@color/white" />
-                      borderRadius: BorderRadius.circular(
-                        5.0,
-                      ), // Equivalent to <corners android:radius="5.0dip" />
-                      border: Border.all(
-                        width: 1.0,
-                        color: Color(
-                          0xFFE5E7E9,
-                        ), // Equivalent to <stroke android:color="#ffe5e7e9" />
-                      ),
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Image.asset(
-                          "assets/paper.png",
-                          height: 60,
-                        ), // Add your icons
-                        SizedBox(height: 12),
-                        Text(
-                          "PAPER",
-                          style: GoogleFonts.poppins(
-                            fontWeight: FontWeight.bold,
-                            fontSize: 20,
-                          ),
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(builder: (context) => Bookmark()),
+                      );
+                    },
+                    child: Container(
+                      width: 130,
+                      height: 130,
+                      decoration: BoxDecoration(
+                        color:
+                            Colors
+                                .white, // Equivalent to <solid android:color="@color/white" />
+                        borderRadius: BorderRadius.circular(
+                          5.0,
+                        ), // Equivalent to <corners android:radius="5.0dip" />
+                        border: Border.all(
+                          width: 1.0,
+                          color: Color(
+                            0xFFE5E7E9,
+                          ), // Equivalent to <stroke android:color="#ffe5e7e9" />
                         ),
-                      ],
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(
+                            Icons.bookmark,
+                            size: 50,
+                            color: Color(0xffb48ce8),
+                          ),
+                          SizedBox(height: 12),
+                          Text(
+                            "BookMark",
+                            style: GoogleFonts.poppins(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 20,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ),
                 ],
               ),
-              SizedBox(height: 30),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Divider(color: Colors.black, thickness: 1),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "NO ADS",
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                    fontSize: 24,
-                  ),
-                ),
-              ),
+              SizedBox(height: 10),
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child: Container(
@@ -207,151 +201,31 @@ class _MainDashboardState extends State<MainDashboard>
                     color: Color(0xFFF5E4FC),
                   ),
                   width: 400,
-                  height: 150,
+                  height: 130,
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Padding(
                         padding: const EdgeInsets.all(8.0),
-                        child: Image.asset("assets/bookcon.png", height: 60),
-                      ), // Add your icons
-                      SizedBox(width: 12),
-                      Text(
-                        "We have supported to \nOur Students, We want to \nStudent Learn\nMore and More",
-                        style: TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                          height: 1.3,
-                        ),
+                        child: Image.asset("assets/quiz.png", height: 60),
                       ),
                       Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.asset(
-                          "assets/home_cta_img-removebg-preview.png",
-                          height: 50,
-                          width: 50,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Divider(color: Colors.black, thickness: 1),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "MCQ's Challenge App",
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                    fontSize: 24,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Color(0xFFF5E4FC),
-                  ),
-                  width: 400,
-                  height: 150,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.asset("assets/bookcon.png", height: 60),
-                      ), // Add your icons
-                      SizedBox(width: 12),
-                      Text(
-                        "Play Quiz Challenge! \nMatch Your With other \nto Student? Play Quizoo\nNow",
-                        style: TextStyle(
-                          fontSize: 13.5,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.black,
-                          height: 1.3,
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.asset(
-                          "assets/home_cta_img-removebg-preview.png",
-                          height: 50,
-                          width: 50,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Divider(color: Colors.black, thickness: 1),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "Other Apps",
-                  style: GoogleFonts.poppins(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                    fontSize: 24,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Center(
-                  child: SizedBox(
-                    height: 170,
-                    width: 450,
-                    child: Card(
-                      color: Colors.blue,
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            children: [
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Image.asset(
-                                  "assets/farhan.webp",
-                                  height: 100,
-                                ),
-                              ),
-                              Padding(
-                                padding: const EdgeInsets.all(8.0),
-                                child: Column(
-                                  children: [
-                                    Text(
-                                      "Our inside Success\nStory, 10 Years of Succ...\nIts not just app, its dream",
-                                      style: TextStyle(
-                                        fontSize: 12,
-                                        fontWeight: FontWeight.w600,
-                                        color: Colors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(height: 10),
-                                    ElevatedButton(
-                                      onPressed: () {},
-                                      child: Text("Read Stories"),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                            ],
+                        padding: const EdgeInsets.only(bottom: 24.0),
+                        child: Text(
+                          "Play Quiz Challenge",
+                          style: TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
                         ),
                       ),
-                    ),
+                      Padding(
+                        padding: const EdgeInsets.only(bottom: 24.0, right: 8),
+                        child: Image.asset("assets/quizbutton.png", height: 50),
+                      ),
+                    ],
                   ),
                 ),
               ),
@@ -365,8 +239,8 @@ class _MainDashboardState extends State<MainDashboard>
                   "Share the app",
                   style: GoogleFonts.poppins(
                     fontWeight: FontWeight.bold,
-                    color: Colors.grey,
-                    fontSize: 24,
+                    color: Colors.black,
+                    fontSize: 20,
                   ),
                 ),
               ),
@@ -387,13 +261,16 @@ class _MainDashboardState extends State<MainDashboard>
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Color(0xFFFA9E32), // Purple
-                          Color(0xFFFA9E32), // Lighter purple
+                          // Colors.red[900]!, // Deep red
+                          Colors.red,
+                          Colors.orange,
+                          // Colors.orange[300]!, // Light orange
                         ],
-                        begin: Alignment.centerLeft,
-                        end: Alignment.centerRight,
+                        stops: [0.0, 0.3], // Color transition points
+                        begin: Alignment.bottomLeft,
+                        end: Alignment.topRight,
                       ),
-                      borderRadius: BorderRadius.circular(8),
+                      borderRadius: BorderRadius.circular(20),
                     ),
                     child: Padding(
                       padding: const EdgeInsets.all(8.0),
@@ -449,17 +326,46 @@ class _MainDashboardState extends State<MainDashboard>
                   ),
                 ),
               ),
+
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Divider(color: Colors.black, thickness: 1),
+              ),
+
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, left: 8),
+                child: Text(
+                  "We are Secure",
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 20,
+                  ),
+                ),
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  Image.asset("assets/privacy.png", height: 60),
+
+                  SizedBox(width: 10),
+                  Image.asset("assets/gdpr.png", height: 60),
+                  SizedBox(width: 10),
+                  Image.asset("assets/contentpolicy.png", height: 60),
+                  SizedBox(width: 10),
+                  Image.asset("assets/adspolicy.png", height: 60),
+                ],
+              ),
+
               Padding(
                 padding: const EdgeInsets.all(8.0),
                 child:
                     _isAdLoaded
-                        ? Center(
-                          child: Container(
-                            alignment: Alignment.center,
-                            width: _bannerAd!.size.width.toDouble(),
-                            height: _bannerAd!.size.height.toDouble(),
-                            child: AdWidget(ad: _bannerAd!),
-                          ),
+                        ? Container(
+                          alignment: Alignment.center,
+                          width: _bannerAd!.size.width.toDouble(),
+                          height: _bannerAd!.size.height.toDouble(),
+                          child: AdWidget(ad: _bannerAd!),
                         )
                         : Center(
                           child: Container(

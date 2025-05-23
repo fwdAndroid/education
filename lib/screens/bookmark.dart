@@ -1,22 +1,19 @@
 import 'package:education/constant/ad_keys.dart';
-import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/screens/webpage.dart';
 import 'package:education/widgets/chatpter_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-class LearningDashboard extends StatefulWidget {
-  const LearningDashboard({super.key});
+class Bookmark extends StatefulWidget {
+  const Bookmark({super.key});
 
   @override
-  State<LearningDashboard> createState() => _LearningDashboardState();
+  State<Bookmark> createState() => _BookmarkState();
 }
 
-class _LearningDashboardState extends State<LearningDashboard>
-    with AnalyticsScreenTracker<LearningDashboard> {
+class _BookmarkState extends State<Bookmark> {
   BannerAd? _bannerAd;
   bool _isAdLoaded = false;
-  String get screenName => 'LearningDashboard';
 
   @override
   void initState() {
@@ -51,12 +48,16 @@ class _LearningDashboardState extends State<LearningDashboard>
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Icon(Icons.bookmark, size: 40),
+            child: Image.asset(
+              "assets/Screenshot 2025-05-23 115139.png",
+              height: 50,
+              width: 50,
+            ),
           ),
         ],
         iconTheme: IconThemeData(color: Colors.white),
 
-        title: Text("Menu", style: TextStyle(color: Colors.white)),
+        title: Text("Bookmark", style: TextStyle(color: Colors.white)),
         backgroundColor: Color(0xffab77ff),
       ),
       body: SingleChildScrollView(

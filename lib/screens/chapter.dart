@@ -45,6 +45,16 @@ class _ChapterState extends State<Chapter>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        actions: [
+          Padding(
+            padding: const EdgeInsets.only(top: 8.0, bottom: 8),
+            child: Image.asset("assets/bulb.png", height: 50, width: 50),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child: Icon(Icons.bookmark, size: 40),
+          ),
+        ],
         iconTheme: IconThemeData(color: Colors.white),
         title: Text(widget.title, style: TextStyle(color: Colors.white)),
         backgroundColor: Color(0xffab77ff),
@@ -59,9 +69,11 @@ class _ChapterState extends State<Chapter>
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.only(bottom: 16),
-                  child: Image.asset(
-                    widget.imagePaths[index],
-                    fit: BoxFit.cover,
+                  child: Expanded(
+                    child: Image.asset(
+                      widget.imagePaths[index],
+                      fit: BoxFit.fitHeight,
+                    ),
                   ),
                 );
               },
