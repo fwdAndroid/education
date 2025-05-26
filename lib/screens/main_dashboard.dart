@@ -65,39 +65,9 @@ class _MainDashboardState extends State<MainDashboard>
               const SizedBox(height: 30),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Image.asset(
-                      "assets/logo.png",
-                      height: 50,
-                    ), // Add your logo asset
-                    Image.asset(
-                      "assets/classes-removebg-preview.png",
-                      height: 40,
-                    ), // Add your classes asset
-                  ],
-                ),
+                child: Image.asset("assets/logo.png", height: 50),
               ),
               SizedBox(height: 16),
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0, left: 8),
-                child: Text(
-                  "Explore",
-                  style: GoogleFonts.poppins(
-                    fontSize: 24,
-                    fontWeight: FontWeight.w900,
-                  ),
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0),
-                child: Text(
-                  "Start a new Journey",
-                  style: GoogleFonts.poppins(fontSize: 16),
-                ),
-              ),
-              SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -118,7 +88,7 @@ class _MainDashboardState extends State<MainDashboard>
                             Colors
                                 .white, // Equivalent to <solid android:color="@color/white" />
                         borderRadius: BorderRadius.circular(
-                          5.0,
+                          20.0,
                         ), // Equivalent to <corners android:radius="5.0dip" />
                         border: Border.all(
                           width: 1.0,
@@ -162,7 +132,7 @@ class _MainDashboardState extends State<MainDashboard>
                             Colors
                                 .white, // Equivalent to <solid android:color="@color/white" />
                         borderRadius: BorderRadius.circular(
-                          5.0,
+                          20.0,
                         ), // Equivalent to <corners android:radius="5.0dip" />
                         border: Border.all(
                           width: 1.0,
@@ -194,25 +164,29 @@ class _MainDashboardState extends State<MainDashboard>
                 ],
               ),
               SizedBox(height: 10),
-              Padding(
+              Container(
+                alignment: Alignment.center,
+                width: 400,
+                height: 100,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(20),
+                  color: Color(0xFFf9f2ff),
+                ),
                 padding: const EdgeInsets.all(8.0),
-                child: Container(
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: Color(0xFFF5E4FC),
-                  ),
-                  width: 400,
-                  height: 130,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Image.asset("assets/quiz.png", height: 60),
+                child: InkWell(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => LearningDashboard(),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 24.0),
+                    );
+                  },
+                  child: Center(
+                    child: ListTile(
+                      leading: Image.asset("assets/quiz.png", height: 60),
+                      title: Container(
+                        padding: EdgeInsets.only(bottom: 20),
                         child: Text(
                           "Play Quiz Challenge",
                           style: TextStyle(
@@ -222,17 +196,17 @@ class _MainDashboardState extends State<MainDashboard>
                           ),
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.only(bottom: 24.0, right: 8),
-                        child: Image.asset("assets/quizbutton.png", height: 50),
+                      trailing: Image.asset(
+                        "assets/quizbutton.png",
+                        height: 50,
                       ),
-                    ],
+                    ),
                   ),
                 ),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Divider(color: Colors.black, thickness: 1),
+                child: Divider(color: Colors.grey, thickness: 1),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -329,8 +303,8 @@ class _MainDashboardState extends State<MainDashboard>
               ),
 
               Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Divider(color: Colors.black, thickness: 1),
+                padding: const EdgeInsets.only(left: 8.0, right: 8, bottom: 8),
+                child: Divider(color: Colors.grey, thickness: 1),
               ),
 
               Padding(
