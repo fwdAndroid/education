@@ -1,8 +1,7 @@
-import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
+import 'package:education/screens/helper/ads_,manager.dart';
 import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/screens/webpage.dart';
-import 'package:education/service/book_mark_service.dart';
 import 'package:education/widgets/chatpter_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -16,31 +15,9 @@ class LearningDashboard extends StatefulWidget {
 
 class _LearningDashboardState extends State<LearningDashboard>
     with AnalyticsScreenTracker<LearningDashboard> {
-  BannerAd? _bannerAd;
-  bool _isAdLoaded = false;
+  bool get _isAdLoaded => AdService().isBannerAdLoaded;
+  BannerAd? get _bannerAd => AdService().bannerAd;
   String get screenName => 'LearningDashboard';
-
-  @override
-  void initState() {
-    // TODO: implement initState
-    super.initState();
-    _bannerAd = BannerAd(
-      adUnitId: bannerKey, // Test Ad Unit ID
-      size: AdSize.banner,
-      request: AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          setState(() {
-            _isAdLoaded = true;
-          });
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          ad.dispose();
-          print('Ad load failed (code=${error.code} message=${error.message})');
-        },
-      ),
-    )..load();
-  }
 
   @override
   Widget build(BuildContext context) {

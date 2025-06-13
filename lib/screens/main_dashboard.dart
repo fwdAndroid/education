@@ -1,4 +1,3 @@
-import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/screens/bookmark.dart';
 import 'package:education/screens/helper/ads_,manager.dart';
@@ -383,12 +382,31 @@ class _MainDashboardState extends State<MainDashboard>
                     _isAdLoaded
                         ? Center(
                           child: Container(
+                            alignment: Alignment.center,
                             width: _bannerAd!.size.width.toDouble(),
                             height: _bannerAd!.size.height.toDouble(),
                             child: AdWidget(ad: _bannerAd!),
                           ),
                         )
-                        : Center(child: Text("Ad loading...")),
+                        : Center(
+                          child: Container(
+                            height: 50,
+                            alignment: Alignment.center,
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(Icons.block, color: Colors.red, size: 30),
+                                Text(
+                                  "Ad Blocked or Not Loaded",
+                                  style: TextStyle(
+                                    color: Colors.red,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
               ),
             ],
           ),
