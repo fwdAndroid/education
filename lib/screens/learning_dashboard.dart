@@ -1,5 +1,6 @@
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
+import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/screens/webpage.dart';
 import 'package:education/service/book_mark_service.dart';
 import 'package:education/widgets/chatpter_list_tile.dart';
@@ -46,9 +47,17 @@ class _LearningDashboardState extends State<LearningDashboard>
     return Scaffold(
       appBar: AppBar(
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0, bottom: 8),
-            child: Image.asset("assets/raw/bulb.png", width: 50, height: 50),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (builder) => QuizDashboard()),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8.0, bottom: 8),
+              child: Image.asset("assets/raw/bulb.png", width: 50, height: 50),
+            ),
           ),
         ],
         iconTheme: IconThemeData(color: Colors.white),
@@ -165,42 +174,53 @@ class _LearningDashboardState extends State<LearningDashboard>
               ],
               chapterNumber: 8,
             ),
-            Container(
-              height: 90,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 1,
-                    blurRadius: 1,
-                    offset: Offset(0, 3),
-                  ),
-                ],
-              ),
-              child: Center(
-                child: ListTile(
-                  leading: Image.asset("assets/raw/abcd.png"),
-                  subtitle: Text("Chapter 9"),
-                  title: Text("PDF Book", style: TextStyle(fontSize: 14)),
+            GestureDetector(
+              onTap: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (builder) => PDFViewerFromAsset()),
+                );
+              },
+              child: Container(
+                height: 90,
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 1,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: Center(
+                  child: ListTile(
+                    leading: Image.asset("assets/raw/abcd.png"),
+                    subtitle: Text("Chapter 9"),
+                    title: Text("PDF Book", style: TextStyle(fontSize: 14)),
 
-                  trailing: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xffab77ff),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(2),
+                    trailing: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color(0xffab77ff),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(2),
+                        ),
+                      ),
+                      onPressed: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (builder) => PDFViewerFromAsset(),
+                          ),
+                        );
+                      },
+                      child: Text(
+                        "Open",
+                        style: TextStyle(color: Colors.white),
                       ),
                     ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (builder) => PDFViewerFromAsset(),
-                        ),
-                      );
-                    },
-                    child: Text("Open", style: TextStyle(color: Colors.white)),
                   ),
                 ),
               ),

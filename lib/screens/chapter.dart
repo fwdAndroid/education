@@ -1,9 +1,10 @@
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
+import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/service/book_mark_service.dart';
-import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'dart:math';
 
 class Chapter extends StatefulWidget {
   final List<String> imagePaths;
@@ -27,8 +28,29 @@ class _ChapterState extends State<Chapter>
   String get screenName => 'Chapter';
   final PageController _pageController = PageController();
   int _currentPage = 0;
-
   bool _isAdLoaded = false;
+
+  final TransformationController _transformationController =
+      TransformationController();
+  double _currentScale = 1.0;
+
+  void _zoomIn() {
+    setState(() {
+      _currentScale = min(_currentScale + 0.2, 3.0);
+      _applyZoom();
+    });
+  }
+
+  void _zoomOut() {
+    setState(() {
+      _currentScale = max(_currentScale - 0.2, 1.0);
+      _applyZoom();
+    });
+  }
+
+  void _applyZoom() {
+    _transformationController.value = Matrix4.identity()..scale(_currentScale);
+  }
 
   @override
   void initState() {
@@ -36,7 +58,7 @@ class _ChapterState extends State<Chapter>
     _bannerAd = BannerAd(
       adUnitId: bannerKey,
       size: AdSize.banner,
-      request: AdRequest(),
+      request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
           setState(() {
@@ -55,6 +77,7 @@ class _ChapterState extends State<Chapter>
   void dispose() {
     _pageController.dispose();
     _bannerAd?.dispose();
+    _transformationController.dispose();
     super.dispose();
   }
 
@@ -63,9 +86,17 @@ class _ChapterState extends State<Chapter>
     return Scaffold(
       appBar: AppBar(
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0, bottom: 8),
-            child: Image.asset("assets/raw/bulb.png", width: 50, height: 50),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (builder) => QuizDashboard()),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.only(top: 8.0, bottom: 8),
+              child: Image.asset("assets/raw/bulb.png", width: 50, height: 50),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
@@ -91,8 +122,7 @@ class _ChapterState extends State<Chapter>
                         chapterNumber: widget.chapterNumber,
                         title: widget.title,
                         subtitle: "Chapter ${widget.chapterNumber}",
-                        imagePath:
-                            "assets/raw/a.png", // Update with correct path
+                        imagePath: "assets/raw/a.png",
                         imagePaths: widget.imagePaths,
                       ),
                     );
@@ -102,10 +132,9 @@ class _ChapterState extends State<Chapter>
             ),
           ),
         ],
-
-        iconTheme: IconThemeData(color: Colors.white),
-        title: Text(widget.title, style: TextStyle(color: Colors.white)),
-        backgroundColor: Color(0xffab77ff),
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text(widget.title, style: const TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xffab77ff),
       ),
       body: Column(
         children: [
@@ -116,12 +145,15 @@ class _ChapterState extends State<Chapter>
               onPageChanged: (int page) {
                 setState(() {
                   _currentPage = page;
+                  _currentScale = 1.0;
+                  _applyZoom();
                 });
               },
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: InteractiveViewer(
+                    transformationController: _transformationController,
                     panEnabled: true,
                     minScale: 1.0,
                     maxScale: 3.0,
@@ -134,14 +166,27 @@ class _ChapterState extends State<Chapter>
               },
             ),
           ),
-          // Page number display (e.g. "1/5")
           Padding(
             padding: const EdgeInsets.symmetric(vertical: 8.0),
             child: Text(
               '${_currentPage + 1}/${widget.imagePaths.length}',
-              style: TextStyle(fontSize: 18, color: Colors.black),
+              style: const TextStyle(fontSize: 18, color: Colors.black),
             ),
           ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              IconButton(
+                icon: const Icon(Icons.zoom_in, color: Colors.black),
+                onPressed: _zoomIn,
+              ),
+              IconButton(
+                icon: const Icon(Icons.zoom_out, color: Colors.black),
+                onPressed: _zoomOut,
+              ),
+            ],
+          ),
+
           Padding(
             padding: const EdgeInsets.all(8.0),
             child:
@@ -160,7 +205,7 @@ class _ChapterState extends State<Chapter>
                         alignment: Alignment.center,
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
+                          children: const [
                             Icon(Icons.block, color: Colors.red, size: 30),
                             Text(
                               "Ad Blocked or Not Loaded",

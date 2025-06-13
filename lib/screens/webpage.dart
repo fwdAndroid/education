@@ -43,27 +43,28 @@ class _PDFViewerFromAssetState extends State<PDFViewerFromAsset> {
   }
 
   Future<void> loadEncryptedPDF() async {
-    // Load asset PDF
-    final byteData = await DefaultAssetBundle.of(
-      context,
-    ).load('assets/test.pdf');
-    final Uint8List inputBytes = byteData.buffer.asUint8List();
+    try {
+      final byteData = await DefaultAssetBundle.of(
+        context,
+      ).load('assets/raw/test.pdf');
+      final Uint8List inputBytes = byteData.buffer.asUint8List();
 
-    // Load PDF using Syncfusion and apply encryption
-    final PdfDocument document = PdfDocument(inputBytes: inputBytes);
-    document.security.userPassword = '';
-    document.security.ownerPassword = 'owner123';
-    final List<int> protectedBytes = await document.save();
-    document.dispose();
+      final PdfDocument document = PdfDocument(inputBytes: inputBytes);
+      document.security.userPassword = '';
+      document.security.ownerPassword = 'owner123';
+      final List<int> protectedBytes = await document.save();
+      document.dispose();
 
-    // Save it to internal storage
-    final dir = await getApplicationDocumentsDirectory();
-    final file = File('${dir.path}/protected_test.pdf');
-    await file.writeAsBytes(protectedBytes, flush: true);
+      final dir = await getApplicationDocumentsDirectory();
+      final file = File('${dir.path}/protected_test.pdf');
+      await file.writeAsBytes(protectedBytes, flush: true);
 
-    setState(() {
-      localPath = file.path;
-    });
+      setState(() {
+        localPath = file.path;
+      });
+    } catch (e) {
+      print("PDF Load Error: $e");
+    }
   }
 
   @override
