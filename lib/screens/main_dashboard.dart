@@ -1,8 +1,13 @@
+import 'dart:typed_data';
+
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/screens/bookmark.dart';
+import 'package:education/screens/helper/image_asset_loader.dart';
 import 'package:education/screens/learning_dashboard.dart';
 import 'package:education/screens/privacy_policy.dart';
+import 'package:education/screens/quiz_dashboard.dart';
+import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -46,16 +51,13 @@ class _MainDashboardState extends State<MainDashboard>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         decoration: BoxDecoration(
           image: DecorationImage(
+            image: AssetImage("assets/raw/bg.png"),
             fit: BoxFit.cover,
-            image: AssetImage("assets/bg.png"),
-            filterQuality: FilterQuality.high,
-            // Add your background image
           ),
         ),
         child: SingleChildScrollView(
@@ -65,7 +67,7 @@ class _MainDashboardState extends State<MainDashboard>
               const SizedBox(height: 30),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Image.asset("assets/logo.png", height: 50),
+                child: Image.asset("assets/raw/logo.png", height: 50),
               ),
               SizedBox(height: 16),
               Row(
@@ -101,14 +103,17 @@ class _MainDashboardState extends State<MainDashboard>
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Center(
-                            child: Image.asset("assets/books.png", height: 50),
+                            child: Image.asset(
+                              "assets/raw/books.png",
+                              height: 50,
+                            ),
                           ), // Add your icons
                           SizedBox(height: 12),
                           Text(
                             "LEARNING",
                             style: GoogleFonts.poppins(
                               fontWeight: FontWeight.bold,
-                              fontSize: 20,
+                              fontSize: 17,
                             ),
                           ),
                         ],
@@ -154,7 +159,7 @@ class _MainDashboardState extends State<MainDashboard>
                             "BookMark",
                             style: GoogleFonts.poppins(
                               fontWeight: FontWeight.bold,
-                              fontSize: 20,
+                              fontSize: 17,
                             ),
                           ),
                         ],
@@ -177,14 +182,12 @@ class _MainDashboardState extends State<MainDashboard>
                   onTap: () {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(
-                        builder: (context) => LearningDashboard(),
-                      ),
+                      MaterialPageRoute(builder: (context) => QuizDashboard()),
                     );
                   },
                   child: Center(
                     child: ListTile(
-                      leading: Image.asset("assets/quiz.png", height: 60),
+                      leading: Image.asset("assets/raw/quiz.png", height: 60),
                       title: Container(
                         padding: EdgeInsets.only(bottom: 20),
                         child: Text(
@@ -197,7 +200,7 @@ class _MainDashboardState extends State<MainDashboard>
                         ),
                       ),
                       trailing: Image.asset(
-                        "assets/quizbutton.png",
+                        "assets/raw/quizbutton.png",
                         height: 50,
                       ),
                     ),
@@ -257,7 +260,7 @@ class _MainDashboardState extends State<MainDashboard>
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Image.asset(
-                                "assets/icq_share.webp",
+                                "assets/raw/icq_share.webp",
                                 height: 60,
                               ),
                             ),
@@ -289,7 +292,7 @@ class _MainDashboardState extends State<MainDashboard>
                             Padding(
                               padding: const EdgeInsets.all(8.0),
                               child: Image.asset(
-                                "assets/home_cta_img-removebg-preview.png",
+                                "assets/raw/home_cta_img-removebg-preview.png",
                                 height: 40,
                                 width: 40,
                               ),
@@ -329,12 +332,12 @@ class _MainDashboardState extends State<MainDashboard>
                           builder:
                               (context) => PrivacyPolicy(
                                 title: "Privacy Policy",
-                                imagePath: "assets/chemxi_Page027.jpg",
+                                imagePath: "assets/raw/chemxi_Page027.jpg",
                               ),
                         ),
                       );
                     },
-                    child: Image.asset("assets/privacy.png", height: 60),
+                    child: Image.asset("assets/raw/privacy.png", height: 60),
                   ),
 
                   SizedBox(width: 10),
@@ -346,12 +349,12 @@ class _MainDashboardState extends State<MainDashboard>
                           builder:
                               (context) => PrivacyPolicy(
                                 title: "GDPR",
-                                imagePath: "assets/chemxi_Page027.jpg",
+                                imagePath: "assets/raw//chemxi_Page027.jpg",
                               ),
                         ),
                       );
                     },
-                    child: Image.asset("assets/gdpr.png", height: 60),
+                    child: Image.asset("assets/raw/gdpr.png", height: 60),
                   ),
 
                   InkWell(
@@ -362,12 +365,15 @@ class _MainDashboardState extends State<MainDashboard>
                           builder:
                               (context) => PrivacyPolicy(
                                 title: "Content License",
-                                imagePath: "assets/chemxi_Page027.jpg",
+                                imagePath: "assets/raw/chemxi_Page027.jpg",
                               ),
                         ),
                       );
                     },
-                    child: Image.asset("assets/contentpolicy.png", height: 60),
+                    child: Image.asset(
+                      "assets/raw/contentpolicy.png",
+                      height: 60,
+                    ),
                   ),
                   SizedBox(width: 10),
                   InkWell(
@@ -378,12 +384,12 @@ class _MainDashboardState extends State<MainDashboard>
                           builder:
                               (context) => PrivacyPolicy(
                                 title: "Ads Policy",
-                                imagePath: "assets/chemxi_Page027.jpg",
+                                imagePath: "assets/raw/chemxi_Page027.jpg",
                               ),
                         ),
                       );
                     },
-                    child: Image.asset("assets/adspolicy.png", height: 60),
+                    child: Image.asset("assets/raw/adspolicy.png", height: 60),
                   ),
                 ],
               ),

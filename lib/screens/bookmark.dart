@@ -1,5 +1,6 @@
 import 'package:education/constant/ad_keys.dart';
-import 'package:education/screens/webpage.dart';
+import 'package:education/screens/chapter.dart';
+import 'package:education/service/book_mark_service.dart';
 import 'package:education/widgets/chatpter_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -17,10 +18,9 @@ class _BookmarkState extends State<Bookmark> {
 
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
     _bannerAd = BannerAd(
-      adUnitId: bannerKey, // Test Ad Unit ID
+      adUnitId: bannerKey,
       size: AdSize.banner,
       request: AdRequest(),
       listener: BannerAdListener(
@@ -39,175 +39,125 @@ class _BookmarkState extends State<Bookmark> {
 
   @override
   Widget build(BuildContext context) {
+    final bookmarkService = BookmarkService();
+
     return Scaffold(
       appBar: AppBar(
         actions: [
           Padding(
             padding: const EdgeInsets.only(top: 8.0, bottom: 8),
-            child: Image.asset("assets/bulb.png", height: 50, width: 50),
+            child: Image.asset("assets/raw/bulb.png", height: 50, width: 50),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Image.asset(
-              "assets/Screenshot 2025-05-23 115139.png",
+              "assets/raw/Screenshot 2025-05-23 115139.png",
               height: 50,
               width: 50,
             ),
           ),
         ],
         iconTheme: IconThemeData(color: Colors.white),
-
         title: Text("Bookmark", style: TextStyle(color: Colors.white)),
         backgroundColor: Color(0xffab77ff),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            ChapterTile(
-              title: "Fundamentals of Chemistry",
-              subtitle: "Chapter 1",
-              imagePath: "assets/a.png",
-              imagePaths: [
-                "assets/chemxi_Page006.jpg",
-                "assets/chemxi_Page007.jpg",
-                "assets/chemxi_Page008.jpg",
-                "assets/chemxi_Page009.jpg",
-              ],
-              chapterNumber: 1,
-            ),
-            //2nd
-            ChapterTile(
-              title: "Atomic Structure",
-              subtitle: "Chapter 2",
-              imagePath: "assets/ab.png",
-              imagePaths: [
-                "assets/chemxi_Page010.jpg",
-                "assets/chemxi_Page011.jpg",
-                "assets/chemxi_Page012.jpg",
-                "assets/chemxi_Page013.jpg",
-              ],
-              chapterNumber: 2,
-            ),
-            //3
-            ChapterTile(
-              title: "Periodic Table",
-              subtitle: "Chapter 3",
-              imagePath: "assets/abc.png",
-              imagePaths: [
-                "assets/chemxi_Page014.jpg",
-                "assets/chemxi_Page015.jpg",
-                "assets/chemxi_Page016.jpg",
-                "assets/chemxi_Page017.jpg",
-              ],
-              chapterNumber: 3,
-            ),
-            //4
-            ChapterTile(
-              title: "Chemical Bonding",
-              subtitle: "Chapter 4",
-              imagePath: "assets/abcd.png",
-              imagePaths: [
-                "assets/chemxi_Page018.jpg",
-                "assets/chemxi_Page019.jpg",
-                "assets/chemxi_Page020.jpg",
-                "assets/chemxi_Page021.jpg",
-              ],
-              chapterNumber: 4,
-            ),
-
-            //5
-            ChapterTile(
-              title: "Physical States of Matter",
-              subtitle: "Chapter 5",
-              imagePath: "assets/a.png",
-              imagePaths: [
-                "assets/chemxi_Page022.jpg",
-                "assets/chemxi_Page023.jpg",
-                "assets/chemxi_Page024.jpg",
-                "assets/chemxi_Page025.jpg",
-              ],
-              chapterNumber: 5,
-            ),
-            //6
-            ChapterTile(
-              title: "Solutions",
-              subtitle: "Chapter 6",
-              imagePath: "assets/ab.png",
-              imagePaths: [
-                "assets/chemxi_Page026.jpg",
-                "assets/chemxi_Page027.jpg",
-                "assets/chemxi_Page028.jpg",
-                "assets/chemxi_Page029.jpg",
-              ],
-              chapterNumber: 6,
-            ),
-
-            //7
-            ChapterTile(
-              title: "Electrochemistry",
-              subtitle: "Chapter 7",
-              imagePath: "assets/abc.png",
-              imagePaths: [
-                "assets/chemxi_Page030.jpg",
-                "assets/chemxi_Page031.jpg",
-                "assets/chemxi_Page032.jpg",
-                "assets/chemxi_Page033.jpg",
-              ],
-              chapterNumber: 7,
-            ),
-            //8
-            ChapterTile(
-              title: "Chemical Reactivity",
-              subtitle: "Chapter 8",
-              imagePath: "assets/abcd.png",
-              imagePaths: [
-                "assets/chemxi_Page030.jpg",
-                "assets/chemxi_Page031.jpg",
-                "assets/chemxi_Page032.jpg",
-                "assets/chemxi_Page033.jpg",
-              ],
-              chapterNumber: 8,
-            ),
-            Container(
-              height: 90,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(8),
-                color: Colors.white,
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.grey.withOpacity(0.5),
-                    spreadRadius: 1,
-                    blurRadius: 1,
-                    offset: Offset(0, 3),
-                  ),
-                ],
+            if (bookmarkService.bookmarkedChapters.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Bookmarked Chapters",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
               ),
-              child: Center(
-                child: ListTile(
-                  leading: Image.asset("assets/abcd.png"),
-                  subtitle: Text("Chapter 9"),
-                  title: Text("PDF Book", style: TextStyle(fontSize: 14)),
-
-                  trailing: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Color(0xffab77ff),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(2),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (builder) => PDFViewerFromAsset(),
-                        ),
+            ...bookmarkService.bookmarkedChapters.map((chapter) {
+              return ChapterTile(
+                title: chapter.title,
+                subtitle: chapter.subtitle,
+                imagePath: chapter.imagePath,
+                imagePaths: chapter.imagePaths,
+                chapterNumber: chapter.chapterNumber,
+                isBookmarked: true,
+                onBookmarkChanged: (isBookmarked) {
+                  setState(() {
+                    if (!isBookmarked) {
+                      bookmarkService.removeChapterBookmark(
+                        chapter.chapterNumber,
                       );
+                    }
+                  });
+                },
+              );
+            }).toList(),
+            if (bookmarkService.bookmarkedPages.isNotEmpty)
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Text(
+                  "Bookmarked Pages",
+                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+                ),
+              ),
+            ...bookmarkService.bookmarkedPages.map((page) {
+              return Container(
+                margin: EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  borderRadius: BorderRadius.circular(8),
+                  color: Colors.white,
+                  boxShadow: [
+                    BoxShadow(
+                      color: Colors.grey.withOpacity(0.5),
+                      spreadRadius: 1,
+                      blurRadius: 1,
+                      offset: Offset(0, 3),
+                    ),
+                  ],
+                ),
+                child: ListTile(
+                  leading: Image.asset(page.imagePath, width: 50, height: 50),
+                  title: Text(
+                    "${page.chapterTitle} - Page ${page.pageNumber + 1}",
+                  ),
+                  trailing: IconButton(
+                    icon: Icon(Icons.bookmark, color: Colors.purple),
+                    onPressed: () {
+                      setState(() {
+                        bookmarkService.removePageBookmark(
+                          page.chapterNumber,
+                          page.pageNumber,
+                        );
+                      });
                     },
-                    child: Text("Open", style: TextStyle(color: Colors.white)),
+                  ),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder:
+                            (context) => Chapter(
+                              chapterNumber: page.chapterNumber,
+                              title: page.chapterTitle,
+                              imagePaths: [page.imagePath],
+                            ),
+                      ),
+                    );
+                  },
+                ),
+              );
+            }).toList(),
+            if (bookmarkService.bookmarkedChapters.isEmpty &&
+                bookmarkService.bookmarkedPages.isEmpty)
+              Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(16.0),
+                  child: Text(
+                    "No bookmarks yet. Bookmark chapters or pages to see them here.",
+                    style: TextStyle(fontSize: 16),
+                    textAlign: TextAlign.center,
                   ),
                 ),
               ),
-            ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child:

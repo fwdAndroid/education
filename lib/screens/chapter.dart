@@ -1,13 +1,21 @@
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
+import 'package:education/service/book_mark_service.dart';
+import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class Chapter extends StatefulWidget {
   final List<String> imagePaths;
   final String title;
+  final int chapterNumber;
 
-  const Chapter({super.key, required this.imagePaths, required this.title});
+  const Chapter({
+    super.key,
+    required this.imagePaths,
+    required this.title,
+    required this.chapterNumber,
+  });
 
   @override
   State<Chapter> createState() => _ChapterState();
@@ -57,13 +65,44 @@ class _ChapterState extends State<Chapter>
         actions: [
           Padding(
             padding: const EdgeInsets.only(top: 8.0, bottom: 8),
-            child: Image.asset("assets/bulb.png", height: 50, width: 50),
+            child: Image.asset("assets/raw/bulb.png", width: 50, height: 50),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: Icon(Icons.bookmark, size: 40),
+            child: IconButton(
+              icon: Icon(
+                BookmarkService().isChapterBookmarked(widget.chapterNumber)
+                    ? Icons.bookmark
+                    : Icons.bookmark_border,
+                size: 30,
+                color: Colors.white,
+              ),
+              onPressed: () {
+                setState(() {
+                  if (BookmarkService().isChapterBookmarked(
+                    widget.chapterNumber,
+                  )) {
+                    BookmarkService().removeChapterBookmark(
+                      widget.chapterNumber,
+                    );
+                  } else {
+                    BookmarkService().addChapterBookmark(
+                      BookmarkedChapter(
+                        chapterNumber: widget.chapterNumber,
+                        title: widget.title,
+                        subtitle: "Chapter ${widget.chapterNumber}",
+                        imagePath:
+                            "assets/raw/a.png", // Update with correct path
+                        imagePaths: widget.imagePaths,
+                      ),
+                    );
+                  }
+                });
+              },
+            ),
           ),
         ],
+
         iconTheme: IconThemeData(color: Colors.white),
         title: Text(widget.title, style: TextStyle(color: Colors.white)),
         backgroundColor: Color(0xffab77ff),
