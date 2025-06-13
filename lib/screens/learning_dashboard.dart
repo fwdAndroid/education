@@ -1,3 +1,4 @@
+import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/screens/helper/ads_,manager.dart';
 import 'package:education/screens/quiz_dashboard.dart';
@@ -15,9 +16,12 @@ class LearningDashboard extends StatefulWidget {
 
 class _LearningDashboardState extends State<LearningDashboard>
     with AnalyticsScreenTracker<LearningDashboard> {
-  bool get _isAdLoaded => AdService().isBannerAdLoaded;
-  BannerAd? get _bannerAd => AdService().bannerAd;
   String get screenName => 'LearningDashboard';
+  @override
+  void initState() {
+    super.initState();
+    AdService().loadBannerAd(bannerKey); // replace with AdKeys.bannerAdUnitId
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -204,35 +208,26 @@ class _LearningDashboardState extends State<LearningDashboard>
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child:
-                  _isAdLoaded
-                      ? Center(
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: _bannerAd!.size.width.toDouble(),
-                          height: _bannerAd!.size.height.toDouble(),
-                          child: AdWidget(ad: _bannerAd!),
-                        ),
+              child: ValueListenableBuilder<bool>(
+                valueListenable: AdService().isBannerAdLoaded,
+                builder: (context, isLoaded, child) {
+                  return isLoaded && AdService().bannerAd != null
+                      ? Container(
+                        alignment: Alignment.center,
+                        width: AdService().bannerAd!.size.width.toDouble(),
+                        height: AdService().bannerAd!.size.height.toDouble(),
+                        child: AdWidget(ad: AdService().bannerAd!),
                       )
-                      : Center(
-                        child: Container(
-                          height: 50,
-                          alignment: Alignment.center,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.block, color: Colors.red, size: 30),
-                              Text(
-                                "Ad Blocked or Not Loaded",
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
+                      : Container(
+                        height: 50,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Ad Loading...",
+                          style: TextStyle(color: Colors.black, fontSize: 12),
                         ),
-                      ),
+                      );
+                },
+              ),
             ),
           ],
         ),

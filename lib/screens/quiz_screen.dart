@@ -1,5 +1,6 @@
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
+import 'package:education/screens/helper/ads_,manager.dart';
 import 'package:education/widgets/quiz_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -21,28 +22,10 @@ class _QuizPageState extends State<QuizPage>
 
   String get screenName => 'QuizPage${widget.chapterNumber}';
 
-  BannerAd? _bannerAd;
-  bool _isAdLoaded = false;
   @override
   void initState() {
-    // TODO: implement initState
     super.initState();
-    _bannerAd = BannerAd(
-      adUnitId: bannerKey, // Test Ad Unit ID
-      size: AdSize.banner,
-      request: AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          setState(() {
-            _isAdLoaded = true;
-          });
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          ad.dispose();
-          print('Ad load failed (code=${error.code} message=${error.message})');
-        },
-      ),
-    )..load();
+    AdService().loadBannerAd(bannerKey); // replace with AdKeys.bannerAdUnitId
   }
 
   @override
@@ -97,35 +80,26 @@ class _QuizPageState extends State<QuizPage>
             Spacer(),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child:
-                  _isAdLoaded
-                      ? Center(
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: _bannerAd!.size.width.toDouble(),
-                          height: _bannerAd!.size.height.toDouble(),
-                          child: AdWidget(ad: _bannerAd!),
-                        ),
+              child: ValueListenableBuilder<bool>(
+                valueListenable: AdService().isBannerAdLoaded,
+                builder: (context, isLoaded, child) {
+                  return isLoaded && AdService().bannerAd != null
+                      ? Container(
+                        alignment: Alignment.center,
+                        width: AdService().bannerAd!.size.width.toDouble(),
+                        height: AdService().bannerAd!.size.height.toDouble(),
+                        child: AdWidget(ad: AdService().bannerAd!),
                       )
-                      : Center(
-                        child: Container(
-                          height: 50,
-                          alignment: Alignment.center,
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(Icons.block, color: Colors.red, size: 30),
-                              Text(
-                                "Ad Blocked or Not Loaded",
-                                style: TextStyle(
-                                  color: Colors.red,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ],
-                          ),
+                      : Container(
+                        height: 50,
+                        alignment: Alignment.center,
+                        child: Text(
+                          "Ad Loading...",
+                          style: TextStyle(color: Colors.black, fontSize: 12),
                         ),
-                      ),
+                      );
+                },
+              ),
             ),
           ],
         ),

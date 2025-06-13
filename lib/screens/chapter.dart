@@ -1,5 +1,6 @@
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
+import 'package:education/screens/helper/ads_,manager.dart';
 import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/service/book_mark_service.dart';
 import 'package:flutter/material.dart';
@@ -24,11 +25,14 @@ class Chapter extends StatefulWidget {
 
 class _ChapterState extends State<Chapter>
     with AnalyticsScreenTracker<Chapter> {
-  BannerAd? _bannerAd;
   String get screenName => 'Chapter';
   final PageController _pageController = PageController();
   int _currentPage = 0;
-  bool _isAdLoaded = false;
+  @override
+  void initState() {
+    super.initState();
+    AdService().loadBannerAd(bannerKey); // replace with AdKeys.bannerAdUnitId
+  }
 
   final TransformationController _transformationController =
       TransformationController();
@@ -53,30 +57,9 @@ class _ChapterState extends State<Chapter>
   }
 
   @override
-  void initState() {
-    super.initState();
-    _bannerAd = BannerAd(
-      adUnitId: bannerKey,
-      size: AdSize.banner,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          setState(() {
-            _isAdLoaded = true;
-          });
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          ad.dispose();
-          print('Ad load failed (code=${error.code} message=${error.message})');
-        },
-      ),
-    )..load();
-  }
-
-  @override
   void dispose() {
     _pageController.dispose();
-    _bannerAd?.dispose();
+
     _transformationController.dispose();
     super.dispose();
   }
@@ -189,32 +172,26 @@ class _ChapterState extends State<Chapter>
 
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child:
-                _isAdLoaded
-                    ? Center(
-                      child: Container(
-                        alignment: Alignment.center,
-                        width: _bannerAd!.size.width.toDouble(),
-                        height: _bannerAd!.size.height.toDouble(),
-                        child: AdWidget(ad: _bannerAd!),
-                      ),
+            child: ValueListenableBuilder<bool>(
+              valueListenable: AdService().isBannerAdLoaded,
+              builder: (context, isLoaded, child) {
+                return isLoaded && AdService().bannerAd != null
+                    ? Container(
+                      alignment: Alignment.center,
+                      width: AdService().bannerAd!.size.width.toDouble(),
+                      height: AdService().bannerAd!.size.height.toDouble(),
+                      child: AdWidget(ad: AdService().bannerAd!),
                     )
-                    : Center(
-                      child: Container(
-                        height: 50,
-                        alignment: Alignment.center,
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: const [
-                            Icon(Icons.block, color: Colors.red, size: 30),
-                            Text(
-                              "Ad Blocked or Not Loaded",
-                              style: TextStyle(color: Colors.red, fontSize: 12),
-                            ),
-                          ],
-                        ),
+                    : Container(
+                      height: 50,
+                      alignment: Alignment.center,
+                      child: Text(
+                        "Ad Loading...",
+                        style: TextStyle(color: Colors.black, fontSize: 12),
                       ),
-                    ),
+                    );
+              },
+            ),
           ),
         ],
       ),

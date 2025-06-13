@@ -1,4 +1,4 @@
-// ad_service.dart
+import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class AdService {
@@ -7,7 +7,7 @@ class AdService {
   AdService._internal();
 
   BannerAd? _bannerAd;
-  bool get isBannerAdLoaded => _bannerAd != null;
+  final ValueNotifier<bool> isBannerAdLoaded = ValueNotifier(false);
 
   void loadBannerAd(String adUnitId) {
     if (_bannerAd != null) return;
@@ -17,11 +17,15 @@ class AdService {
       size: AdSize.banner,
       request: const AdRequest(),
       listener: BannerAdListener(
-        onAdLoaded: (ad) => print('Banner ad loaded'),
+        onAdLoaded: (ad) {
+          print('Banner ad loaded');
+          isBannerAdLoaded.value = true;
+        },
         onAdFailedToLoad: (ad, error) {
           print('Banner ad failed: $error');
           ad.dispose();
           _bannerAd = null;
+          isBannerAdLoaded.value = false;
         },
       ),
     )..load();
@@ -32,5 +36,6 @@ class AdService {
   void disposeBannerAd() {
     _bannerAd?.dispose();
     _bannerAd = null;
+    isBannerAdLoaded.value = false;
   }
 }

@@ -1,3 +1,4 @@
+import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/screens/bookmark.dart';
 import 'package:education/screens/helper/ads_,manager.dart';
@@ -18,9 +19,12 @@ class MainDashboard extends StatefulWidget {
 
 class _MainDashboardState extends State<MainDashboard>
     with AnalyticsScreenTracker<MainDashboard> {
-  bool get _isAdLoaded => AdService().isBannerAdLoaded;
-  BannerAd? get _bannerAd => AdService().bannerAd;
   String get screenName => 'MainDashboard';
+  @override
+  void initState() {
+    super.initState();
+    AdService().loadBannerAd(bannerKey); // replace with AdKeys.bannerAdUnitId
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -156,30 +160,34 @@ class _MainDashboardState extends State<MainDashboard>
                   color: Color(0xFFf9f2ff),
                 ),
                 padding: const EdgeInsets.all(8.0),
-                child: InkWell(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => QuizDashboard()),
-                    );
-                  },
-                  child: Center(
-                    child: ListTile(
-                      leading: Image.asset("assets/raw/quiz.png", height: 60),
-                      title: Container(
-                        padding: EdgeInsets.only(bottom: 20),
-                        child: Text(
-                          "Play Quiz Challenge",
-                          style: TextStyle(
-                            fontSize: 16,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                child: Card(
+                  child: InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => QuizDashboard(),
+                        ),
+                      );
+                    },
+                    child: Center(
+                      child: ListTile(
+                        leading: Image.asset("assets/raw/quiz.png", height: 60),
+                        title: Container(
+                          padding: EdgeInsets.only(bottom: 20),
+                          child: Text(
+                            "Play Quiz Challenge",
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
                           ),
                         ),
-                      ),
-                      trailing: Image.asset(
-                        "assets/raw/quizbutton.png",
-                        height: 50,
+                        trailing: Image.asset(
+                          "assets/raw/quizbutton.png",
+                          height: 50,
+                        ),
                       ),
                     ),
                   ),
@@ -378,35 +386,26 @@ class _MainDashboardState extends State<MainDashboard>
 
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child:
-                    _isAdLoaded
-                        ? Center(
-                          child: Container(
-                            alignment: Alignment.center,
-                            width: _bannerAd!.size.width.toDouble(),
-                            height: _bannerAd!.size.height.toDouble(),
-                            child: AdWidget(ad: _bannerAd!),
-                          ),
+                child: ValueListenableBuilder<bool>(
+                  valueListenable: AdService().isBannerAdLoaded,
+                  builder: (context, isLoaded, child) {
+                    return isLoaded && AdService().bannerAd != null
+                        ? Container(
+                          alignment: Alignment.center,
+                          width: AdService().bannerAd!.size.width.toDouble(),
+                          height: AdService().bannerAd!.size.height.toDouble(),
+                          child: AdWidget(ad: AdService().bannerAd!),
                         )
-                        : Center(
-                          child: Container(
-                            height: 50,
-                            alignment: Alignment.center,
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(Icons.block, color: Colors.red, size: 30),
-                                Text(
-                                  "Ad Blocked or Not Loaded",
-                                  style: TextStyle(
-                                    color: Colors.red,
-                                    fontSize: 12,
-                                  ),
-                                ),
-                              ],
-                            ),
+                        : Container(
+                          height: 50,
+                          alignment: Alignment.center,
+                          child: Text(
+                            "Ad Loading...",
+                            style: TextStyle(color: Colors.black, fontSize: 12),
                           ),
-                        ),
+                        );
+                  },
+                ),
               ),
             ],
           ),
