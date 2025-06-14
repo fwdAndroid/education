@@ -1,8 +1,9 @@
+import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:confetti/confetti.dart';
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/widgets/quiz_widget.dart';
-import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class QuizPage extends StatefulWidget {
   final int chapterNumber;
@@ -19,14 +20,26 @@ class _QuizPageState extends State<QuizPage>
   int correctAnswers = 0;
   int? selectedIndex;
 
+  late ConfettiController _confettiController;
+  bool showConfetti = false;
+
   String get screenName => 'QuizPage${widget.chapterNumber}';
 
   BannerAd? _bannerAd;
   bool _isBannerAdLoaded = false;
+
   @override
   void initState() {
     super.initState();
     _loadBannerAd();
+    _confettiController = ConfettiController(duration: Duration(seconds: 2));
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    _confettiController.dispose();
+    super.dispose();
   }
 
   void _loadBannerAd() {
@@ -47,12 +60,6 @@ class _QuizPageState extends State<QuizPage>
         },
       ),
     )..load();
-  }
-
-  @override
-  void dispose() {
-    _bannerAd?.dispose();
-    super.dispose();
   }
 
   @override
@@ -79,55 +86,129 @@ class _QuizPageState extends State<QuizPage>
         backgroundColor: Color(0xffab77ff),
         iconTheme: IconThemeData(color: Colors.white),
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              "Q${currentQuestionIndex + 1}: $question",
-              style: TextStyle(fontSize: 18),
+      body: Column(
+        children: [
+          if (showConfetti)
+            SizedBox(
+              height: 100,
+              child: ConfettiWidget(
+                confettiController: _confettiController,
+                blastDirectionality: BlastDirectionality.explosive,
+                shouldLoop: false,
+                colors: [Colors.deepPurple, Colors.pink, Colors.orange],
+              ),
             ),
-            SizedBox(height: 20),
-            ...List.generate(options.length, (index) {
-              return ListTile(
-                title: Text(options[index]),
-                leading: Radio<int>(
-                  value: index,
-                  groupValue: selectedIndex,
-                  onChanged: (value) {
-                    setState(() {
-                      selectedIndex = value;
-                    });
-                    _showAnswerDialog(options[value!], correctAnswer);
-                  },
+          Expanded(
+            child: AnimatedSwitcher(
+              duration: Duration(milliseconds: 400),
+              transitionBuilder: (child, animation) {
+                return SlideTransition(
+                  position: Tween<Offset>(
+                    begin: Offset(1, 0),
+                    end: Offset.zero,
+                  ).animate(animation),
+                  child: FadeTransition(opacity: animation, child: child),
+                );
+              },
+              child: Padding(
+                key: ValueKey(currentQuestionIndex),
+                padding: const EdgeInsets.all(16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        CircleAvatar(
+                          backgroundColor: Colors.deepPurple,
+                          child: Text(
+                            "${currentQuestionIndex + 1}",
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 12),
+                        Expanded(
+                          child: Text(
+                            question,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                    SizedBox(height: 30),
+                    ...List.generate(options.length, (index) {
+                      final isSelected = selectedIndex == index;
+
+                      return AnimatedContainer(
+                        duration: Duration(milliseconds: 300),
+                        margin: EdgeInsets.symmetric(vertical: 6),
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                            color:
+                                isSelected
+                                    ? Colors.deepPurple
+                                    : Colors.grey.shade400,
+                            width: isSelected ? 2 : 1,
+                          ),
+                          borderRadius: BorderRadius.circular(10),
+                          color:
+                              isSelected
+                                  ? Colors.deepPurple.withOpacity(0.1)
+                                  : Colors.white,
+                        ),
+                        child: Material(
+                          color: Colors.transparent,
+                          child: InkWell(
+                            borderRadius: BorderRadius.circular(10),
+                            onTap: () {
+                              setState(() {
+                                selectedIndex = index;
+                              });
+                              _showAnswerDialog(options[index], correctAnswer);
+                            },
+                            child: Padding(
+                              padding: EdgeInsets.all(14),
+                              child: Text(
+                                options[index],
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            ),
+                          ),
+                        ),
+                      );
+                    }),
+                  ],
                 ),
-              );
-            }),
-            Spacer(),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child:
-                  _bannerAd != null && _isBannerAdLoaded
-                      ? Center(
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: _bannerAd!.size.width.toDouble(),
-                          height: _bannerAd!.size.height.toDouble(),
-                          child: AdWidget(ad: _bannerAd!),
-                        ),
-                      )
-                      : Container(
-                        height: 50,
-                        alignment: Alignment.center,
-                        child: const Text(
-                          "Ad Loading...",
-                          style: TextStyle(color: Colors.black, fontSize: 12),
-                        ),
-                      ),
+              ),
             ),
-          ],
-        ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(8.0),
+            child:
+                _bannerAd != null && _isBannerAdLoaded
+                    ? Center(
+                      child: Container(
+                        alignment: Alignment.center,
+                        width: _bannerAd!.size.width.toDouble(),
+                        height: _bannerAd!.size.height.toDouble(),
+                        child: AdWidget(ad: _bannerAd!),
+                      ),
+                    )
+                    : Container(
+                      height: 50,
+                      alignment: Alignment.center,
+                      child: const Text(
+                        "Ad Loading...",
+                        style: TextStyle(color: Colors.black, fontSize: 12),
+                      ),
+                    ),
+          ),
+        ],
       ),
     );
   }
@@ -149,16 +230,16 @@ class _QuizPageState extends State<QuizPage>
               if (!isCorrect)
                 TextButton(
                   onPressed: () {
-                    Navigator.pop(context); // close dialog
+                    Navigator.pop(context);
                     setState(() {
-                      selectedIndex = null; // reset selection
+                      selectedIndex = null;
                     });
                   },
                   child: Text("Try Again"),
                 ),
               TextButton(
                 onPressed: () {
-                  Navigator.pop(context); // close dialog
+                  Navigator.pop(context);
                   if (isCorrect) {
                     setState(() {
                       correctAnswers++;
@@ -167,11 +248,10 @@ class _QuizPageState extends State<QuizPage>
                         currentQuestionIndex++;
                         selectedIndex = null;
                       } else {
-                        _showFinalResult();
+                        _triggerConfettiAndShowResult();
                       }
                     });
                   } else {
-                    // Move forward without reattempt if user doesn't choose Try Again
                     if (currentQuestionIndex <
                         chapterQuizzes[widget.chapterNumber]!.length - 1) {
                       setState(() {
@@ -179,7 +259,7 @@ class _QuizPageState extends State<QuizPage>
                         selectedIndex = null;
                       });
                     } else {
-                      _showFinalResult();
+                      _triggerConfettiAndShowResult();
                     }
                   }
                 },
@@ -188,6 +268,16 @@ class _QuizPageState extends State<QuizPage>
             ],
           ),
     );
+  }
+
+  void _triggerConfettiAndShowResult() {
+    setState(() {
+      showConfetti = true;
+    });
+    _confettiController.play();
+    Future.delayed(Duration(seconds: 2), () {
+      _showFinalResult();
+    });
   }
 
   void _showFinalResult() {

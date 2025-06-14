@@ -182,6 +182,7 @@ class _LearningDashboardState extends State<LearningDashboard>
               ],
               chapterNumber: 8,
             ),
+
             GestureDetector(
               onTap: () {
                 Navigator.push(
@@ -191,6 +192,8 @@ class _LearningDashboardState extends State<LearningDashboard>
               },
               child: Container(
                 height: 90,
+                margin: const EdgeInsets.all(8),
+                padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   color: Colors.white,
@@ -199,19 +202,47 @@ class _LearningDashboardState extends State<LearningDashboard>
                       color: Colors.grey.withOpacity(0.5),
                       spreadRadius: 1,
                       blurRadius: 1,
-                      offset: Offset(0, 3),
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
-                child: Center(
-                  child: ListTile(
-                    leading: Image.asset("assets/raw/abcd.png"),
-                    subtitle: Text("Chapter 9"),
-                    title: Text("PDF Book", style: TextStyle(fontSize: 14)),
-
-                    trailing: ElevatedButton(
+                child: Row(
+                  children: [
+                    Image.asset("assets/raw/abcd.png", height: 48),
+                    const SizedBox(width: 10),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          // TITLE (single line, clipped if too long)
+                          Text(
+                            "PDF Book",
+                            style: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w600,
+                            ),
+                            maxLines: 1,
+                            softWrap: false,
+                            overflow: TextOverflow.clip, // not ellipsis
+                          ),
+                          const SizedBox(height: 4),
+                          Text(
+                            "Chapter 9",
+                            style: const TextStyle(
+                              fontSize: 12,
+                              color: Colors.grey,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(width: 10),
+                    ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: Color(0xffab77ff),
+                        backgroundColor: const Color(0xffab77ff),
+                        minimumSize: const Size(60, 36),
+                        padding: const EdgeInsets.symmetric(horizontal: 12),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(2),
                         ),
@@ -224,12 +255,12 @@ class _LearningDashboardState extends State<LearningDashboard>
                           ),
                         );
                       },
-                      child: Text(
+                      child: const Text(
                         "Open",
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
-                  ),
+                  ],
                 ),
               ),
             ),

@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:education/advertisement_pages/ads_policy_page.dart';
 import 'package:education/advertisement_pages/content_license_page.dart';
 import 'package:education/advertisement_pages/gdpr_page.dart';
@@ -30,12 +31,12 @@ class _MainDashboardState extends State<MainDashboard>
   @override
   void initState() {
     super.initState();
+    _loadBannerAd();
     // Hide only the top status bar
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
       overlays: [SystemUiOverlay.bottom],
     );
-    _loadBannerAd();
   }
 
   void _loadBannerAd() {
@@ -66,6 +67,10 @@ class _MainDashboardState extends State<MainDashboard>
 
   @override
   Widget build(BuildContext context) {
+    final screenWidth = MediaQuery.of(context).size.width;
+    double titleFontSize = screenWidth * 0.04; // around 16 on 400px width
+    double subtitleFontSize = screenWidth * 0.03; // around 12 on 400px width
+
     return Scaffold(
       body: Container(
         width: MediaQuery.of(context).size.width,
@@ -201,16 +206,16 @@ class _MainDashboardState extends State<MainDashboard>
                     child: Center(
                       child: ListTile(
                         leading: Image.asset("assets/raw/quiz.png", height: 60),
-                        title: Container(
-                          padding: const EdgeInsets.only(bottom: 20),
-                          child: const Text(
-                            "Play Quiz Challenge",
-                            style: TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
+                        title: AutoSizeText(
+                          "Play Quiz Challenge",
+                          style: TextStyle(
+                            fontSize:
+                                screenWidth * 0.04, // Responsive font size
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         trailing: Image.asset(
                           "assets/raw/quizbutton.png",
@@ -259,6 +264,8 @@ class _MainDashboardState extends State<MainDashboard>
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         const Icon(Icons.share, size: 100, color: Colors.white),
+
+                        // Main Text Block
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -267,20 +274,20 @@ class _MainDashboardState extends State<MainDashboard>
                             child: Column(
                               mainAxisAlignment: MainAxisAlignment.center,
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
+                              children: [
                                 Text(
                                   "Share with Friends",
                                   style: TextStyle(
-                                    fontSize: 16,
+                                    fontSize: titleFontSize,
                                     fontWeight: FontWeight.bold,
                                     color: Colors.white,
                                   ),
                                 ),
-                                SizedBox(height: 4),
+                                const SizedBox(height: 4),
                                 Text(
-                                  "help your friend fall in love\nwith learning through Alim!",
+                                  "Help your friend fall in love\nwith learning through Alim!",
                                   style: TextStyle(
-                                    fontSize: 12,
+                                    fontSize: subtitleFontSize,
                                     color: Colors.white,
                                   ),
                                 ),
@@ -288,6 +295,8 @@ class _MainDashboardState extends State<MainDashboard>
                             ),
                           ),
                         ),
+
+                        // Arrow Button
                         Container(
                           height: 40,
                           width: 40,
@@ -324,9 +333,89 @@ class _MainDashboardState extends State<MainDashboard>
                   ),
                 ),
               ),
-              Padding(
-                padding: const EdgeInsets.only(left: 8.0, right: 8, bottom: 8),
-                child: Divider(color: const Color(0xffb48ce8), thickness: 1),
+
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: [
+                  GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (builder) => const PrivacyPolicyPage(),
+                        ),
+                      );
+                    },
+                    child: Container(
+                      height: 60,
+                      width: 150,
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFEBD4FB),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.only(left: 8.0),
+                            child: Image.asset(
+                              "assets/raw/privacy.png",
+                              height: 40,
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          Text(
+                            'Privacy Policy',
+                            style: TextStyle(
+                              color: const Color(0xFF8238C6),
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const GdprPage(),
+                        ),
+                      );
+                    },
+                    child: Image.asset("assets/raw/gdpr.png", height: 40),
+                  ),
+                  const SizedBox(width: 5),
+
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const ContentLicensePage(),
+                        ),
+                      );
+                    },
+                    child: Image.asset(
+                      "assets/raw/contentpolicy.png",
+                      height: 40,
+                    ),
+                  ),
+                  const SizedBox(width: 5),
+                  InkWell(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const AdsPolicyPage(),
+                        ),
+                      );
+                    },
+                    child: Image.asset("assets/raw/adspolicy.png", height: 40),
+                  ),
+                ],
               ),
               const Padding(
                 padding: EdgeInsets.only(top: 8.0, left: 8, bottom: 8),
@@ -339,91 +428,9 @@ class _MainDashboardState extends State<MainDashboard>
                   ),
                 ),
               ),
-              SingleChildScrollView(
-                scrollDirection: Axis.horizontal,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    const SizedBox(width: 10),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (builder) => const PrivacyPolicyPage(),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFEBD4FB),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Image.asset(
-                                "assets/raw/privacy.png",
-                                height: 60,
-                              ),
-                            ),
-                            Text(
-                              'Privacy Policy',
-                              style: TextStyle(
-                                color: const Color(0xFF8238C6),
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                            const SizedBox(width: 10),
-                          ],
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const GdprPage(),
-                          ),
-                        );
-                      },
-                      child: Image.asset("assets/raw/gdpr.png", height: 60),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ContentLicensePage(),
-                          ),
-                        );
-                      },
-                      child: Image.asset(
-                        "assets/raw/contentpolicy.png",
-                        height: 60,
-                      ),
-                    ),
-                    const SizedBox(width: 10),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const AdsPolicyPage(),
-                          ),
-                        );
-                      },
-                      child: Image.asset(
-                        "assets/raw/adspolicy.png",
-                        height: 60,
-                      ),
-                    ),
-                  ],
-                ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8.0, right: 8, bottom: 8),
+                child: Divider(color: const Color(0xffb48ce8), thickness: 1),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),

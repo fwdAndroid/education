@@ -1,4 +1,5 @@
 import 'package:education/constant/ad_keys.dart';
+import 'package:education/screens/learning_dashboard.dart';
 import 'package:education/widgets/quiz_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -51,9 +52,21 @@ class _QuizDashboardState extends State<QuizDashboard> {
     return Scaffold(
       appBar: AppBar(
         actions: [
-          Padding(
-            padding: const EdgeInsets.only(top: 8.0, bottom: 8),
-            child: Image.asset("assets/raw/bulb.png", width: 50, height: 50),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (builder) => LearningDashboard()),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset(
+                "assets/raw/Screenshot 2025-05-23 115139.png",
+                height: 50,
+                width: 50,
+              ),
+            ),
           ),
           Padding(
             padding: const EdgeInsets.all(8.0),

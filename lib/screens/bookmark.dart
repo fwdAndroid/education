@@ -1,5 +1,6 @@
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/screens/chapter.dart';
+import 'package:education/screens/learning_dashboard.dart';
 import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/service/book_mark_service.dart';
 import 'package:education/widgets/chatpter_list_tile.dart';
@@ -67,12 +68,20 @@ class _BookmarkState extends State<Bookmark> {
               child: Image.asset("assets/raw/bulb.png", height: 50, width: 50),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: Image.asset(
-              "assets/raw/Screenshot 2025-05-23 115139.png",
-              height: 50,
-              width: 50,
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (builder) => LearningDashboard()),
+              );
+            },
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Image.asset(
+                "assets/raw/Screenshot 2025-05-23 115139.png",
+                height: 50,
+                width: 50,
+              ),
             ),
           ),
         ],

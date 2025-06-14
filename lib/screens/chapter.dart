@@ -89,6 +89,8 @@ class _ChapterState extends State<Chapter>
 
   @override
   Widget build(BuildContext context) {
+    final screenHeight = MediaQuery.of(context).size.height;
+
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
@@ -152,7 +154,9 @@ class _ChapterState extends State<Chapter>
       ),
       body: Column(
         children: [
-          Expanded(
+          // PageView: 80%
+          SizedBox(
+            height: screenHeight * 0.7,
             child: PageView.builder(
               controller: _pageController,
               itemCount: widget.imagePaths.length,
@@ -171,50 +175,61 @@ class _ChapterState extends State<Chapter>
                     panEnabled: true,
                     minScale: 1.0,
                     maxScale: 3.0,
-                    child: Image.asset(widget.imagePaths[index], height: 600),
+                    child: Image.asset(
+                      widget.imagePaths[index],
+                      fit: BoxFit.contain,
+                    ),
                   ),
                 );
               },
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.symmetric(vertical: 8.0),
-            child: Text(
-              '${_currentPage + 1}/${widget.imagePaths.length}',
-              style: const TextStyle(fontSize: 18, color: Colors.black),
+
+          // Page counter: 4%
+          SizedBox(
+            height: screenHeight * 0.04,
+            child: Center(
+              child: Text(
+                '${_currentPage + 1}/${widget.imagePaths.length}',
+                style: const TextStyle(fontSize: 16, color: Colors.black),
+              ),
             ),
           ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              IconButton(
-                icon: const Icon(Icons.zoom_in, color: Colors.black),
-                onPressed: _zoomIn,
-              ),
-              IconButton(
-                icon: const Icon(Icons.zoom_out, color: Colors.black),
-                onPressed: _zoomOut,
-              ),
-            ],
+
+          // Zoom controls: 8%
+          SizedBox(
+            height: screenHeight * 0.08,
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.zoom_in, color: Colors.black),
+                  onPressed: _zoomIn,
+                ),
+                IconButton(
+                  icon: const Icon(Icons.zoom_out, color: Colors.black),
+                  onPressed: _zoomOut,
+                ),
+              ],
+            ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child:
-                _isAdLoaded && _bannerAd != null
-                    ? Container(
-                      alignment: Alignment.center,
-                      width: _bannerAd!.size.width.toDouble(),
-                      height: _bannerAd!.size.height.toDouble(),
-                      child: AdWidget(ad: _bannerAd!),
-                    )
-                    : Container(
-                      height: 50,
-                      alignment: Alignment.center,
-                      child: const Text(
+
+          // Ad Banner: 8%
+          SizedBox(
+            height: screenHeight * 0.08,
+            child: Center(
+              child:
+                  _isAdLoaded && _bannerAd != null
+                      ? SizedBox(
+                        width: _bannerAd!.size.width.toDouble(),
+                        height: _bannerAd!.size.height.toDouble(),
+                        child: AdWidget(ad: _bannerAd!),
+                      )
+                      : const Text(
                         "Ad Loading...",
                         style: TextStyle(color: Colors.black, fontSize: 12),
                       ),
-                    ),
+            ),
           ),
         ],
       ),
