@@ -1,5 +1,4 @@
 import 'package:education/screens/quiz_screen.dart';
-import 'package:education/widgets/quiz_widget.dart';
 import 'package:flutter/material.dart';
 
 class QuizTile extends StatelessWidget {
@@ -17,10 +16,6 @@ class QuizTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    bool hasQuiz =
-        chapterQuizzes.containsKey(chapterNumber) &&
-        chapterQuizzes[chapterNumber]!.isNotEmpty;
-
     return SingleChildScrollView(
       child: GestureDetector(
         onTap: () {
@@ -37,55 +32,75 @@ class QuizTile extends StatelessWidget {
             ),
           );
         },
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 4.0, horizontal: 8.0),
-          child: Container(
-            height: 90,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(8),
-              color: Colors.white,
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 1,
-                  blurRadius: 1,
-                  offset: Offset(0, 3),
-                ),
-              ],
-            ),
-            child: Center(
-              child: ListTile(
-                leading: Image.asset(imagePath),
-                title: Text(title, style: TextStyle(fontSize: 14)),
-                subtitle: Row(children: [
-                 
+        child: Container(
+          height: 90,
+          margin: const EdgeInsets.all(8),
+          padding: const EdgeInsets.symmetric(horizontal: 12),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(8),
+            color: Colors.white,
+            boxShadow: [
+              BoxShadow(
+                color: Colors.grey.withOpacity(0.5),
+                spreadRadius: 1,
+                blurRadius: 1,
+                offset: const Offset(0, 3),
+              ),
+            ],
+          ),
+          child: Row(
+            children: [
+              Image.asset(imagePath, height: 48, width: 48, fit: BoxFit.cover),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // TITLE (single line, clipped if too long)
+                    Text(
+                      title,
+                      style: const TextStyle(
+                        fontSize: 14,
+                        fontWeight: FontWeight.w600,
+                      ),
+                      maxLines: 1,
+                      softWrap: false,
+                      overflow: TextOverflow.clip, // not ellipsis
+                    ),
+                    const SizedBox(height: 4),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(fontSize: 12, color: Colors.grey),
+                    ),
                   ],
                 ),
-                trailing: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xffab77ff),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(2),
-                    ),
+              ),
+              const SizedBox(width: 10),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: const Color(0xffab77ff),
+                  minimumSize: const Size(60, 36),
+                  padding: const EdgeInsets.symmetric(horizontal: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(2),
                   ),
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (context) => QuizPage(
-                              chapterNumber: chapterNumber,
-                              // question: quizData['question'],
-                              // options: quizData['options'],
-                              // correctAnswer: quizData['correctAnswer'],
-                            ),
-                      ),
-                    );
-                  },
-                  child: Text("Quiz", style: TextStyle(color: Colors.white)),
+                ),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder:
+                          (context) => QuizPage(chapterNumber: chapterNumber),
+                    ),
+                  );
+                },
+                child: const Text(
+                  "Open",
+                  style: TextStyle(color: Colors.white),
                 ),
               ),
-            ),
+            ],
           ),
         ),
       ),

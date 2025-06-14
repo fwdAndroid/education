@@ -1,9 +1,11 @@
+import 'package:education/advertisement_pages/ads_policy_page.dart';
+import 'package:education/advertisement_pages/gdpr_page.dart';
+import 'package:education/advertisement_pages/privacy_policy_page.dart';
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/screens/bookmark.dart';
 import 'package:education/screens/helper/ads_,manager.dart';
 import 'package:education/screens/learning_dashboard.dart';
-import 'package:education/screens/privacy_policy.dart';
 import 'package:education/screens/quiz_dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -216,7 +218,7 @@ class _MainDashboardState extends State<MainDashboard>
               ),
 
               Padding(
-                padding: EdgeInsets.all(8),
+                padding: const EdgeInsets.all(8.0),
                 child: GestureDetector(
                   onTap: () {
                     SharePlus.instance.share(
@@ -228,75 +230,76 @@ class _MainDashboardState extends State<MainDashboard>
                   child: Container(
                     height: 140,
                     width: 460,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
                     decoration: BoxDecoration(
-                      gradient: LinearGradient(
-                        colors: [
-                          // Colors.red[900]!, // Deep red
-                          Colors.red,
-                          Colors.orange,
-                          // Colors.orange[300]!, // Light orange
-                        ],
-                        stops: [0.0, 0.3], // Color transition points
-                        begin: Alignment.bottomLeft,
-                        end: Alignment.topRight,
-                      ),
                       borderRadius: BorderRadius.circular(20),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Image.asset(
-                                "assets/raw/icq_share.webp",
-                                height: 60,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    'Share with Friends',
-                                    style: GoogleFonts.poppins(
-                                      color: Colors.black,
-                                      fontSize: 16,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Help your friends fall in \nlove with learning through \nthis ALIM!',
-                                    style: GoogleFonts.poppins(
-                                      color: Colors.black,
-                                      fontSize: 10,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.all(8.0),
-                              child: Image.asset(
-                                "assets/raw/home_cta_img-removebg-preview.png",
-                                height: 40,
-                                width: 40,
-                              ),
-                            ),
-                          ],
-                        ),
+                      gradient: const LinearGradient(
+                        colors: [
+                          Color(0xFFFF6F3C), // Dark Orange (Left)
+                          Color(0xFFff3833), // Light Orange (Right)
+                        ],
+                        begin: Alignment.centerLeft,
+                        end: Alignment.centerRight,
                       ),
+                    ),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        // Share Icon
+                        const Icon(Icons.share, size: 100, color: Colors.white),
+
+                        // Text Column
+                        Expanded(
+                          child: Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12.0,
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: const [
+                                Text(
+                                  "Share with Friends",
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                                SizedBox(height: 4),
+                                Text(
+                                  "help your friend fall in love\nwith learning through Alim!",
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.white,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+
+                        // Arrow Circle
+                        Container(
+                          height: 40,
+                          width: 40,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.only(left: 4.0),
+                            child: const Icon(
+                              Icons.arrow_forward_ios,
+                              color: Colors.orange,
+                            ),
+                          ),
+                        ),
+                      ],
                     ),
                   ),
                 ),
               ),
-
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8, bottom: 8),
                 child: Divider(color: Color(0xffb48ce8), thickness: 1),
@@ -335,32 +338,42 @@ class _MainDashboardState extends State<MainDashboard>
                   children: [
                     SizedBox(width: 10),
 
-                    Container(
-                      decoration: BoxDecoration(
-                        color: const Color(
-                          0xFFEBD4FB,
-                        ), // Light purple background
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Image.asset(
-                              "assets/raw/privacy.png",
-                              height: 60,
-                            ),
+                    GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (builder) => PrivacyPolicyPage(),
                           ),
-                          Text(
-                            'Privacy Policy',
-                            style: TextStyle(
-                              color: Color(0xFF8238C6), // Purple text
-                              fontWeight: FontWeight.w600,
+                        );
+                      },
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: const Color(
+                            0xFFEBD4FB,
+                          ), // Light purple background
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Image.asset(
+                                "assets/raw/privacy.png",
+                                height: 60,
+                              ),
                             ),
-                          ),
-                          const SizedBox(width: 10),
-                        ],
+                            Text(
+                              'Privacy Policy',
+                              style: TextStyle(
+                                color: Color(0xFF8238C6), // Purple text
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                          ],
+                        ),
                       ),
                     ),
 
@@ -369,13 +382,7 @@ class _MainDashboardState extends State<MainDashboard>
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) => PrivacyPolicy(
-                                  title: "GDPR",
-                                  imagePath: "assets/raw//chemxi_Page027.jpg",
-                                ),
-                          ),
+                          MaterialPageRoute(builder: (context) => GdprPage()),
                         );
                       },
                       child: Image.asset("assets/raw/gdpr.png", height: 60),
@@ -383,16 +390,16 @@ class _MainDashboardState extends State<MainDashboard>
 
                     InkWell(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder:
-                                (context) => PrivacyPolicy(
-                                  title: "Content License",
-                                  imagePath: "assets/raw/chemxi_Page027.jpg",
-                                ),
-                          ),
-                        );
+                        // Navigator.push(
+                        //   context,
+                        //   MaterialPageRoute(
+                        //     builder:
+                        //         (context) => PrivacyPolicy(
+                        //           title: "Content License",
+                        //           imagePath: "assets/raw/chemxi_Page027.jpg",
+                        //         ),
+                        //   ),
+                        // );
                       },
                       child: Image.asset(
                         "assets/raw/contentpolicy.png",
@@ -405,11 +412,7 @@ class _MainDashboardState extends State<MainDashboard>
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder:
-                                (context) => PrivacyPolicy(
-                                  title: "Ads Policy",
-                                  imagePath: "assets/raw/chemxi_Page027.jpg",
-                                ),
+                            builder: (context) => AdsPolicyPage(),
                           ),
                         );
                       },
@@ -428,11 +431,14 @@ class _MainDashboardState extends State<MainDashboard>
                   valueListenable: AdService().isBannerAdLoaded,
                   builder: (context, isLoaded, child) {
                     return isLoaded && AdService().bannerAd != null
-                        ? Container(
-                          alignment: Alignment.center,
-                          width: AdService().bannerAd!.size.width.toDouble(),
-                          height: AdService().bannerAd!.size.height.toDouble(),
-                          child: AdWidget(ad: AdService().bannerAd!),
+                        ? Center(
+                          child: Container(
+                            alignment: Alignment.center,
+                            width: AdService().bannerAd!.size.width.toDouble(),
+                            height:
+                                AdService().bannerAd!.size.height.toDouble(),
+                            child: AdWidget(ad: AdService().bannerAd!),
+                          ),
                         )
                         : Container(
                           height: 50,
@@ -447,8 +453,6 @@ class _MainDashboardState extends State<MainDashboard>
               ),
             ],
           ),
-
-          // Text section
         ),
       ),
     );
