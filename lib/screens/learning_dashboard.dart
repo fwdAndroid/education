@@ -1,6 +1,5 @@
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
-import 'package:education/screens/helper/ads_,manager.dart';
 import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/screens/webpage.dart';
 import 'package:education/widgets/chatpter_list_tile.dart';
@@ -17,10 +16,38 @@ class LearningDashboard extends StatefulWidget {
 class _LearningDashboardState extends State<LearningDashboard>
     with AnalyticsScreenTracker<LearningDashboard> {
   String get screenName => 'LearningDashboard';
+  BannerAd? _bannerAd;
+  bool _isBannerAdLoaded = false;
   @override
   void initState() {
     super.initState();
-    AdService().loadBannerAd(bannerKey); // replace with AdKeys.bannerAdUnitId
+    _loadBannerAd();
+  }
+
+  void _loadBannerAd() {
+    _bannerAd = BannerAd(
+      adUnitId: bannerKey,
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _isBannerAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          _bannerAd = null;
+          _isBannerAdLoaded = false;
+        },
+      ),
+    )..load();
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
   }
 
   @override
@@ -208,26 +235,24 @@ class _LearningDashboardState extends State<LearningDashboard>
             ),
             Padding(
               padding: const EdgeInsets.all(8.0),
-              child: ValueListenableBuilder<bool>(
-                valueListenable: AdService().isBannerAdLoaded,
-                builder: (context, isLoaded, child) {
-                  return isLoaded && AdService().bannerAd != null
-                      ? Container(
-                        alignment: Alignment.center,
-                        width: AdService().bannerAd!.size.width.toDouble(),
-                        height: AdService().bannerAd!.size.height.toDouble(),
-                        child: AdWidget(ad: AdService().bannerAd!),
+              child:
+                  _bannerAd != null && _isBannerAdLoaded
+                      ? Center(
+                        child: Container(
+                          alignment: Alignment.center,
+                          width: _bannerAd!.size.width.toDouble(),
+                          height: _bannerAd!.size.height.toDouble(),
+                          child: AdWidget(ad: _bannerAd!),
+                        ),
                       )
                       : Container(
                         height: 50,
                         alignment: Alignment.center,
-                        child: Text(
+                        child: const Text(
                           "Ad Loading...",
                           style: TextStyle(color: Colors.black, fontSize: 12),
                         ),
-                      );
-                },
-              ),
+                      ),
             ),
           ],
         ),

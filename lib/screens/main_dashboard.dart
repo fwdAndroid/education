@@ -1,10 +1,10 @@
 import 'package:education/advertisement_pages/ads_policy_page.dart';
+import 'package:education/advertisement_pages/content_license_page.dart';
 import 'package:education/advertisement_pages/gdpr_page.dart';
 import 'package:education/advertisement_pages/privacy_policy_page.dart';
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/screens/bookmark.dart';
-import 'package:education/screens/helper/ads_,manager.dart';
 import 'package:education/screens/learning_dashboard.dart';
 import 'package:education/screens/quiz_dashboard.dart';
 import 'package:flutter/material.dart';
@@ -22,7 +22,11 @@ class MainDashboard extends StatefulWidget {
 
 class _MainDashboardState extends State<MainDashboard>
     with AnalyticsScreenTracker<MainDashboard> {
+  BannerAd? _bannerAd;
+  bool _isBannerAdLoaded = false;
+
   String get screenName => 'MainDashboard';
+
   @override
   void initState() {
     super.initState();
@@ -31,7 +35,33 @@ class _MainDashboardState extends State<MainDashboard>
       SystemUiMode.manual,
       overlays: [SystemUiOverlay.bottom],
     );
-    AdService().loadBannerAd(bannerKey); // replace with AdKeys.bannerAdUnitId
+    _loadBannerAd();
+  }
+
+  void _loadBannerAd() {
+    _bannerAd = BannerAd(
+      adUnitId: bannerKey,
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _isBannerAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          _bannerAd = null;
+          _isBannerAdLoaded = false;
+        },
+      ),
+    )..load();
+  }
+
+  @override
+  void dispose() {
+    _bannerAd?.dispose();
+    super.dispose();
   }
 
   @override
@@ -40,7 +70,7 @@ class _MainDashboardState extends State<MainDashboard>
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
+        decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage("assets/raw/bg.png"),
             fit: BoxFit.cover,
@@ -55,7 +85,7 @@ class _MainDashboardState extends State<MainDashboard>
                 padding: const EdgeInsets.all(8.0),
                 child: Image.asset("assets/raw/logo.png", height: 50),
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
@@ -64,7 +94,7 @@ class _MainDashboardState extends State<MainDashboard>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => LearningDashboard(),
+                          builder: (context) => const LearningDashboard(),
                         ),
                       );
                     },
@@ -72,24 +102,18 @@ class _MainDashboardState extends State<MainDashboard>
                       width: 160,
                       height: 130,
                       decoration: BoxDecoration(
-                        color:
-                            Colors
-                                .white, // Equivalent to <solid android:color="@color/white" />
-                        borderRadius: BorderRadius.circular(
-                          20.0,
-                        ), // Equivalent to <corners android:radius="5.0dip" />
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20.0),
                         border: Border.all(
                           width: 1.0,
-                          color: Color(
-                            0xFFE5E7E9,
-                          ), // Equivalent to <stroke android:color="#ffe5e7e9" />
+                          color: const Color(0xFFE5E7E9),
                         ),
                       ),
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
                           Padding(
-                            padding: EdgeInsetsGeometry.only(left: 12),
+                            padding: const EdgeInsets.only(left: 12),
                             child: Center(
                               child: Image.asset(
                                 "assets/raw/books.png",
@@ -97,8 +121,8 @@ class _MainDashboardState extends State<MainDashboard>
                                 width: 100,
                               ),
                             ),
-                          ), // Add your icons
-                          SizedBox(height: 12),
+                          ),
+                          const SizedBox(height: 12),
                           Text(
                             "LEARNING",
                             style: GoogleFonts.poppins(
@@ -111,29 +135,25 @@ class _MainDashboardState extends State<MainDashboard>
                     ),
                   ),
 
-                  SizedBox(width: 16),
+                  const SizedBox(width: 16),
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => Bookmark()),
+                        MaterialPageRoute(
+                          builder: (context) => const Bookmark(),
+                        ),
                       );
                     },
                     child: Container(
                       width: 160,
                       height: 130,
                       decoration: BoxDecoration(
-                        color:
-                            Colors
-                                .white, // Equivalent to <solid android:color="@color/white" />
-                        borderRadius: BorderRadius.circular(
-                          20.0,
-                        ), // Equivalent to <corners android:radius="5.0dip" />
+                        color: Colors.white,
+                        borderRadius: BorderRadius.circular(20.0),
                         border: Border.all(
                           width: 1.0,
-                          color: Color(
-                            0xFFE5E7E9,
-                          ), // Equivalent to <stroke android:color="#ffe5e7e9" />
+                          color: const Color(0xFFE5E7E9),
                         ),
                       ),
                       child: Column(
@@ -142,9 +162,9 @@ class _MainDashboardState extends State<MainDashboard>
                           Icon(
                             Icons.bookmark,
                             size: 50,
-                            color: Color(0xffb48ce8),
+                            color: const Color(0xffb48ce8),
                           ),
-                          SizedBox(height: 12),
+                          const SizedBox(height: 12),
                           Text(
                             "BookMark",
                             style: GoogleFonts.poppins(
@@ -158,14 +178,14 @@ class _MainDashboardState extends State<MainDashboard>
                   ),
                 ],
               ),
-              SizedBox(height: 10),
+              const SizedBox(height: 10),
               Container(
                 alignment: Alignment.center,
                 width: 400,
                 height: 140,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
-                  color: Color(0xFFf9f2ff),
+                  color: const Color(0xFFf9f2ff),
                 ),
                 padding: const EdgeInsets.all(8.0),
                 child: Card(
@@ -174,7 +194,7 @@ class _MainDashboardState extends State<MainDashboard>
                       Navigator.push(
                         context,
                         MaterialPageRoute(
-                          builder: (context) => QuizDashboard(),
+                          builder: (context) => const QuizDashboard(),
                         ),
                       );
                     },
@@ -182,8 +202,8 @@ class _MainDashboardState extends State<MainDashboard>
                       child: ListTile(
                         leading: Image.asset("assets/raw/quiz.png", height: 60),
                         title: Container(
-                          padding: EdgeInsets.only(bottom: 20),
-                          child: Text(
+                          padding: const EdgeInsets.only(bottom: 20),
+                          child: const Text(
                             "Play Quiz Challenge",
                             style: TextStyle(
                               fontSize: 16,
@@ -203,7 +223,7 @@ class _MainDashboardState extends State<MainDashboard>
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Divider(color: Color(0xffb48ce8), thickness: 1),
+                child: Divider(color: const Color(0xffb48ce8), thickness: 1),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -221,11 +241,7 @@ class _MainDashboardState extends State<MainDashboard>
                 padding: const EdgeInsets.all(8.0),
                 child: GestureDetector(
                   onTap: () {
-                    SharePlus.instance.share(
-                      ShareParams(
-                        text: 'check out my website https://example.com',
-                      ),
-                    );
+                    Share.share('check out my website https://example.com');
                   },
                   child: Container(
                     height: 140,
@@ -234,10 +250,7 @@ class _MainDashboardState extends State<MainDashboard>
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(20),
                       gradient: const LinearGradient(
-                        colors: [
-                          Color(0xFFFF6F3C), // Dark Orange (Left)
-                          Color(0xFFff3833), // Light Orange (Right)
-                        ],
+                        colors: [Color(0xFFFF6F3C), Color(0xFFff3833)],
                         begin: Alignment.centerLeft,
                         end: Alignment.centerRight,
                       ),
@@ -245,10 +258,7 @@ class _MainDashboardState extends State<MainDashboard>
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        // Share Icon
                         const Icon(Icons.share, size: 100, color: Colors.white),
-
-                        // Text Column
                         Expanded(
                           child: Padding(
                             padding: const EdgeInsets.symmetric(
@@ -278,8 +288,6 @@ class _MainDashboardState extends State<MainDashboard>
                             ),
                           ),
                         ),
-
-                        // Arrow Circle
                         Container(
                           height: 40,
                           width: 40,
@@ -287,9 +295,9 @@ class _MainDashboardState extends State<MainDashboard>
                             color: Colors.white,
                             shape: BoxShape.circle,
                           ),
-                          child: Padding(
-                            padding: const EdgeInsets.only(left: 4.0),
-                            child: const Icon(
+                          child: const Padding(
+                            padding: EdgeInsets.only(left: 4.0),
+                            child: Icon(
                               Icons.arrow_forward_ios,
                               color: Colors.orange,
                             ),
@@ -302,14 +310,14 @@ class _MainDashboardState extends State<MainDashboard>
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8, bottom: 8),
-                child: Divider(color: Color(0xffb48ce8), thickness: 1),
+                child: Divider(color: const Color(0xffb48ce8), thickness: 1),
               ),
 
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0, left: 8),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0, left: 8),
                 child: Text(
                   "We are Secure",
-                  style: GoogleFonts.poppins(
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                     fontSize: 20,
@@ -318,13 +326,13 @@ class _MainDashboardState extends State<MainDashboard>
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8, bottom: 8),
-                child: Divider(color: Color(0xffb48ce8), thickness: 1),
+                child: Divider(color: const Color(0xffb48ce8), thickness: 1),
               ),
-              Padding(
-                padding: const EdgeInsets.only(top: 8.0, left: 8, bottom: 8),
+              const Padding(
+                padding: EdgeInsets.only(top: 8.0, left: 8, bottom: 8),
                 child: Text(
-                  "Advertisments",
-                  style: GoogleFonts.poppins(
+                  "Advertisements",
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,
                     fontSize: 20,
@@ -336,22 +344,19 @@ class _MainDashboardState extends State<MainDashboard>
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                   children: [
-                    SizedBox(width: 10),
-
+                    const SizedBox(width: 10),
                     GestureDetector(
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (builder) => PrivacyPolicyPage(),
+                            builder: (builder) => const PrivacyPolicyPage(),
                           ),
                         );
                       },
                       child: Container(
                         decoration: BoxDecoration(
-                          color: const Color(
-                            0xFFEBD4FB,
-                          ), // Light purple background
+                          color: const Color(0xFFEBD4FB),
                           borderRadius: BorderRadius.circular(12),
                         ),
                         child: Row(
@@ -367,7 +372,7 @@ class _MainDashboardState extends State<MainDashboard>
                             Text(
                               'Privacy Policy',
                               style: TextStyle(
-                                color: Color(0xFF8238C6), // Purple text
+                                color: const Color(0xFF8238C6),
                                 fontWeight: FontWeight.w600,
                               ),
                             ),
@@ -376,43 +381,39 @@ class _MainDashboardState extends State<MainDashboard>
                         ),
                       ),
                     ),
-
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     InkWell(
                       onTap: () {
                         Navigator.push(
                           context,
-                          MaterialPageRoute(builder: (context) => GdprPage()),
+                          MaterialPageRoute(
+                            builder: (context) => const GdprPage(),
+                          ),
                         );
                       },
                       child: Image.asset("assets/raw/gdpr.png", height: 60),
                     ),
-
                     InkWell(
                       onTap: () {
-                        // Navigator.push(
-                        //   context,
-                        //   MaterialPageRoute(
-                        //     builder:
-                        //         (context) => PrivacyPolicy(
-                        //           title: "Content License",
-                        //           imagePath: "assets/raw/chemxi_Page027.jpg",
-                        //         ),
-                        //   ),
-                        // );
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const ContentLicensePage(),
+                          ),
+                        );
                       },
                       child: Image.asset(
                         "assets/raw/contentpolicy.png",
                         height: 60,
                       ),
                     ),
-                    SizedBox(width: 10),
+                    const SizedBox(width: 10),
                     InkWell(
                       onTap: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => AdsPolicyPage(),
+                            builder: (context) => const AdsPolicyPage(),
                           ),
                         );
                       },
@@ -424,32 +425,26 @@ class _MainDashboardState extends State<MainDashboard>
                   ],
                 ),
               ),
-
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: ValueListenableBuilder<bool>(
-                  valueListenable: AdService().isBannerAdLoaded,
-                  builder: (context, isLoaded, child) {
-                    return isLoaded && AdService().bannerAd != null
+                child:
+                    _bannerAd != null && _isBannerAdLoaded
                         ? Center(
                           child: Container(
                             alignment: Alignment.center,
-                            width: AdService().bannerAd!.size.width.toDouble(),
-                            height:
-                                AdService().bannerAd!.size.height.toDouble(),
-                            child: AdWidget(ad: AdService().bannerAd!),
+                            width: _bannerAd!.size.width.toDouble(),
+                            height: _bannerAd!.size.height.toDouble(),
+                            child: AdWidget(ad: _bannerAd!),
                           ),
                         )
                         : Container(
                           height: 50,
                           alignment: Alignment.center,
-                          child: Text(
+                          child: const Text(
                             "Ad Loading...",
                             style: TextStyle(color: Colors.black, fontSize: 12),
                           ),
-                        );
-                  },
-                ),
+                        ),
               ),
             ],
           ),

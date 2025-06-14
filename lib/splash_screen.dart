@@ -1,6 +1,4 @@
 import 'dart:async';
-import 'package:education/constant/ad_keys.dart';
-import 'package:education/screens/helper/ads_,manager.dart';
 import 'package:education/screens/main_dashboard.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -20,7 +18,6 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    AdService().loadBannerAd(bannerKey); // Preload banner
     _cacheInterstitialAd();
 
     // Start timer and check for ad readiness after 2 seconds

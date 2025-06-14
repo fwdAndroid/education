@@ -1,7 +1,6 @@
 import 'dart:math';
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
-import 'package:education/screens/helper/ads_,manager.dart';
 import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/service/book_mark_service.dart';
 import 'package:flutter/material.dart';
@@ -91,6 +90,7 @@ class _ChapterState extends State<Chapter>
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(
         actions: [
           GestureDetector(
@@ -165,16 +165,13 @@ class _ChapterState extends State<Chapter>
               },
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.all(16.0),
+                  padding: const EdgeInsets.all(8.0),
                   child: InteractiveViewer(
                     transformationController: _transformationController,
                     panEnabled: true,
                     minScale: 1.0,
                     maxScale: 3.0,
-                    child: Image.asset(
-                      widget.imagePaths[index],
-                      fit: BoxFit.contain,
-                    ),
+                    child: Image.asset(widget.imagePaths[index], height: 600),
                   ),
                 );
               },
