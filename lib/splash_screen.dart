@@ -97,7 +97,7 @@ class _SplashScreenState extends State<SplashScreen> {
 
         child: Center(
           child: Image.asset(
-            "assets/raw/bgalim-removebg-preview.png",
+            "assets/raw/Screenshot_2025-06-14_092856-removebg-preview.png",
             width: 300,
           ),
         ),

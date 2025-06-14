@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/screens/helper/ads_,manager.dart';
@@ -5,7 +6,6 @@ import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/service/book_mark_service.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'dart:math';
 
 class Chapter extends StatefulWidget {
   final List<String> imagePaths;
@@ -26,17 +26,41 @@ class Chapter extends StatefulWidget {
 class _ChapterState extends State<Chapter>
     with AnalyticsScreenTracker<Chapter> {
   String get screenName => 'Chapter';
+
   final PageController _pageController = PageController();
+  final TransformationController _transformationController =
+      TransformationController();
+
   int _currentPage = 0;
+  double _currentScale = 1.0;
+
+  BannerAd? _bannerAd;
+  bool _isAdLoaded = false;
+
   @override
   void initState() {
     super.initState();
-    AdService().loadBannerAd(bannerKey); // replace with AdKeys.bannerAdUnitId
+    _loadBannerAd();
   }
 
-  final TransformationController _transformationController =
-      TransformationController();
-  double _currentScale = 1.0;
+  void _loadBannerAd() {
+    _bannerAd = BannerAd(
+      adUnitId: bannerKey,
+      size: AdSize.banner,
+      request: const AdRequest(),
+      listener: BannerAdListener(
+        onAdLoaded: (Ad ad) {
+          setState(() {
+            _isAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (Ad ad, LoadAdError error) {
+          ad.dispose();
+          debugPrint('BannerAd failed to load: $error');
+        },
+      ),
+    )..load();
+  }
 
   void _zoomIn() {
     setState(() {
@@ -59,8 +83,8 @@ class _ChapterState extends State<Chapter>
   @override
   void dispose() {
     _pageController.dispose();
-
     _transformationController.dispose();
+    _bannerAd?.dispose();
     super.dispose();
   }
 
@@ -73,7 +97,7 @@ class _ChapterState extends State<Chapter>
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (builder) => QuizDashboard()),
+                MaterialPageRoute(builder: (builder) => const QuizDashboard()),
               );
             },
             child: Padding(
@@ -116,7 +140,14 @@ class _ChapterState extends State<Chapter>
           ),
         ],
         iconTheme: const IconThemeData(color: Colors.white),
-        title: Text(widget.title, style: const TextStyle(color: Colors.white)),
+        title: Text(
+          widget.title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 12.5,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
         backgroundColor: const Color(0xffab77ff),
       ),
       body: Column(
@@ -169,29 +200,24 @@ class _ChapterState extends State<Chapter>
               ),
             ],
           ),
-
           Padding(
             padding: const EdgeInsets.all(8.0),
-            child: ValueListenableBuilder<bool>(
-              valueListenable: AdService().isBannerAdLoaded,
-              builder: (context, isLoaded, child) {
-                return isLoaded && AdService().bannerAd != null
+            child:
+                _isAdLoaded && _bannerAd != null
                     ? Container(
                       alignment: Alignment.center,
-                      width: AdService().bannerAd!.size.width.toDouble(),
-                      height: AdService().bannerAd!.size.height.toDouble(),
-                      child: AdWidget(ad: AdService().bannerAd!),
+                      width: _bannerAd!.size.width.toDouble(),
+                      height: _bannerAd!.size.height.toDouble(),
+                      child: AdWidget(ad: _bannerAd!),
                     )
                     : Container(
                       height: 50,
                       alignment: Alignment.center,
-                      child: Text(
+                      child: const Text(
                         "Ad Loading...",
                         style: TextStyle(color: Colors.black, fontSize: 12),
                       ),
-                    );
-              },
-            ),
+                    ),
           ),
         ],
       ),

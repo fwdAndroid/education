@@ -6,6 +6,7 @@ import 'package:education/screens/learning_dashboard.dart';
 import 'package:education/screens/privacy_policy.dart';
 import 'package:education/screens/quiz_dashboard.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:share_plus/share_plus.dart';
@@ -23,6 +24,11 @@ class _MainDashboardState extends State<MainDashboard>
   @override
   void initState() {
     super.initState();
+    // Hide only the top status bar
+    SystemChrome.setEnabledSystemUIMode(
+      SystemUiMode.manual,
+      overlays: [SystemUiOverlay.bottom],
+    );
     AdService().loadBannerAd(bannerKey); // replace with AdKeys.bannerAdUnitId
   }
 
@@ -61,7 +67,7 @@ class _MainDashboardState extends State<MainDashboard>
                       );
                     },
                     child: Container(
-                      width: 130,
+                      width: 160,
                       height: 130,
                       decoration: BoxDecoration(
                         color:
@@ -112,7 +118,7 @@ class _MainDashboardState extends State<MainDashboard>
                       );
                     },
                     child: Container(
-                      width: 130,
+                      width: 160,
                       height: 130,
                       decoration: BoxDecoration(
                         color:
@@ -154,7 +160,7 @@ class _MainDashboardState extends State<MainDashboard>
               Container(
                 alignment: Alignment.center,
                 width: 400,
-                height: 100,
+                height: 140,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(20),
                   color: Color(0xFFf9f2ff),
@@ -195,7 +201,7 @@ class _MainDashboardState extends State<MainDashboard>
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Divider(color: Colors.grey, thickness: 1),
+                child: Divider(color: Color(0xffb48ce8), thickness: 1),
               ),
               Padding(
                 padding: const EdgeInsets.all(8.0),
@@ -293,7 +299,7 @@ class _MainDashboardState extends State<MainDashboard>
 
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8, bottom: 8),
-                child: Divider(color: Colors.grey, thickness: 1),
+                child: Divider(color: Color(0xffb48ce8), thickness: 1),
               ),
 
               Padding(
@@ -309,79 +315,111 @@ class _MainDashboardState extends State<MainDashboard>
               ),
               Padding(
                 padding: const EdgeInsets.only(left: 8.0, right: 8, bottom: 8),
-                child: Divider(color: Colors.grey, thickness: 1),
+                child: Divider(color: Color(0xffb48ce8), thickness: 1),
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                children: [
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) => PrivacyPolicy(
-                                title: "Privacy Policy",
-                                imagePath: "assets/raw/chemxi_Page027.jpg",
-                              ),
-                        ),
-                      );
-                    },
-                    child: Image.asset("assets/raw/privacy.png", height: 60),
+              Padding(
+                padding: const EdgeInsets.only(top: 8.0, left: 8, bottom: 8),
+                child: Text(
+                  "Advertisments",
+                  style: GoogleFonts.poppins(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                    fontSize: 20,
                   ),
+                ),
+              ),
+              SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    SizedBox(width: 10),
 
-                  SizedBox(width: 10),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) => PrivacyPolicy(
-                                title: "GDPR",
-                                imagePath: "assets/raw//chemxi_Page027.jpg",
-                              ),
-                        ),
-                      );
-                    },
-                    child: Image.asset("assets/raw/gdpr.png", height: 60),
-                  ),
-
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) => PrivacyPolicy(
-                                title: "Content License",
-                                imagePath: "assets/raw/chemxi_Page027.jpg",
-                              ),
-                        ),
-                      );
-                    },
-                    child: Image.asset(
-                      "assets/raw/contentpolicy.png",
-                      height: 60,
+                    Container(
+                      decoration: BoxDecoration(
+                        color: const Color(
+                          0xFFEBD4FB,
+                        ), // Light purple background
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Image.asset(
+                              "assets/raw/privacy.png",
+                              height: 60,
+                            ),
+                          ),
+                          Text(
+                            'Privacy Policy',
+                            style: TextStyle(
+                              color: Color(0xFF8238C6), // Purple text
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                        ],
+                      ),
                     ),
-                  ),
-                  SizedBox(width: 10),
-                  InkWell(
-                    onTap: () {
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder:
-                              (context) => PrivacyPolicy(
-                                title: "Ads Policy",
-                                imagePath: "assets/raw/chemxi_Page027.jpg",
-                              ),
-                        ),
-                      );
-                    },
-                    child: Image.asset("assets/raw/adspolicy.png", height: 60),
-                  ),
-                ],
+
+                    SizedBox(width: 10),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => PrivacyPolicy(
+                                  title: "GDPR",
+                                  imagePath: "assets/raw//chemxi_Page027.jpg",
+                                ),
+                          ),
+                        );
+                      },
+                      child: Image.asset("assets/raw/gdpr.png", height: 60),
+                    ),
+
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => PrivacyPolicy(
+                                  title: "Content License",
+                                  imagePath: "assets/raw/chemxi_Page027.jpg",
+                                ),
+                          ),
+                        );
+                      },
+                      child: Image.asset(
+                        "assets/raw/contentpolicy.png",
+                        height: 60,
+                      ),
+                    ),
+                    SizedBox(width: 10),
+                    InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => PrivacyPolicy(
+                                  title: "Ads Policy",
+                                  imagePath: "assets/raw/chemxi_Page027.jpg",
+                                ),
+                          ),
+                        );
+                      },
+                      child: Image.asset(
+                        "assets/raw/adspolicy.png",
+                        height: 60,
+                      ),
+                    ),
+                  ],
+                ),
               ),
 
               Padding(
