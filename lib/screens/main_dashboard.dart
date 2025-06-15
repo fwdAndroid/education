@@ -6,7 +6,6 @@ import 'package:education/advertisement_pages/privacy_policy_page.dart';
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/screens/bookmark.dart';
-import 'package:education/screens/helper/encryoted.dart';
 import 'package:education/screens/learning_dashboard.dart';
 import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/widgets/enyrpted_image_widget.dart';
@@ -77,15 +76,15 @@ class _MainDashboardState extends State<MainDashboard>
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: EncryptedImageProvider(
-              base64Key: base24,
-              assetPath: "assets/encrypted/bg.png.enc",
-            ),
-            fit: BoxFit.cover,
-          ),
-        ),
+        // decoration: BoxDecoration(
+        //   image: DecorationImage(
+        //     image: EncryptedImageProvider(
+        //       base64Key: base24,
+        //       assetPath: "assets/encrypted/bg.png.enc",
+        //     ),
+        //     fit: BoxFit.cover,
+        //   ),
+        // ),
         child: SingleChildScrollView(
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,

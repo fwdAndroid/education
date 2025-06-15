@@ -1,11 +1,9 @@
 import 'package:education/constant/ad_keys.dart';
-import 'package:education/provider/chapter_provider.dart';
 import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/service/book_mark_service.dart';
 import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:provider/provider.dart';
 
 class Chapter extends StatelessWidget {
   final List<String> imagePaths;
@@ -21,13 +19,10 @@ class Chapter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (_) => ChapterProvider(imagePaths: imagePaths),
-      child: ChapterScreen(
-        title: title,
-        chapterNumber: chapterNumber,
-        imagePaths: imagePaths,
-      ),
+    return ChapterScreen(
+      title: title,
+      chapterNumber: chapterNumber,
+      imagePaths: imagePaths,
     );
   }
 }
@@ -49,15 +44,62 @@ class ChapterScreen extends StatefulWidget {
 }
 
 class _ChapterScreenState extends State<ChapterScreen> {
+  int currentPage = 0;
+  late PageController _pageController;
+  late TransformationController _transformationController;
+  late BannerAd _bannerAd;
+  bool _isAdLoaded = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _pageController = PageController();
+    _transformationController = TransformationController();
+    _loadBannerAd();
+  }
+
+  void _loadBannerAd() {
+    _bannerAd = BannerAd(
+      size: AdSize.banner,
+      adUnitId: bannerKey, // Replace with your ad unit ID
+      listener: BannerAdListener(
+        onAdLoaded: (ad) {
+          setState(() => _isAdLoaded = true);
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+        },
+      ),
+      request: const AdRequest(),
+    )..load();
+  }
+
+  void _zoomIn() {
+    final matrix = _transformationController.value.clone();
+    _transformationController.value = matrix..scale(1.2);
+  }
+
+  void _zoomOut() {
+    final matrix = _transformationController.value.clone();
+    _transformationController.value = matrix..scale(0.8);
+  }
+
+  @override
+  void dispose() {
+    _pageController.dispose();
+    _transformationController.dispose();
+    _bannerAd.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    final provider = context.watch<ChapterProvider>();
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: const IconThemeData(color: Colors.white),
         title: Text(
           widget.title,
           style: const TextStyle(
@@ -72,11 +114,11 @@ class _ChapterScreenState extends State<ChapterScreen> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (builder) => const QuizDashboard()),
+                MaterialPageRoute(builder: (context) => const QuizDashboard()),
               );
             },
             child: Padding(
-              padding: const EdgeInsets.only(top: 8.0, bottom: 8),
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: EnyrptedImageWidget(
                 base64Key: base24,
                 assetPath: "assets/encrypted/bulb.png.enc",
@@ -85,38 +127,33 @@ class _ChapterScreenState extends State<ChapterScreen> {
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: IconButton(
-              icon: Icon(
-                BookmarkService().isChapterBookmarked(widget.chapterNumber)
-                    ? Icons.bookmark
-                    : Icons.bookmark_border,
-                size: 30,
-                color: Colors.white,
-              ),
-              onPressed: () {
-                setState(() {
-                  if (BookmarkService().isChapterBookmarked(
-                    widget.chapterNumber,
-                  )) {
-                    BookmarkService().removeChapterBookmark(
-                      widget.chapterNumber,
-                    );
-                  } else {
-                    BookmarkService().addChapterBookmark(
-                      BookmarkedChapter(
-                        chapterNumber: widget.chapterNumber,
-                        title: widget.title,
-                        subtitle: "Chapter ${widget.chapterNumber}",
-                        imagePath: "assets/encrypted/a.png.enc", // ✅ correct
-                        imagePaths: widget.imagePaths,
-                      ),
-                    );
-                  }
-                });
-              },
+          IconButton(
+            icon: Icon(
+              BookmarkService().isChapterBookmarked(widget.chapterNumber)
+                  ? Icons.bookmark
+                  : Icons.bookmark_border,
+              size: 30,
+              color: Colors.white,
             ),
+            onPressed: () {
+              setState(() {
+                if (BookmarkService().isChapterBookmarked(
+                  widget.chapterNumber,
+                )) {
+                  BookmarkService().removeChapterBookmark(widget.chapterNumber);
+                } else {
+                  BookmarkService().addChapterBookmark(
+                    BookmarkedChapter(
+                      chapterNumber: widget.chapterNumber,
+                      title: widget.title,
+                      subtitle: "Chapter ${widget.chapterNumber}",
+                      imagePath: "assets/encrypted/a.png.enc",
+                      imagePaths: widget.imagePaths,
+                    ),
+                  );
+                }
+              });
+            },
           ),
         ],
       ),
@@ -125,41 +162,39 @@ class _ChapterScreenState extends State<ChapterScreen> {
           SizedBox(
             height: screenHeight * 0.7,
             child: PageView.builder(
-              controller: PageController(initialPage: provider.currentPage),
-              itemCount: provider.imagePaths.length,
+              controller: _pageController,
+              itemCount: widget.imagePaths.length,
               onPageChanged: (index) {
-                provider.updatePage(index);
-                provider.preloadSurroundingImages(base24);
+                setState(() => currentPage = index);
               },
               itemBuilder: (context, index) {
-                return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: InteractiveViewer(
-                    transformationController: provider.transformationController,
-                    panEnabled: true,
-                    minScale: 1.0,
-                    maxScale: 3.0,
-                    child: EnyrptedImageWidget(
-                      base64Key: base24,
-                      assetPath: provider.imagePaths[index],
-                      height: screenHeight,
-                    ),
-                  ),
+                return PageView.builder(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: widget.imagePaths.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(8.0),
+                      child: EnyrptedImageWidget(
+                        assetPath: widget.imagePaths[index],
+                        base64Key: base24,
+                        height: 200,
+                        fit: BoxFit.contain,
+                      ),
+                    );
+                  },
                 );
               },
             ),
           ),
-
           SizedBox(
             height: screenHeight * 0.04,
             child: Center(
               child: Text(
-                '${provider.currentPage + 1}/${provider.imagePaths.length}',
+                '${currentPage + 1}/${widget.imagePaths.length}',
                 style: const TextStyle(fontSize: 16, color: Colors.black),
               ),
             ),
           ),
-
           SizedBox(
             height: screenHeight * 0.08,
             child: Row(
@@ -167,24 +202,23 @@ class _ChapterScreenState extends State<ChapterScreen> {
               children: [
                 IconButton(
                   icon: const Icon(Icons.zoom_in, color: Colors.black),
-                  onPressed: provider.zoomIn,
+                  onPressed: _zoomIn,
                 ),
                 IconButton(
                   icon: const Icon(Icons.zoom_out, color: Colors.black),
-                  onPressed: provider.zoomOut,
+                  onPressed: _zoomOut,
                 ),
               ],
             ),
           ),
-
           SizedBox(
             height: screenHeight * 0.08,
             child:
-                provider.isAdLoaded && provider.bannerAd != null
+                _isAdLoaded
                     ? SizedBox(
-                      width: provider.bannerAd!.size.width.toDouble(),
-                      height: provider.bannerAd!.size.height.toDouble(),
-                      child: AdWidget(ad: provider.bannerAd!),
+                      width: _bannerAd.size.width.toDouble(),
+                      height: _bannerAd.size.height.toDouble(),
+                      child: AdWidget(ad: _bannerAd),
                     )
                     : const Text(
                       "Ad Loading...",
