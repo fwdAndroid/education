@@ -566,84 +566,83 @@ final Map<int, List<Map<String, dynamic>>> chapterQuizzes = {
     },
   ],
 
-  8: [
-    {
-      'question': 'Select the mismatched',
-      'options': [
-        'Protein → Amino acid',
-        'Carbohydrate → Glucose',
-        'Fats → Starch',
-        'Nucleic acid → Nucleotide',
-      ],
-      'correctAnswer': 'Fats → Starch',
-    },
-    {
-      'question': 'Deficiency of vitamin-K causes',
-      'options': ['Rickets', 'Anemia', 'Scurvy', 'Beriberi'],
-      'correctAnswer': 'Beriberi',
-    },
-    {
-      'question': 'Period of rapid growth and development called',
-      'options': ['Childhood', 'Adulthood', 'Adolescence', 'Both "a" and "b"'],
-      'correctAnswer': 'Adolescence',
-    },
-    {
-      'question':
-          'Deficiency of dietary protein causes an imbalance in the gastrointestinal system',
-      'options': ['Marasmus', 'Edema', 'Diarrhea', 'Kwashiorkor'],
-      'correctAnswer': 'Kwashiorkor',
-    },
-    {
-      'question':
-          'An animal that migrates great distances would obtain the greatest benefit from storing its energy as',
-      'options': ['Fats', 'Carbohydrates', 'Protein', 'Minerals.'],
-      'correctAnswer': 'Fats',
-    },
-    {
-      'question':
-          'Which of the following vitamins is correctly associated with its use?',
-      'options': [
-        'Vitamin K → Production of white blood cells',
-        'Vitamin C → Curing rickets',
-        'Vitamin E → Protection of skin from cancer',
-        'Vitamin A → Incorporated into the visual pigment of the eye',
-      ],
-      'correctAnswer':
-          'Vitamin A → Incorporated into the visual pigment of the eye',
-    },
-    {
-      'question': 'Which of the following statements describes pepsin?',
-      'options': [
-        'It is manufactured by the pancreas.',
-        'It helps stabilize fat-water emulsions.',
-        'It splits maltose into monosaccharides.',
-        'It begins the hydrolysis of proteins in the stomach.',
-      ],
-      'correctAnswer': 'It begins the hydrolysis of proteins in the stomach.',
-    },
-    {
-      'question': 'Which of the following is true of bile salts?',
-      'options': [
-        'They are enzymes',
-        'They are manufactured by the pancreas',
-        'They emulsify fats in the duodenum',
-        'They increase the efficiency of pepsin action.',
-      ],
-      'correctAnswer': 'They emulsify fats in the duodenum',
-    },
-    {
-      'question':
-          'In the human digestive system trachea and esophagus both connect to the',
-      'options': ['Large intestine', 'Stomach', 'Pharynx', 'Rectum'],
-      'correctAnswer': 'Pharynx',
-    },
-    {
-      'question': 'All are sources of calcium except',
-      'options': ['Red meat', 'Green leafy vegetables', 'Broccoli', 'Nuts'],
-      'correctAnswer': 'Nuts',
-    },
-  ],
-
+  // 8: [
+  //   {
+  //     'question': 'Select the mismatched',
+  //     'options': [
+  //       'Protein → Amino acid',
+  //       'Carbohydrate → Glucose',
+  //       'Fats → Starch',
+  //       'Nucleic acid → Nucleotide',
+  //     ],
+  //     'correctAnswer': 'Fats → Starch',
+  //   },
+  //   {
+  //     'question': 'Deficiency of vitamin-K causes',
+  //     'options': ['Rickets', 'Anemia', 'Scurvy', 'Beriberi'],
+  //     'correctAnswer': 'Beriberi',
+  //   },
+  //   {
+  //     'question': 'Period of rapid growth and development called',
+  //     'options': ['Childhood', 'Adulthood', 'Adolescence', 'Both "a" and "b"'],
+  //     'correctAnswer': 'Adolescence',
+  //   },
+  //   {
+  //     'question':
+  //         'Deficiency of dietary protein causes an imbalance in the gastrointestinal system',
+  //     'options': ['Marasmus', 'Edema', 'Diarrhea', 'Kwashiorkor'],
+  //     'correctAnswer': 'Kwashiorkor',
+  //   },
+  //   {
+  //     'question':
+  //         'An animal that migrates great distances would obtain the greatest benefit from storing its energy as',
+  //     'options': ['Fats', 'Carbohydrates', 'Protein', 'Minerals.'],
+  //     'correctAnswer': 'Fats',
+  //   },
+  //   {
+  //     'question':
+  //         'Which of the following vitamins is correctly associated with its use?',
+  //     'options': [
+  //       'Vitamin K → Production of white blood cells',
+  //       'Vitamin C → Curing rickets',
+  //       'Vitamin E → Protection of skin from cancer',
+  //       'Vitamin A → Incorporated into the visual pigment of the eye',
+  //     ],
+  //     'correctAnswer':
+  //         'Vitamin A → Incorporated into the visual pigment of the eye',
+  //   },
+  //   {
+  //     'question': 'Which of the following statements describes pepsin?',
+  //     'options': [
+  //       'It is manufactured by the pancreas.',
+  //       'It helps stabilize fat-water emulsions.',
+  //       'It splits maltose into monosaccharides.',
+  //       'It begins the hydrolysis of proteins in the stomach.',
+  //     ],
+  //     'correctAnswer': 'It begins the hydrolysis of proteins in the stomach.',
+  //   },
+  //   {
+  //     'question': 'Which of the following is true of bile salts?',
+  //     'options': [
+  //       'They are enzymes',
+  //       'They are manufactured by the pancreas',
+  //       'They emulsify fats in the duodenum',
+  //       'They increase the efficiency of pepsin action.',
+  //     ],
+  //     'correctAnswer': 'They emulsify fats in the duodenum',
+  //   },
+  //   {
+  //     'question':
+  //         'In the human digestive system trachea and esophagus both connect to the',
+  //     'options': ['Large intestine', 'Stomach', 'Pharynx', 'Rectum'],
+  //     'correctAnswer': 'Pharynx',
+  //   },
+  //   {
+  //     'question': 'All are sources of calcium except',
+  //     'options': ['Red meat', 'Green leafy vegetables', 'Broccoli', 'Nuts'],
+  //     'correctAnswer': 'Nuts',
+  //   },
+  // ],
   9: [
     {
       'question':

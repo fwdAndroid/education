@@ -1,11 +1,11 @@
-import 'package:education/constant/ad_keys.dart';
-import 'package:education/screens/chapter.dart';
-import 'package:education/screens/learning_dashboard.dart';
-import 'package:education/screens/quiz_dashboard.dart';
-import 'package:education/service/book_mark_service.dart';
 import 'package:education/widgets/chatpter_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:education/constant/ad_keys.dart';
+import 'package:education/screens/chapter.dart';
+import 'package:education/screens/quiz_dashboard.dart';
+import 'package:education/service/book_mark_service.dart';
+import 'package:education/widgets/enyrpted_image_widget.dart';
 
 class Bookmark extends StatefulWidget {
   const Bookmark({super.key});
@@ -15,12 +15,24 @@ class Bookmark extends StatefulWidget {
 }
 
 class _BookmarkState extends State<Bookmark> {
+  final BookmarkService _bookmarkService = BookmarkService();
+
+  bool _isLoading = true;
   BannerAd? _bannerAd;
   bool _isBannerAdLoaded = false;
+
   @override
   void initState() {
     super.initState();
+    _loadBookmarks();
     _loadBannerAd();
+  }
+
+  Future<void> _loadBookmarks() async {
+    await _bookmarkService.loadBookmarks();
+    setState(() {
+      _isLoading = false;
+    });
   }
 
   void _loadBannerAd() {
@@ -29,7 +41,7 @@ class _BookmarkState extends State<Bookmark> {
       size: AdSize.banner,
       request: const AdRequest(),
       listener: BannerAdListener(
-        onAdLoaded: (ad) {
+        onAdLoaded: (_) {
           setState(() {
             _isBannerAdLoaded = true;
           });
@@ -51,57 +63,45 @@ class _BookmarkState extends State<Bookmark> {
 
   @override
   Widget build(BuildContext context) {
-    final bookmarkService = BookmarkService();
+    if (_isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    final bookmarkedChapters = _bookmarkService.bookmarkedChapters;
+    final bookmarkedPages = _bookmarkService.bookmarkedPages;
 
     return Scaffold(
       appBar: AppBar(
+        title: const Text("Bookmark"),
+        backgroundColor: const Color(0xffab77ff),
         actions: [
           GestureDetector(
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (builder) => QuizDashboard()),
+                MaterialPageRoute(builder: (_) => const QuizDashboard()),
               );
             },
-            child: Padding(
-              padding: const EdgeInsets.only(top: 8.0, bottom: 8),
-              child: Image.asset("assets/raw/bulb.png", height: 50, width: 50),
+            child: EnyrptedImageWidget(
+              assetPath: "assets/encrypted/bulb.png.enc",
+              base64Key: base24,
+              width: 50,
+              height: 50,
             ),
           ),
-          GestureDetector(
-            onTap: () {
-              Navigator.push(
-                context,
-                MaterialPageRoute(builder: (builder) => LearningDashboard()),
-              );
-            },
-            child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Image.asset(
-                "assets/raw/Screenshot 2025-05-23 115139.png",
-                height: 50,
-                width: 50,
-              ),
-            ),
-          ),
+          const SizedBox(width: 10),
         ],
-        iconTheme: IconThemeData(color: Colors.white),
-        title: Text("Bookmark", style: TextStyle(color: Colors.white)),
-        backgroundColor: Color(0xffab77ff),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            if (bookmarkService.bookmarkedChapters.isNotEmpty)
+            if (bookmarkedChapters.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "Bookmarked Chapters",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+                child: Text("Bookmarked Chapters"),
               ),
-            ...bookmarkService.bookmarkedChapters.map((chapter) {
-              return ChapterTile(
+            ...bookmarkedChapters.map(
+              (chapter) => ChapterTile(
                 title: chapter.title,
                 subtitle: chapter.subtitle,
                 imagePath: chapter.imagePath,
@@ -109,27 +109,24 @@ class _BookmarkState extends State<Bookmark> {
                 chapterNumber: chapter.chapterNumber,
                 isBookmarked: true,
                 onBookmarkChanged: (isBookmarked) {
-                  setState(() {
-                    if (!isBookmarked) {
-                      bookmarkService.removeChapterBookmark(
+                  if (!isBookmarked) {
+                    setState(() {
+                      _bookmarkService.removeChapterBookmark(
                         chapter.chapterNumber,
                       );
-                    }
-                  });
+                    });
+                  }
                 },
-              );
-            }).toList(),
-            if (bookmarkService.bookmarkedPages.isNotEmpty)
+              ),
+            ),
+            if (bookmarkedPages.isNotEmpty)
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Text(
-                  "Bookmarked Pages",
-                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                ),
+                child: Text("Bookmarked Pages"),
               ),
-            ...bookmarkService.bookmarkedPages.map((page) {
-              return Container(
-                margin: EdgeInsets.all(8),
+            ...bookmarkedPages.map(
+              (page) => Container(
+                margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
                   color: Colors.white,
@@ -138,20 +135,25 @@ class _BookmarkState extends State<Bookmark> {
                       color: Colors.grey.withOpacity(0.5),
                       spreadRadius: 1,
                       blurRadius: 1,
-                      offset: Offset(0, 3),
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
                 child: ListTile(
-                  leading: Image.asset(page.imagePath, width: 50, height: 50),
+                  leading: EnyrptedImageWidget(
+                    assetPath: page.imagePath,
+                    base64Key: base24,
+                    width: 50,
+                    height: 50,
+                  ),
                   title: Text(
                     "${page.chapterTitle} - Page ${page.pageNumber + 1}",
                   ),
                   trailing: IconButton(
-                    icon: Icon(Icons.bookmark, color: Colors.purple),
+                    icon: const Icon(Icons.bookmark, color: Colors.purple),
                     onPressed: () {
                       setState(() {
-                        bookmarkService.removePageBookmark(
+                        _bookmarkService.removePageBookmark(
                           page.chapterNumber,
                           page.pageNumber,
                         );
@@ -163,7 +165,7 @@ class _BookmarkState extends State<Bookmark> {
                       context,
                       MaterialPageRoute(
                         builder:
-                            (context) => Chapter(
+                            (_) => Chapter(
                               chapterNumber: page.chapterNumber,
                               title: page.chapterTitle,
                               imagePaths: [page.imagePath],
@@ -172,38 +174,32 @@ class _BookmarkState extends State<Bookmark> {
                     );
                   },
                 ),
-              );
-            }).toList(),
-            if (bookmarkService.bookmarkedChapters.isEmpty &&
-                bookmarkService.bookmarkedPages.isEmpty)
-              Center(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Text(
-                    "No bookmarks yet. Bookmark chapters or pages to see them here.",
-                    style: TextStyle(fontSize: 16),
-                    textAlign: TextAlign.center,
-                  ),
+              ),
+            ),
+            if (bookmarkedChapters.isEmpty && bookmarkedPages.isEmpty)
+              Padding(
+                padding: const EdgeInsets.all(16.0),
+                child: Text(
+                  "No bookmarks yet. Bookmark chapters or pages to see them here.",
+                  textAlign: TextAlign.center,
                 ),
               ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child:
                   _bannerAd != null && _isBannerAdLoaded
-                      ? Center(
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: _bannerAd!.size.width.toDouble(),
-                          height: _bannerAd!.size.height.toDouble(),
-                          child: AdWidget(ad: _bannerAd!),
-                        ),
+                      ? SizedBox(
+                        width: _bannerAd!.size.width.toDouble(),
+                        height: _bannerAd!.size.height.toDouble(),
+                        child: AdWidget(ad: _bannerAd!),
                       )
-                      : Container(
+                      : const SizedBox(
                         height: 50,
-                        alignment: Alignment.center,
-                        child: const Text(
-                          "Ad Loading...",
-                          style: TextStyle(color: Colors.black, fontSize: 12),
+                        child: Center(
+                          child: Text(
+                            "Ad Loading...",
+                            style: TextStyle(fontSize: 12),
+                          ),
                         ),
                       ),
             ),

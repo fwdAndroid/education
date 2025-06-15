@@ -1,6 +1,8 @@
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/screens/learning_dashboard.dart';
+import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:education/widgets/quiz_list_tile.dart';
+import 'package:education/widgets/quiz_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -15,6 +17,64 @@ class _QuizDashboardState extends State<QuizDashboard> {
   String get screenName => 'LearningDashboard';
   BannerAd? _bannerAd;
   bool _isBannerAdLoaded = false;
+
+  // Chapter metadata (only for available chapters)
+  final List<Map<String, dynamic>> availableChapters =
+      [
+            {
+              'chapterNumber': 1,
+              'title': "Fundamentals of Chemistry",
+              'subtitle': "Chapter 1",
+              'imagePath': "assets/encrypted/a.png.enc",
+            },
+            {
+              'chapterNumber': 2,
+              'title': "Atomic Structure",
+              'subtitle': "Chapter 2",
+              'imagePath': "assets/encrypted/ab.png.enc",
+            },
+            {
+              'chapterNumber': 3,
+              'title': "Periodic Table",
+              'subtitle': "Chapter 3",
+              'imagePath': "assets/encrypted/abc.png.enc",
+            },
+            {
+              'chapterNumber': 4,
+              'title': "Chemical Bonding",
+              'subtitle': "Chapter 4",
+              'imagePath': "assets/encrypted/abcd.png.enc",
+            },
+            {
+              'chapterNumber': 5,
+              'title': "Physical States of Matter",
+              'subtitle': "Chapter 5",
+              'imagePath': "assets/encrypted/a.png.enc",
+            },
+            {
+              'chapterNumber': 6,
+              'title': "Solutions",
+              'subtitle': "Chapter 6",
+              'imagePath': "assets/encrypted/ab.png.enc",
+            },
+            {
+              'chapterNumber': 7,
+              'title': "Electrochemistry",
+              'subtitle': "Chapter 7",
+              'imagePath': "assets/encrypted/abc.png.enc",
+            },
+            // {
+            //   'chapterNumber': 8,
+            //   'title': "Chemical Reactivity",
+            //   'subtitle': "Chapter 8",
+            //   'imagePath': "assets/encrypted/abcd.png",
+            // },
+          ]
+          .where(
+            (chapter) => chapterQuizzes.containsKey(chapter['chapterNumber']),
+          )
+          .toList();
+
   @override
   void initState() {
     super.initState();
@@ -56,97 +116,42 @@ class _QuizDashboardState extends State<QuizDashboard> {
             onTap: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (builder) => LearningDashboard()),
+                MaterialPageRoute(
+                  builder: (builder) => const LearningDashboard(),
+                ),
               );
             },
             child: Padding(
               padding: const EdgeInsets.all(8.0),
-              child: Image.asset(
-                "assets/raw/Screenshot 2025-05-23 115139.png",
+              child: EnyrptedImageWidget(
+                base64Key: base24,
+                assetPath:
+                    "assets/encrypted/Screenshot 2025-05-23 115139.png.enc",
                 height: 50,
                 width: 50,
               ),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(8.0),
+          const Padding(
+            padding: EdgeInsets.all(8.0),
             child: Icon(Icons.bookmark, size: 40),
           ),
         ],
-        iconTheme: IconThemeData(color: Colors.white),
-
-        title: Text("Quiz", style: TextStyle(color: Colors.white)),
-        backgroundColor: Color(0xffab77ff),
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: const Text("Quiz", style: TextStyle(color: Colors.white)),
+        backgroundColor: const Color(0xffab77ff),
       ),
       body: SingleChildScrollView(
         child: Column(
           children: [
-            QuizTile(
-              title: "Fundamentals of Chemistry",
-              subtitle: "Chapter 1",
-              imagePath: "assets/raw/a.png",
-
-              chapterNumber: 1,
-            ),
-            //2nd
-            QuizTile(
-              title: "Atomic Structure",
-              subtitle: "Chapter 2",
-              imagePath: "assets/raw/ab.png",
-
-              chapterNumber: 2,
-            ),
-            //3
-            QuizTile(
-              title: "Periodic Table",
-              subtitle: "Chapter 3",
-              imagePath: "assets/raw/abc.png",
-
-              chapterNumber: 3,
-            ),
-            //4
-            QuizTile(
-              title: "Chemical Bonding",
-              subtitle: "Chapter 4",
-              imagePath: "assets/raw/abcd.png",
-
-              chapterNumber: 4,
-            ),
-
-            //5
-            QuizTile(
-              title: "Physical States of Matter",
-              subtitle: "Chapter 5",
-              imagePath: "assets/raw/a.png",
-
-              chapterNumber: 5,
-            ),
-            //6
-            QuizTile(
-              title: "Solutions",
-              subtitle: "Chapter 6",
-              imagePath: "assets/raw/ab.png",
-
-              chapterNumber: 6,
-            ),
-
-            //7
-            QuizTile(
-              title: "Electrochemistry",
-              subtitle: "Chapter 7",
-              imagePath: "assets/raw/abc.png",
-
-              chapterNumber: 7,
-            ),
-            //8
-            QuizTile(
-              title: "Chemical Reactivity",
-              subtitle: "Chapter 8",
-              imagePath: "assets/raw/abcd.png",
-
-              chapterNumber: 8,
-            ),
-
+            // Only show available chapters
+            for (var chapter in availableChapters)
+              QuizTile(
+                title: chapter['title'],
+                subtitle: chapter['subtitle'],
+                imagePath: chapter['imagePath'],
+                chapterNumber: chapter['chapterNumber'],
+              ),
             Padding(
               padding: const EdgeInsets.all(8.0),
               child:

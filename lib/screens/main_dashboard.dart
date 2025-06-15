@@ -6,8 +6,10 @@ import 'package:education/advertisement_pages/privacy_policy_page.dart';
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/screens/bookmark.dart';
+import 'package:education/screens/helper/encryoted.dart';
 import 'package:education/screens/learning_dashboard.dart';
 import 'package:education/screens/quiz_dashboard.dart';
+import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -75,9 +77,12 @@ class _MainDashboardState extends State<MainDashboard>
       body: Container(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
-        decoration: const BoxDecoration(
+        decoration: BoxDecoration(
           image: DecorationImage(
-            image: AssetImage("assets/raw/bg.png"),
+            image: EncryptedImageProvider(
+              base64Key: base24,
+              assetPath: "assets/encrypted/bg.png.enc",
+            ),
             fit: BoxFit.cover,
           ),
         ),
@@ -88,7 +93,11 @@ class _MainDashboardState extends State<MainDashboard>
               const SizedBox(height: 30),
               Padding(
                 padding: const EdgeInsets.all(8.0),
-                child: Image.asset("assets/raw/logo.png", height: 50),
+                child: EnyrptedImageWidget(
+                  base64Key: base24,
+                  assetPath: "assets/encrypted/logo.png.enc",
+                  height: 50,
+                ),
               ),
               const SizedBox(height: 16),
               Row(
@@ -120,8 +129,9 @@ class _MainDashboardState extends State<MainDashboard>
                           Padding(
                             padding: const EdgeInsets.only(left: 12),
                             child: Center(
-                              child: Image.asset(
-                                "assets/raw/books.png",
+                              child: EnyrptedImageWidget(
+                                base64Key: base24,
+                                assetPath: "assets/encrypted/books.png.enc",
                                 height: 50,
                                 width: 100,
                               ),
@@ -205,7 +215,11 @@ class _MainDashboardState extends State<MainDashboard>
                     },
                     child: Center(
                       child: ListTile(
-                        leading: Image.asset("assets/raw/quiz.png", height: 60),
+                        leading: EnyrptedImageWidget(
+                          base64Key: base24,
+                          assetPath: "assets/encrypted/quiz.png.enc",
+                          height: 60,
+                        ),
                         title: AutoSizeText(
                           "Play Quiz Challenge",
                           style: TextStyle(
@@ -217,8 +231,9 @@ class _MainDashboardState extends State<MainDashboard>
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
                         ),
-                        trailing: Image.asset(
-                          "assets/raw/quizbutton.png",
+                        trailing: EnyrptedImageWidget(
+                          base64Key: base24,
+                          assetPath: "assets/encrypted/quizbutton.png.enc",
                           height: 50,
                         ),
                       ),
@@ -358,8 +373,9 @@ class _MainDashboardState extends State<MainDashboard>
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(left: 8.0),
-                            child: Image.asset(
-                              "assets/raw/privacy.png",
+                            child: EnyrptedImageWidget(
+                              base64Key: base24,
+                              assetPath: "assets/encrypted/privacy.png.enc",
                               height: 40,
                             ),
                           ),
@@ -385,7 +401,11 @@ class _MainDashboardState extends State<MainDashboard>
                         ),
                       );
                     },
-                    child: Image.asset("assets/raw/gdpr.png", height: 40),
+                    child: EnyrptedImageWidget(
+                      base64Key: base24,
+                      assetPath: "assets/encrypted/gdpr.png.enc",
+                      height: 40,
+                    ),
                   ),
                   const SizedBox(width: 5),
 
@@ -398,8 +418,9 @@ class _MainDashboardState extends State<MainDashboard>
                         ),
                       );
                     },
-                    child: Image.asset(
-                      "assets/raw/contentpolicy.png",
+                    child: EnyrptedImageWidget(
+                      base64Key: base24,
+                      assetPath: "assets/encrypted/contentpolicy.png.enc",
                       height: 40,
                     ),
                   ),
@@ -413,7 +434,11 @@ class _MainDashboardState extends State<MainDashboard>
                         ),
                       );
                     },
-                    child: Image.asset("assets/raw/adspolicy.png", height: 40),
+                    child: EnyrptedImageWidget(
+                      base64Key: base24,
+                      assetPath: "assets/encrypted/adspolicy.png.enc",
+                      height: 40,
+                    ),
                   ),
                 ],
               ),

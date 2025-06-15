@@ -3,6 +3,7 @@ import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/screens/webpage.dart';
 import 'package:education/widgets/chatpter_list_tile.dart';
+import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -64,7 +65,12 @@ class _LearningDashboardState extends State<LearningDashboard>
             },
             child: Padding(
               padding: const EdgeInsets.only(top: 8.0, bottom: 8),
-              child: Image.asset("assets/raw/bulb.png", width: 50, height: 50),
+              child: EnyrptedImageWidget(
+                base64Key: base24,
+                assetPath: "assets/encrypted/bulb.png.enc",
+                width: 50,
+                height: 50,
+              ),
             ),
           ),
         ],
@@ -79,12 +85,12 @@ class _LearningDashboardState extends State<LearningDashboard>
             ChapterTile(
               title: "Fundamentals of Chemistry",
               subtitle: "Chapter 1",
-              imagePath: "assets/raw/a.png",
+              imagePath: "assets/encrypted/a.png.enc",
               imagePaths: [
-                "assets/raw/chemxi_Page006.jpg",
-                "assets/raw/chemxi_Page007.jpg",
-                "assets/raw/chemxi_Page008.jpg",
-                "assets/raw/chemxi_Page009.jpg",
+                "assets/encrypted/chemxi_Page006.jpg.enc",
+                "assets/encrypted/chemxi_Page007.jpg.enc",
+                "assets/encrypted/chemxi_Page008.jpg.enc",
+                "assets/encrypted/chemxi_Page009.jpg.enc",
               ],
               chapterNumber: 1,
             ),
@@ -93,12 +99,12 @@ class _LearningDashboardState extends State<LearningDashboard>
             ChapterTile(
               title: "Atomic Structure",
               subtitle: "Chapter 2",
-              imagePath: "assets/raw/ab.png",
+              imagePath: "assets/encrypted/ab.png.enc",
               imagePaths: [
-                "assets/raw/chemxi_Page010.jpg",
-                "assets/raw/chemxi_Page011.jpg",
-                "assets/raw/chemxi_Page012.jpg",
-                "assets/raw/chemxi_Page013.jpg",
+                "assets/encrypted/chemxi_Page010.jpg.enc",
+                "assets/encrypted/chemxi_Page011.jpg.enc",
+                "assets/encrypted/chemxi_Page012.jpg.enc",
+                "assets/encrypted/chemxi_Page013.jpg.enc",
               ],
               chapterNumber: 2,
             ),
@@ -106,12 +112,12 @@ class _LearningDashboardState extends State<LearningDashboard>
             ChapterTile(
               title: "Periodic Table",
               subtitle: "Chapter 3",
-              imagePath: "assets/raw/abc.png",
+              imagePath: "assets/encrypted/abc.png.enc",
               imagePaths: [
-                "assets/raw/chemxi_Page014.jpg",
-                "assets/raw/chemxi_Page015.jpg",
-                "assets/raw/chemxi_Page016.jpg",
-                "assets/raw/chemxi_Page017.jpg",
+                "assets/encrypted/chemxi_Page014.jpg.enc",
+                "assets/encrypted/chemxi_Page015.jpg.enc",
+                "assets/encrypted/chemxi_Page016.jpg.enc",
+                "assets/encrypted/chemxi_Page017.jpg.enc",
               ],
               chapterNumber: 3,
             ),
@@ -119,12 +125,12 @@ class _LearningDashboardState extends State<LearningDashboard>
             ChapterTile(
               title: "Chemical Bonding",
               subtitle: "Chapter 4",
-              imagePath: "assets/raw/abcd.png",
+              imagePath: "assets/encrypted/abcd.png.enc",
               imagePaths: [
-                "assets/raw/chemxi_Page018.jpg",
-                "assets/raw/chemxi_Page019.jpg",
-                "assets/raw/chemxi_Page020.jpg",
-                "assets/raw/chemxi_Page021.jpg",
+                "assets/encrypted/chemxi_Page018.jpg.enc",
+                "assets/encrypted/chemxi_Page019.jpg.enc",
+                "assets/encrypted/chemxi_Page020.jpg.enc",
+                "assets/encrypted/chemxi_Page021.jpg.enc",
               ],
               chapterNumber: 4,
             ),
@@ -133,12 +139,12 @@ class _LearningDashboardState extends State<LearningDashboard>
             ChapterTile(
               title: "Physical States of Matter",
               subtitle: "Chapter 5",
-              imagePath: "assets/raw/a.png",
+              imagePath: "assets/encrypted/a.png.enc",
               imagePaths: [
-                "assets/raw/chemxi_Page022.jpg",
-                "assets/raw/chemxi_Page023.jpg",
-                "assets/raw/chemxi_Page024.jpg",
-                "assets/raw/chemxi_Page025.jpg",
+                "assets/encrypted/chemxi_Page022.jpg.enc",
+                "assets/encrypted/chemxi_Page023.jpg.enc",
+                "assets/encrypted/chemxi_Page024.jpg.enc",
+                "assets/encrypted/chemxi_Page025.jpg.enc",
               ],
               chapterNumber: 5,
             ),
@@ -146,12 +152,12 @@ class _LearningDashboardState extends State<LearningDashboard>
             ChapterTile(
               title: "Solutions",
               subtitle: "Chapter 6",
-              imagePath: "assets/raw/ab.png",
+              imagePath: "assets/encrypted/ab.png.enc",
               imagePaths: [
-                "assets/raw/chemxi_Page026.jpg",
-                "assets/raw/chemxi_Page027.jpg",
-                "assets/raw/chemxi_Page028.jpg",
-                "assets/raw/chemxi_Page029.jpg",
+                "assets/encrypted/chemxi_Page026.jpg.enc",
+                "assets/encrypted/chemxi_Page027.jpg.enc",
+                "assets/encrypted/chemxi_Page028.jpg.enc",
+                "assets/encrypted/chemxi_Page029.jpg.enc",
               ],
               chapterNumber: 6,
             ),
@@ -160,12 +166,12 @@ class _LearningDashboardState extends State<LearningDashboard>
             ChapterTile(
               title: "Electrochemistry",
               subtitle: "Chapter 7",
-              imagePath: "assets/raw/abc.png",
+              imagePath: "assets/encrypted/abc.png.enc",
               imagePaths: [
-                "assets/raw/chemxi_Page030.jpg",
-                "assets/raw/chemxi_Page031.jpg",
-                "assets/raw/chemxi_Page032.jpg",
-                "assets/raw/chemxi_Page033.jpg",
+                "assets/encrypted/chemxi_Page030.jpg.enc",
+                "assets/encrypted/chemxi_Page031.jpg.enc",
+                "assets/encrypted/chemxi_Page032.jpg.enc",
+                "assets/encrypted/chemxi_Page033.jpg.enc",
               ],
               chapterNumber: 7,
             ),
@@ -173,12 +179,12 @@ class _LearningDashboardState extends State<LearningDashboard>
             ChapterTile(
               title: "Chemical Reactivity",
               subtitle: "Chapter 8",
-              imagePath: "assets/raw/abcd.png",
+              imagePath: "assets/encrypted/abcd.png.enc",
               imagePaths: [
-                "assets/raw/chemxi_Page030.jpg",
-                "assets/raw/chemxi_Page031.jpg",
-                "assets/raw/chemxi_Page032.jpg",
-                "assets/raw/chemxi_Page033.jpg",
+                "assets/encrypted/chemxi_Page030.jpg.enc",
+                "assets/encrypted/chemxi_Page031.jpg.enc",
+                "assets/encrypted/chemxi_Page032.jpg.enc",
+                "assets/encrypted/chemxi_Page033.jpg.enc",
               ],
               chapterNumber: 8,
             ),
@@ -187,7 +193,13 @@ class _LearningDashboardState extends State<LearningDashboard>
               onTap: () {
                 Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (builder) => PDFViewerFromAsset()),
+                  MaterialPageRoute(
+                    builder:
+                        (builder) => PDFViewerFromEncryptedAsset(
+                          assetPath: 'assets/encrypted/test.pdf.enc',
+                          base64Key: base24,
+                        ),
+                  ),
                 );
               },
               child: Container(
@@ -208,7 +220,11 @@ class _LearningDashboardState extends State<LearningDashboard>
                 ),
                 child: Row(
                   children: [
-                    Image.asset("assets/raw/abcd.png", height: 48),
+                    EnyrptedImageWidget(
+                      base64Key: base24,
+                      assetPath: "assets/encrypted/abcd.png.enc",
+                      height: 48,
+                    ),
                     const SizedBox(width: 10),
                     Expanded(
                       child: Column(
@@ -251,7 +267,11 @@ class _LearningDashboardState extends State<LearningDashboard>
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (builder) => PDFViewerFromAsset(),
+                            builder:
+                                (builder) => PDFViewerFromEncryptedAsset(
+                                  assetPath: 'assets/encrypted/test.pdf.enc',
+                                  base64Key: base24,
+                                ),
                           ),
                         );
                       },

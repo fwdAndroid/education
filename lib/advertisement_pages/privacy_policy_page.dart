@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PrivacyPolicyPage extends StatefulWidget {
   const PrivacyPolicyPage({super.key});
@@ -8,12 +9,19 @@ class PrivacyPolicyPage extends StatefulWidget {
 }
 
 class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
+  final Uri _url = Uri.parse('https://www.google.com/');
+
+  Future<void> _launchURL() async {
+    if (!await launchUrl(_url, mode: LaunchMode.externalApplication)) {
+      throw 'Could not launch $_url';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         iconTheme: IconThemeData(color: Colors.white),
-
         title: Text("Privacy Policy", style: TextStyle(color: Colors.white)),
         backgroundColor: Color(0xffab77ff),
       ),
@@ -31,67 +39,59 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                   color: Colors.black,
                   height: 1.4,
                 ),
-                textAlign: TextAlign.left,
               ),
               SizedBox(height: 16),
 
-              // Paragraph 1
+              // Paragraphs
               Text(
-                "Not everyone knows how to make a Privacy Policy agreement, especially with CCPA or GDPR or CalOPPA or PIPEDA or Australia's Privacy Act provisions. If you are not a lawyer or someone who is familiar with Privacy Policies, you will be clueless. Some people might even take advantage of you because of this. Some people may even extort money from you. These are some examples that we want to stop from happening to you.",
-                style: TextStyle(
-                  fontSize: 14.5,
-                  height: 1.6,
-                  color: Colors.black87,
-                ),
+                "Not everyone knows how to make a Privacy Policy agreement...",
+                style: _paragraphStyle(),
               ),
               SizedBox(height: 12),
-
-              // Paragraph 2
               Text(
                 "We will help you protect yourself by generating a Privacy Policy.",
-                style: TextStyle(
-                  fontSize: 14.5,
-                  height: 1.6,
-                  color: Colors.black87,
-                ),
+                style: _paragraphStyle(),
               ),
               SizedBox(height: 12),
-
-              // Paragraph 3
               Text(
-                "Our Privacy Policy Generator can help you make sure that your business complies with the law. We are here to help you protect your business, yourself and your customers.",
-                style: TextStyle(
-                  fontSize: 14.5,
-                  height: 1.6,
-                  color: Colors.black87,
-                ),
+                "Our Privacy Policy Generator can help you...",
+                style: _paragraphStyle(),
               ),
               SizedBox(height: 12),
-
-              // Paragraph 4
               Text(
-                "Fill in the blank spaces below and we will create a personalized website Privacy Policy for your business. No account registration required. Simply generate & download a Privacy Policy in seconds!",
-                style: TextStyle(
-                  fontSize: 14.5,
-                  height: 1.6,
-                  color: Colors.black87,
-                ),
+                "Fill in the blank spaces below and we will create a personalized website Privacy Policy...",
+                style: _paragraphStyle(),
               ),
               SizedBox(height: 12),
-
-              // Paragraph 5
               Text(
-                "Small remark when filling in this Privacy Policy generator: Not all parts of this Privacy Policy might be applicable to your website. When there are parts that are not applicable, these can be removed. Optional elements can be selected in step 2. The accuracy of the generated Privacy Policy on this website is not legally binding. Use at your own risk.",
-                style: TextStyle(
-                  fontSize: 14.5,
-                  height: 1.6,
-                  color: Colors.black87,
+                "Small remark when filling in this Privacy Policy generator...",
+                style: _paragraphStyle(),
+              ),
+              SizedBox(height: 24),
+
+              // 🔗 Hyperlink
+              Center(
+                child: GestureDetector(
+                  onTap: _launchURL,
+                  child: Text(
+                    "Visit Privacy Policy Generator Website",
+                    style: TextStyle(
+                      color: Colors.blue,
+                      fontSize: 15,
+                      decoration: TextDecoration.underline,
+                    ),
+                  ),
                 ),
               ),
+              SizedBox(height: 20),
             ],
           ),
         ),
       ),
     );
+  }
+
+  TextStyle _paragraphStyle() {
+    return TextStyle(fontSize: 14.5, height: 1.6, color: Colors.black87);
   }
 }

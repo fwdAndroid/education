@@ -1,4 +1,6 @@
+import 'package:education/constant/ad_keys.dart';
 import 'package:education/screens/quiz_screen.dart';
+import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
 
 class QuizTile extends StatelessWidget {
@@ -50,7 +52,12 @@ class QuizTile extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Image.asset(imagePath, height: 48, width: 48, fit: BoxFit.cover),
+              EnyrptedImageWidget(
+                assetPath: imagePath,
+                height: 48,
+                width: 48,
+                base64Key: base24,
+              ),
               const SizedBox(width: 10),
               Expanded(
                 child: Column(

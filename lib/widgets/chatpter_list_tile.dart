@@ -1,4 +1,6 @@
+import 'package:education/constant/ad_keys.dart';
 import 'package:education/screens/chapter.dart';
+import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
 
 class ChapterTile extends StatelessWidget {
@@ -29,7 +31,7 @@ class ChapterTile extends StatelessWidget {
           context,
           MaterialPageRoute(
             builder:
-                (context) => Chapter(
+                (_) => Chapter(
                   title: title,
                   imagePaths: imagePaths,
                   chapterNumber: chapterNumber,
@@ -55,14 +57,18 @@ class ChapterTile extends StatelessWidget {
         ),
         child: Row(
           children: [
-            Image.asset(imagePath, height: 48, width: 48, fit: BoxFit.cover),
+            EnyrptedImageWidget(
+              assetPath: imagePath,
+              base64Key: base24,
+              height: 48,
+              width: 48,
+            ),
             const SizedBox(width: 10),
             Expanded(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // TITLE (single line, clipped if too long)
                   Text(
                     title,
                     style: const TextStyle(
@@ -70,8 +76,7 @@ class ChapterTile extends StatelessWidget {
                       fontWeight: FontWeight.w600,
                     ),
                     maxLines: 1,
-                    softWrap: false,
-                    overflow: TextOverflow.clip, // not ellipsis
+                    overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
                   Text(
@@ -81,7 +86,6 @@ class ChapterTile extends StatelessWidget {
                 ],
               ),
             ),
-            const SizedBox(width: 10),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: const Color(0xffab77ff),
@@ -96,7 +100,7 @@ class ChapterTile extends StatelessWidget {
                   context,
                   MaterialPageRoute(
                     builder:
-                        (context) => Chapter(
+                        (_) => Chapter(
                           title: title,
                           imagePaths: imagePaths,
                           chapterNumber: chapterNumber,

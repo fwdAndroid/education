@@ -1,12 +1,13 @@
-import 'dart:math';
 import 'package:education/constant/ad_keys.dart';
-import 'package:education/mixin/firebase_analytics_mixin.dart';
+import 'package:education/provider/chapter_provider.dart';
 import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/service/book_mark_service.dart';
+import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:provider/provider.dart';
 
-class Chapter extends StatefulWidget {
+class Chapter extends StatelessWidget {
   final List<String> imagePaths;
   final String title;
   final int chapterNumber;
@@ -19,81 +20,53 @@ class Chapter extends StatefulWidget {
   });
 
   @override
-  State<Chapter> createState() => _ChapterState();
+  Widget build(BuildContext context) {
+    return ChangeNotifierProvider(
+      create: (_) => ChapterProvider(imagePaths: imagePaths),
+      child: ChapterScreen(
+        title: title,
+        chapterNumber: chapterNumber,
+        imagePaths: imagePaths,
+      ),
+    );
+  }
 }
 
-class _ChapterState extends State<Chapter>
-    with AnalyticsScreenTracker<Chapter> {
-  String get screenName => 'Chapter';
+class ChapterScreen extends StatefulWidget {
+  final String title;
+  final int chapterNumber;
+  final List<String> imagePaths;
 
-  final PageController _pageController = PageController();
-  final TransformationController _transformationController =
-      TransformationController();
-
-  int _currentPage = 0;
-  double _currentScale = 1.0;
-
-  BannerAd? _bannerAd;
-  bool _isAdLoaded = false;
+  const ChapterScreen({
+    super.key,
+    required this.title,
+    required this.chapterNumber,
+    required this.imagePaths,
+  });
 
   @override
-  void initState() {
-    super.initState();
-    _loadBannerAd();
-  }
+  State<ChapterScreen> createState() => _ChapterScreenState();
+}
 
-  void _loadBannerAd() {
-    _bannerAd = BannerAd(
-      adUnitId: bannerKey,
-      size: AdSize.banner,
-      request: const AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          setState(() {
-            _isAdLoaded = true;
-          });
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          ad.dispose();
-          debugPrint('BannerAd failed to load: $error');
-        },
-      ),
-    )..load();
-  }
-
-  void _zoomIn() {
-    setState(() {
-      _currentScale = min(_currentScale + 0.2, 3.0);
-      _applyZoom();
-    });
-  }
-
-  void _zoomOut() {
-    setState(() {
-      _currentScale = max(_currentScale - 0.2, 1.0);
-      _applyZoom();
-    });
-  }
-
-  void _applyZoom() {
-    _transformationController.value = Matrix4.identity()..scale(_currentScale);
-  }
-
-  @override
-  void dispose() {
-    _pageController.dispose();
-    _transformationController.dispose();
-    _bannerAd?.dispose();
-    super.dispose();
-  }
-
+class _ChapterScreenState extends State<ChapterScreen> {
   @override
   Widget build(BuildContext context) {
+    final provider = context.watch<ChapterProvider>();
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
       backgroundColor: Colors.white,
       appBar: AppBar(
+        iconTheme: IconThemeData(color: Colors.white),
+        title: Text(
+          widget.title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 12.5,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+        backgroundColor: const Color(0xffab77ff),
         actions: [
           GestureDetector(
             onTap: () {
@@ -104,7 +77,12 @@ class _ChapterState extends State<Chapter>
             },
             child: Padding(
               padding: const EdgeInsets.only(top: 8.0, bottom: 8),
-              child: Image.asset("assets/raw/bulb.png", width: 50, height: 50),
+              child: EnyrptedImageWidget(
+                base64Key: base24,
+                assetPath: "assets/encrypted/bulb.png.enc",
+                width: 50,
+                height: 50,
+              ),
             ),
           ),
           Padding(
@@ -131,7 +109,7 @@ class _ChapterState extends State<Chapter>
                         chapterNumber: widget.chapterNumber,
                         title: widget.title,
                         subtitle: "Chapter ${widget.chapterNumber}",
-                        imagePath: "assets/raw/a.png",
+                        imagePath: "assets/encrypted/a.png.enc", // ✅ correct
                         imagePaths: widget.imagePaths,
                       ),
                     );
@@ -141,43 +119,30 @@ class _ChapterState extends State<Chapter>
             ),
           ),
         ],
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: Text(
-          widget.title,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: 12.5,
-            fontWeight: FontWeight.bold,
-          ),
-        ),
-        backgroundColor: const Color(0xffab77ff),
       ),
       body: Column(
         children: [
-          // PageView: 80%
           SizedBox(
             height: screenHeight * 0.7,
             child: PageView.builder(
-              controller: _pageController,
-              itemCount: widget.imagePaths.length,
-              onPageChanged: (int page) {
-                setState(() {
-                  _currentPage = page;
-                  _currentScale = 1.0;
-                  _applyZoom();
-                });
+              controller: PageController(initialPage: provider.currentPage),
+              itemCount: provider.imagePaths.length,
+              onPageChanged: (index) {
+                provider.updatePage(index);
+                provider.preloadSurroundingImages(base24);
               },
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: InteractiveViewer(
-                    transformationController: _transformationController,
+                    transformationController: provider.transformationController,
                     panEnabled: true,
                     minScale: 1.0,
                     maxScale: 3.0,
-                    child: Image.asset(
-                      widget.imagePaths[index],
-                      fit: BoxFit.contain,
+                    child: EnyrptedImageWidget(
+                      base64Key: base24,
+                      assetPath: provider.imagePaths[index],
+                      height: screenHeight,
                     ),
                   ),
                 );
@@ -185,18 +150,16 @@ class _ChapterState extends State<Chapter>
             ),
           ),
 
-          // Page counter: 4%
           SizedBox(
             height: screenHeight * 0.04,
             child: Center(
               child: Text(
-                '${_currentPage + 1}/${widget.imagePaths.length}',
+                '${provider.currentPage + 1}/${provider.imagePaths.length}',
                 style: const TextStyle(fontSize: 16, color: Colors.black),
               ),
             ),
           ),
 
-          // Zoom controls: 8%
           SizedBox(
             height: screenHeight * 0.08,
             child: Row(
@@ -204,32 +167,29 @@ class _ChapterState extends State<Chapter>
               children: [
                 IconButton(
                   icon: const Icon(Icons.zoom_in, color: Colors.black),
-                  onPressed: _zoomIn,
+                  onPressed: provider.zoomIn,
                 ),
                 IconButton(
                   icon: const Icon(Icons.zoom_out, color: Colors.black),
-                  onPressed: _zoomOut,
+                  onPressed: provider.zoomOut,
                 ),
               ],
             ),
           ),
 
-          // Ad Banner: 8%
           SizedBox(
             height: screenHeight * 0.08,
-            child: Center(
-              child:
-                  _isAdLoaded && _bannerAd != null
-                      ? SizedBox(
-                        width: _bannerAd!.size.width.toDouble(),
-                        height: _bannerAd!.size.height.toDouble(),
-                        child: AdWidget(ad: _bannerAd!),
-                      )
-                      : const Text(
-                        "Ad Loading...",
-                        style: TextStyle(color: Colors.black, fontSize: 12),
-                      ),
-            ),
+            child:
+                provider.isAdLoaded && provider.bannerAd != null
+                    ? SizedBox(
+                      width: provider.bannerAd!.size.width.toDouble(),
+                      height: provider.bannerAd!.size.height.toDouble(),
+                      child: AdWidget(ad: provider.bannerAd!),
+                    )
+                    : const Text(
+                      "Ad Loading...",
+                      style: TextStyle(color: Colors.black, fontSize: 12),
+                    ),
           ),
         ],
       ),

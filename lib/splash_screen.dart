@@ -1,5 +1,7 @@
 import 'dart:async';
+import 'package:education/constant/ad_keys.dart';
 import 'package:education/screens/main_dashboard.dart';
+import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -81,23 +83,26 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Container(
-        height: MediaQuery.of(context).size.height,
-        width: MediaQuery.of(context).size.width,
-        decoration: BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage("assets/raw/bg.png"),
-            fit: BoxFit.cover,
-            filterQuality: FilterQuality.high,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // Encrypted background image
+          EnyrptedImageWidget(
+            base64Key: base24,
+            assetPath:
+                "assets/encrypted/bg.png.enc", // Use your actual encrypted image
           ),
-        ),
 
-        child: Center(
-          child: Image.asset(
-            "assets/raw/Screenshot_2025-06-14_092856-removebg-preview.png",
-            width: 300,
+          // Center logo or splash content
+          Center(
+            child: EnyrptedImageWidget(
+              base64Key: base24,
+              assetPath:
+                  "assets/encrypted/Screenshot_2025-06-14_092856-removebg-preview.png.enc",
+              width: 300,
+            ),
           ),
-        ),
+        ],
       ),
     );
   }

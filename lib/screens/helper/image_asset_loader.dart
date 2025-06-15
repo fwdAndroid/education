@@ -1,28 +1,18 @@
-// lib/screens/helper/encrypted_asset_loader.dart
+import 'package:encrypt/encrypt.dart';
 import 'dart:typed_data';
-import 'package:flutter/services.dart';
+import 'package:flutter/services.dart' show rootBundle;
 
 class EncryptedAssetLoader {
-  static final Map<String, Uint8List> _cache = {};
+  static final _key = Key.fromUtf8('my32lengthsupersecretnooneknows1');
+  static final _iv = IV.fromLength(16);
+  static final _encrypter = Encrypter(
+    AES(_key, mode: AESMode.cbc),
+  ); // explicitly CBC
 
   static Future<Uint8List> loadDecrypted(String assetPath) async {
-    if (_cache.containsKey(assetPath)) return _cache[assetPath]!;
-
-    try {
-      final ByteData bytes = await rootBundle.load(assetPath);
-      final Uint8List encrypted = bytes.buffer.asUint8List();
-      final Uint8List decrypted = Uint8List(encrypted.length);
-
-      // Fixed decryption: XOR with 0xAA
-      for (int i = 0; i < encrypted.length; i++) {
-        decrypted[i] = encrypted[i] ^ 0xAA;
-      }
-
-      _cache[assetPath] = decrypted;
-      return decrypted;
-    } catch (e) {
-      print("Decryption error for $assetPath: $e");
-      throw Exception("Failed to decrypt asset");
-    }
+    final encryptedData = await rootBundle.load(assetPath);
+    final encrypted = Encrypted(encryptedData.buffer.asUint8List());
+    final decrypted = _encrypter.decryptBytes(encrypted, iv: _iv);
+    return Uint8List.fromList(decrypted);
   }
 }
