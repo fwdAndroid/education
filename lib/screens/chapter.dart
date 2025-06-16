@@ -178,7 +178,8 @@ class _ChapterScreenState extends State<ChapterScreen> {
                         assetPath: widget.imagePaths[index],
                         base64Key: base24,
                         height: 200,
-                        fit: BoxFit.contain,
+                        width: MediaQuery.of(context).size.width,
+                        fit: BoxFit.cover,
                       ),
                     );
                   },

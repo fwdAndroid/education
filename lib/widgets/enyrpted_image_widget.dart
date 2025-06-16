@@ -105,7 +105,7 @@ class _EnyrptedImageWidgetState extends State<EnyrptedImageWidget> {
             width: widget.width,
             fit: widget.fit,
             gaplessPlayback: true,
-            filterQuality: FilterQuality.low,
+            filterQuality: FilterQuality.none,
           );
         }
       },

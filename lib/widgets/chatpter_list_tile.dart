@@ -59,9 +59,9 @@ class ChapterTile extends StatelessWidget {
           children: [
             EnyrptedImageWidget(
               assetPath: imagePath,
-              base64Key: base24,
               height: 48,
               width: 48,
+              base64Key: base24,
             ),
             const SizedBox(width: 10),
             Expanded(

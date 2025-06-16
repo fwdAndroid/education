@@ -97,6 +97,7 @@ class _SplashScreenState extends State<SplashScreen> {
           Center(
             child: EnyrptedImageWidget(
               base64Key: base24,
+
               assetPath:
                   "assets/encrypted/Screenshot_2025-06-14_092856-removebg-preview.png.enc",
               width: 300,
