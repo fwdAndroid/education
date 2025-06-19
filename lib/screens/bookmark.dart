@@ -161,17 +161,17 @@ class _BookmarkState extends State<Bookmark> {
                     },
                   ),
                   onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder:
-                            (_) => Chapter(
-                              chapterNumber: page.chapterNumber,
-                              title: page.chapterTitle,
-                              imagePaths: [page.imagePath],
-                            ),
-                      ),
-                    );
+                    // Navigator.push(
+                    //   context,
+                    //   MaterialPageRoute(
+                    //     builder:
+                    //         (_) => Chapter(
+                    //           chapterNumber: page.chapterNumber,
+                    //           title: page.chapterTitle,
+                    //           imagePaths: [page.imagePath],
+                    //         ),
+                    //   ),
+                    // );
                   },
                 ),
               ),

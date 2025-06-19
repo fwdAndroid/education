@@ -50,6 +50,10 @@ class _ChapterScreenState extends State<ChapterScreen> {
   late BannerAd _bannerAd;
   bool _isAdLoaded = false;
 
+  // 🔁 Loading tracking
+  int _loadedImages = 0;
+  bool _allImagesLoaded = false;
+
   @override
   void initState() {
     super.initState();
@@ -61,7 +65,7 @@ class _ChapterScreenState extends State<ChapterScreen> {
   void _loadBannerAd() {
     _bannerAd = BannerAd(
       size: AdSize.banner,
-      adUnitId: bannerKey, // Replace with your ad unit ID
+      adUnitId: bannerKey,
       listener: BannerAdListener(
         onAdLoaded: (ad) {
           setState(() => _isAdLoaded = true);
@@ -159,6 +163,7 @@ class _ChapterScreenState extends State<ChapterScreen> {
       ),
       body: Column(
         children: [
+          // Image content
           SizedBox(
             height: screenHeight * 0.7,
             child: PageView.builder(
@@ -168,25 +173,21 @@ class _ChapterScreenState extends State<ChapterScreen> {
                 setState(() => currentPage = index);
               },
               itemBuilder: (context, index) {
-                return PageView.builder(
-                  scrollDirection: Axis.horizontal,
-                  itemCount: widget.imagePaths.length,
-                  itemBuilder: (context, index) {
-                    return Padding(
-                      padding: const EdgeInsets.all(8.0),
-                      child: EnyrptedImageWidget(
-                        assetPath: widget.imagePaths[index],
-                        base64Key: base24,
-                        height: 200,
-                        width: MediaQuery.of(context).size.width,
-                        fit: BoxFit.cover,
-                      ),
-                    );
-                  },
+                return Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: EnyrptedImageWidget(
+                    assetPath: widget.imagePaths[index],
+                    base64Key: base24,
+                    height: 200,
+                    width: MediaQuery.of(context).size.width,
+                    fit: BoxFit.cover,
+                  ),
                 );
               },
             ),
           ),
+
+          // Page indicator
           SizedBox(
             height: screenHeight * 0.04,
             child: Center(
@@ -196,6 +197,8 @@ class _ChapterScreenState extends State<ChapterScreen> {
               ),
             ),
           ),
+
+          // Zoom buttons
           SizedBox(
             height: screenHeight * 0.08,
             child: Row(
@@ -212,6 +215,30 @@ class _ChapterScreenState extends State<ChapterScreen> {
               ],
             ),
           ),
+
+          // Loading progress (only show while loading)
+          if (!_allImagesLoaded)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Column(
+                children: [
+                  LinearProgressIndicator(
+                    value: _loadedImages / widget.imagePaths.length,
+                    backgroundColor: Colors.grey[300],
+                    valueColor: const AlwaysStoppedAnimation<Color>(
+                      Colors.purple,
+                    ),
+                  ),
+                  const SizedBox(height: 4),
+                  Text(
+                    'Loading ${((_loadedImages / widget.imagePaths.length) * 100).toInt()}%',
+                    style: const TextStyle(color: Colors.black),
+                  ),
+                ],
+              ),
+            ),
+
+          // Ad
           SizedBox(
             height: screenHeight * 0.08,
             child:

@@ -5,6 +5,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -17,6 +19,8 @@ void main() async {
   ]);
 
   MobileAds.instance.initialize();
+  await Hive.initFlutter();
+  await Hive.openBox<Uint8List>('decryptedImages');
 
   runApp(const MyApp());
 }

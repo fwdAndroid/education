@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:convert';
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
@@ -7,7 +8,7 @@ import 'package:pointycastle/api.dart';
 import 'package:pointycastle/block/aes.dart';
 import 'package:pointycastle/block/modes/gcm.dart';
 
-// === DECRYPTION FUNCTION (Top-level for isolate use) ===
+// === DECRYPTION FUNCTION (for isolate use) ===
 Uint8List _decrypt(Map<String, dynamic> params) {
   final Uint8List bytes = params['bytes'];
   final Uint8List key = params['key'];
@@ -24,8 +25,35 @@ Uint8List _decrypt(Map<String, dynamic> params) {
 // === MEMORY CACHE FOR DECRYPTED IMAGES ===
 final Map<String, Uint8List> decryptedImageCache = {};
 
-// === IMAGE WIDGET THAT LOADS ENCRYPTED IMAGES ===
-class EnyrptedImageWidget extends StatefulWidget {
+// === STREAM-BASED IMAGE LOADER CLASS ===
+class StreamedEncryptedImageLoader {
+  final String assetPath;
+  final String base64Key;
+
+  StreamedEncryptedImageLoader(this.assetPath, this.base64Key);
+
+  Stream<Uint8List> decryptStream() async* {
+    if (decryptedImageCache.containsKey(assetPath)) {
+      yield decryptedImageCache[assetPath]!;
+      return;
+    }
+
+    try {
+      final assetBytes = await rootBundle.load(assetPath);
+      final bytes = assetBytes.buffer.asUint8List();
+      final key = base64Decode(base64Key);
+
+      final decrypted = await compute(_decrypt, {'bytes': bytes, 'key': key});
+      decryptedImageCache[assetPath] = decrypted;
+      yield decrypted;
+    } catch (e) {
+      yield* Stream.error(e);
+    }
+  }
+}
+
+// === STREAM IMAGE WIDGET ===
+class EnyrptedImageWidget extends StatelessWidget {
   final String assetPath;
   final String base64Key;
   final double? height;
@@ -42,68 +70,22 @@ class EnyrptedImageWidget extends StatefulWidget {
   });
 
   @override
-  State<EnyrptedImageWidget> createState() => _EnyrptedImageWidgetState();
-}
-
-class _EnyrptedImageWidgetState extends State<EnyrptedImageWidget> {
-  late Future<Uint8List> _decryptionFuture;
-
-  @override
-  void initState() {
-    super.initState();
-    _decryptionFuture = _getOrDecrypt();
-  }
-
-  Future<Uint8List> _getOrDecrypt() async {
-    if (decryptedImageCache.containsKey(widget.assetPath)) {
-      return decryptedImageCache[widget.assetPath]!;
-    }
-
-    final assetBytes = await rootBundle.load(widget.assetPath);
-    final bytes = assetBytes.buffer.asUint8List();
-    final key = base64Decode(widget.base64Key);
-
-    final decrypted = await compute(_decrypt, {'bytes': bytes, 'key': key});
-
-    decryptedImageCache[widget.assetPath] = decrypted;
-    return decrypted;
-  }
-
-  Future<void> preloadEncryptedImages(
-    List<String> imagePaths,
-    String base64Key,
-  ) async {
-    final key = base64Decode(base64Key);
-
-    final futures = imagePaths.map((path) async {
-      if (decryptedImageCache.containsKey(path)) return;
-
-      final assetBytes = await rootBundle.load(path);
-      final bytes = assetBytes.buffer.asUint8List();
-
-      final decrypted = await compute(_decrypt, {'bytes': bytes, 'key': key});
-
-      decryptedImageCache[path] = decrypted;
-    });
-
-    await Future.wait(futures); // Run all decryptions in parallel
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return FutureBuilder<Uint8List>(
-      future: _decryptionFuture,
+    final loader = StreamedEncryptedImageLoader(assetPath, base64Key);
+
+    return StreamBuilder<Uint8List>(
+      stream: loader.decryptStream(),
       builder: (context, snapshot) {
-        if (snapshot.connectionState != ConnectionState.done) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError || !snapshot.hasData) {
           return const Icon(Icons.error, color: Colors.red);
         } else {
           return Image.memory(
             snapshot.data!,
-            height: widget.height,
-            width: widget.width,
-            fit: widget.fit,
+            height: height,
+            width: width,
+            fit: fit,
             gaplessPlayback: true,
             filterQuality: FilterQuality.none,
           );
