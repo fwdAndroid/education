@@ -34,7 +34,13 @@ class StreamedEncryptedImageLoader {
   StreamedEncryptedImageLoader(this.assetPath, this.base64Key);
 
   Stream<Uint8List> decryptStream() async* {
-    final hiveBox = Hive.box<Uint8List>('imageCache');
+    // Safe Hive box access with check and open if necessary
+    Box<Uint8List> hiveBox;
+    if (Hive.isBoxOpen('imageCache')) {
+      hiveBox = Hive.box<Uint8List>('imageCache');
+    } else {
+      hiveBox = await Hive.openBox<Uint8List>('imageCache');
+    }
 
     // Check in-memory cache first
     if (decryptedImageCache.containsKey(assetPath)) {
@@ -97,6 +103,10 @@ class EnyrptedImageWidget extends StatelessWidget {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         } else if (snapshot.hasError || !snapshot.hasData) {
+          debugPrint('Error loading image: $assetPath');
+          if (snapshot.hasError) {
+            debugPrint('Error details: ${snapshot.error}');
+          }
           return const Icon(Icons.error, color: Colors.red);
         } else {
           return Image.memory(
