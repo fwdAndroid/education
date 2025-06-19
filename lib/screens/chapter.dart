@@ -50,10 +50,6 @@ class _ChapterScreenState extends State<ChapterScreen> {
   late BannerAd _bannerAd;
   bool _isAdLoaded = false;
 
-  // 🔁 Loading tracking
-  int _loadedImages = 0;
-  bool _allImagesLoaded = false;
-
   @override
   void initState() {
     super.initState();
@@ -217,26 +213,6 @@ class _ChapterScreenState extends State<ChapterScreen> {
           ),
 
           // Loading progress (only show while loading)
-          if (!_allImagesLoaded)
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              child: Column(
-                children: [
-                  LinearProgressIndicator(
-                    value: _loadedImages / widget.imagePaths.length,
-                    backgroundColor: Colors.grey[300],
-                    valueColor: const AlwaysStoppedAnimation<Color>(
-                      Colors.purple,
-                    ),
-                  ),
-                  const SizedBox(height: 4),
-                  Text(
-                    'Loading ${((_loadedImages / widget.imagePaths.length) * 100).toInt()}%',
-                    style: const TextStyle(color: Colors.black),
-                  ),
-                ],
-              ),
-            ),
 
           // Ad
           SizedBox(

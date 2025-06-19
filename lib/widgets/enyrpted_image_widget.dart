@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/foundation.dart';
+import 'package:hive/hive.dart';
 import 'package:pointycastle/api.dart';
 import 'package:pointycastle/block/aes.dart';
 import 'package:pointycastle/block/modes/gcm.dart';
@@ -33,9 +34,22 @@ class StreamedEncryptedImageLoader {
   StreamedEncryptedImageLoader(this.assetPath, this.base64Key);
 
   Stream<Uint8List> decryptStream() async* {
+    final hiveBox = Hive.box<Uint8List>('imageCache');
+
+    // Check in-memory cache first
     if (decryptedImageCache.containsKey(assetPath)) {
       yield decryptedImageCache[assetPath]!;
       return;
+    }
+
+    // Check Hive persistent cache
+    if (hiveBox.containsKey(assetPath)) {
+      final cached = hiveBox.get(assetPath);
+      if (cached != null) {
+        decryptedImageCache[assetPath] = cached;
+        yield cached;
+        return;
+      }
     }
 
     try {
@@ -44,7 +58,11 @@ class StreamedEncryptedImageLoader {
       final key = base64Decode(base64Key);
 
       final decrypted = await compute(_decrypt, {'bytes': bytes, 'key': key});
+
+      // Save to both caches
       decryptedImageCache[assetPath] = decrypted;
+      await hiveBox.put(assetPath, decrypted);
+
       yield decrypted;
     } catch (e) {
       yield* Stream.error(e);

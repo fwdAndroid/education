@@ -7,6 +7,7 @@ import 'package:flutter/services.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive/hive.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -19,9 +20,10 @@ void main() async {
   ]);
 
   MobileAds.instance.initialize();
-  await Hive.initFlutter();
-  await Hive.openBox<Uint8List>('decryptedImages');
 
+  final dir = await getApplicationDocumentsDirectory();
+  await Hive.initFlutter(dir.path);
+  await Hive.openBox<Uint8List>('imageCache'); // 👈 we'll use this
   runApp(const MyApp());
 }
 
