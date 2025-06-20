@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/firebase_options.dart';
-import 'package:education/pdf%20hepler.dart';
 import 'package:education/service/book_mark_service.dart';
 import 'package:education/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -27,17 +26,6 @@ Future<List<String>> getEncryptedImagePaths() async {
   return encryptedPaths;
 }
 
-Future<List<String>> getEncryptedPdfPaths() async {
-  final manifestJson = await rootBundle.loadString('AssetManifest.json');
-  final manifestMap = json.decode(manifestJson);
-  return manifestMap.keys
-      .where(
-        (key) =>
-            key.startsWith('assets/encrypted/') && key.endsWith('.pdf.enc'),
-      )
-      .toList();
-}
-
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -53,16 +41,9 @@ void main() async {
   final appDocDir = await getApplicationDocumentsDirectory();
   await Hive.initFlutter(appDocDir.path);
   await Hive.openBox<Uint8List>('imageCache');
-  await Hive.openBox<Uint8List>('pdfCache'); // <-- New line
+  await Hive.openBox<Uint8List>('pdfCache'); // <--- important
 
   final encryptedImages = await getEncryptedImagePaths();
-  final encryptedPDFs = await getEncryptedPdfPaths();
-
-  // Optional preload during splash
-  for (final pdf in encryptedPDFs.take(2)) {
-    // Only preload 2
-    await decryptAndCachePDF(pdf, base24); // Assuming base24 is your key
-  }
 
   runApp(
     MaterialApp(

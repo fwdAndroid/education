@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
+import 'package:education/screens/load.dart';
 import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/screens/webpage.dart';
 import 'package:education/widgets/chatpter_list_tile.dart';
@@ -19,6 +22,9 @@ class _LearningDashboardState extends State<LearningDashboard>
   String get screenName => 'LearningDashboard';
   BannerAd? _bannerAd;
   bool _isBannerAdLoaded = false;
+  final String assetPath = 'assets/encrypted/tests.pdf.enc';
+  final String cacheKey = 'test';
+  final String base64Key = base24;
   @override
   void initState() {
     super.initState();
@@ -190,15 +196,17 @@ class _LearningDashboardState extends State<LearningDashboard>
             ),
 
             GestureDetector(
-              onTap: () {
+              onTap: () async {
+                final file = await loadAndDecryptPdfFromAssets(
+                  assetPath,
+                  cacheKey,
+                  base64.decode(base64Key),
+                );
+
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder:
-                        (builder) => PDFViewerFromEncryptedAsset(
-                          assetPath: 'assets/encrypted/test.pdf.enc',
-                          base64Key: base24,
-                        ),
+                    builder: (_) => PDFViewerFromCache(pdfFile: file),
                   ),
                 );
               },
@@ -263,15 +271,17 @@ class _LearningDashboardState extends State<LearningDashboard>
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
-                      onPressed: () {
+                      onPressed: () async {
+                        final file = await loadAndDecryptPdfFromAssets(
+                          assetPath,
+                          cacheKey,
+                          base64.decode(base64Key),
+                        );
+
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder:
-                                (builder) => PDFViewerFromEncryptedAsset(
-                                  assetPath: 'assets/encrypted/test.pdf.enc',
-                                  base64Key: base24,
-                                ),
+                            builder: (_) => PDFViewerFromCache(pdfFile: file),
                           ),
                         );
                       },
