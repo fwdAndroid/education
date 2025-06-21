@@ -50,8 +50,9 @@ class _SplashScreenState extends State<SplashScreen> {
         });
       },
     );
+    _goToMainDashboard();
 
-    _loadAndShowInterstitialAd();
+    // _loadAndShowInterstitialAd();
   }
 
   void _loadAndShowInterstitialAd() {
