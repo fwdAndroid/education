@@ -4,6 +4,7 @@ import 'package:education/advertisement_pages/content_license_page.dart';
 import 'package:education/advertisement_pages/gdpr_page.dart';
 import 'package:education/advertisement_pages/privacy_policy_page.dart';
 import 'package:education/constant/ad_keys.dart';
+import 'package:education/imageloader.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/screens/bookmark.dart';
 import 'package:education/screens/learning_dashboard.dart';
@@ -13,6 +14,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 class MainDashboard extends StatefulWidget {
@@ -27,17 +30,82 @@ class _MainDashboardState extends State<MainDashboard>
   BannerAd? _bannerAd;
   bool _isBannerAdLoaded = false;
 
+  double _progress = 0.0;
   String get screenName => 'MainDashboard';
+  bool _imagesLoaded = false;
+  int _estimatedRemainingSeconds = 0;
 
   @override
   void initState() {
     super.initState();
+    _initHiveAndPreload();
+
     _loadBannerAd();
     // Hide only the top status bar
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
+
       overlays: [SystemUiOverlay.bottom],
     );
+  }
+
+  Future<void> _initHiveAndPreload() async {
+    final appDocDir = await getApplicationDocumentsDirectory();
+    await Hive.initFlutter(appDocDir.path);
+    await Hive.openBox<Uint8List>('imageCache');
+
+    final preloader = ImagePreloader(
+      assetPaths: [
+        "assets/encrypted/chemxi_Page006.jpg.enc",
+        "assets/encrypted/chemxi_Page007.jpg.enc",
+        "assets/encrypted/chemxi_Page008.jpg.enc",
+        "assets/encrypted/chemxi_Page009.jpg.enc",
+        "assets/encrypted/chemxi_Page010.jpg.enc",
+        "assets/encrypted/chemxi_Page011.jpg.enc",
+        "assets/encrypted/chemxi_Page012.jpg.enc",
+        "assets/encrypted/chemxi_Page013.jpg.enc",
+        "assets/encrypted/chemxi_Page014.jpg.enc",
+        "assets/encrypted/chemxi_Page015.jpg.enc",
+        "assets/encrypted/chemxi_Page016.jpg.enc",
+        "assets/encrypted/chemxi_Page017.jpg.enc",
+        "assets/encrypted/chemxi_Page018.jpg.enc",
+        "assets/encrypted/chemxi_Page019.jpg.enc",
+        "assets/encrypted/chemxi_Page020.jpg.enc",
+        "assets/encrypted/chemxi_Page021.jpg.enc",
+        "assets/encrypted/chemxi_Page022.jpg.enc",
+        "assets/encrypted/chemxi_Page023.jpg.enc",
+        "assets/encrypted/chemxi_Page024.jpg.enc",
+        "assets/encrypted/chemxi_Page025.jpg.enc",
+        "assets/encrypted/chemxi_Page026.jpg.enc",
+        "assets/encrypted/chemxi_Page027.jpg.enc",
+        "assets/encrypted/chemxi_Page028.jpg.enc",
+        "assets/encrypted/chemxi_Page029.jpg.enc",
+        "assets/encrypted/chemxi_Page030.jpg.enc",
+        "assets/encrypted/chemxi_Page031.jpg.enc",
+        "assets/encrypted/chemxi_Page032.jpg.enc",
+        "assets/encrypted/chemxi_Page033.jpg.enc",
+      ],
+      base64Key: base24,
+      concurrency: 4,
+    );
+    final stopwatch = Stopwatch()..start();
+    await preloader.preloadAllImages(
+      onProgress: (loaded, total) {
+        final elapsed = stopwatch.elapsed.inSeconds;
+        final remaining = (elapsed / (loaded + 1) * (total - loaded)).round();
+        setState(() {
+          _progress = loaded / total;
+          _estimatedRemainingSeconds = remaining;
+        });
+      },
+    );
+
+    setState(() {
+      _imagesLoaded = true;
+      _estimatedRemainingSeconds = 0;
+    });
+
+    stopwatch.stop();
   }
 
   void _loadBannerAd() {
@@ -63,6 +131,7 @@ class _MainDashboardState extends State<MainDashboard>
   @override
   void dispose() {
     _bannerAd?.dispose();
+    Hive.close();
     super.dispose();
   }
 
@@ -101,12 +170,32 @@ class _MainDashboardState extends State<MainDashboard>
                   children: [
                     GestureDetector(
                       onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const LearningDashboard(),
-                          ),
-                        );
+                        if (_imagesLoaded) {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const LearningDashboard(),
+                            ),
+                          );
+                        } else {
+                          showDialog(
+                            context: context,
+                            builder:
+                                (context) => AlertDialog(
+                                  title: const Text("Please Wait"),
+                                  content: Text(
+                                    "Learning content is still loading.\nEstimated time: $_estimatedRemainingSeconds seconds.",
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed:
+                                          () => Navigator.of(context).pop(),
+                                      child: const Text("OK"),
+                                    ),
+                                  ],
+                                ),
+                          );
+                        }
                       },
                       child: Container(
                         width: 160,
@@ -189,54 +278,54 @@ class _MainDashboardState extends State<MainDashboard>
                     ),
                   ],
                 ),
-                const SizedBox(height: 10),
-                Container(
-                  alignment: Alignment.center,
-                  width: 400,
-                  height: 140,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: const Color(0xFFf9f2ff),
-                  ),
-                  padding: const EdgeInsets.all(8.0),
-                  child: Card(
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const QuizDashboard(),
-                          ),
-                        );
-                      },
-                      child: Center(
-                        child: ListTile(
-                          leading: EnyrptedImageWidget(
-                            base64Key: base24,
-                            assetPath: "assets/encrypted/quiz.png.enc",
-                            height: 60,
-                          ),
-                          title: AutoSizeText(
-                            "Play Quiz Challenge",
-                            style: TextStyle(
-                              fontSize:
-                                  screenWidth * 0.04, // Responsive font size
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          trailing: EnyrptedImageWidget(
-                            base64Key: base24,
-                            assetPath: "assets/encrypted/quizbutton.png.enc",
-                            height: 50,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                ),
+                // const SizedBox(height: 10),
+                // Container(
+                //   alignment: Alignment.center,
+                //   width: 400,
+                //   height: 140,
+                //   decoration: BoxDecoration(
+                //     borderRadius: BorderRadius.circular(20),
+                //     color: const Color(0xFFf9f2ff),
+                //   ),
+                //   padding: const EdgeInsets.all(8.0),
+                //   child: Card(
+                //     child: InkWell(
+                //       onTap: () {
+                //         Navigator.push(
+                //           context,
+                //           MaterialPageRoute(
+                //             builder: (context) => const QuizDashboard(),
+                //           ),
+                //         );
+                //       },
+                //       child: Center(
+                //         child: ListTile(
+                //           leading: EnyrptedImageWidget(
+                //             base64Key: base24,
+                //             assetPath: "assets/encrypted/quiz.png.enc",
+                //             height: 60,
+                //           ),
+                //           title: AutoSizeText(
+                //             "Play Quiz Challenge",
+                //             style: TextStyle(
+                //               fontSize:
+                //                   screenWidth * 0.04, // Responsive font size
+                //               fontWeight: FontWeight.bold,
+                //               color: Colors.black,
+                //             ),
+                //             maxLines: 1,
+                //             overflow: TextOverflow.ellipsis,
+                //           ),
+                //           trailing: EnyrptedImageWidget(
+                //             base64Key: base24,
+                //             assetPath: "assets/encrypted/quizbutton.png.enc",
+                //             height: 50,
+                //           ),
+                //         ),
+                //       ),
+                //     ),
+                //   ),
+                // ),
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Divider(color: const Color(0xffb48ce8), thickness: 1),
@@ -465,29 +554,29 @@ class _MainDashboardState extends State<MainDashboard>
                   ),
                   child: Divider(color: const Color(0xffb48ce8), thickness: 1),
                 ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child:
-                      _bannerAd != null && _isBannerAdLoaded
-                          ? Center(
-                            child: Container(
+                Center(
+                  child: Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child:
+                        _bannerAd != null && _isBannerAdLoaded
+                            ? Container(
                               alignment: Alignment.center,
                               width: _bannerAd!.size.width.toDouble(),
                               height: _bannerAd!.size.height.toDouble(),
                               child: AdWidget(ad: _bannerAd!),
-                            ),
-                          )
-                          : Container(
-                            height: 50,
-                            alignment: Alignment.center,
-                            child: const Text(
-                              "Ad Loading...",
-                              style: TextStyle(
-                                color: Colors.black,
-                                fontSize: 12,
+                            )
+                            : Container(
+                              height: 50,
+                              alignment: Alignment.center,
+                              child: const Text(
+                                "Ad Loading...",
+                                style: TextStyle(
+                                  color: Colors.black,
+                                  fontSize: 12,
+                                ),
                               ),
                             ),
-                          ),
+                  ),
                 ),
               ],
             ),

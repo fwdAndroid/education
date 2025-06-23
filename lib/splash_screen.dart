@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:typed_data';
 
 import 'package:education/constant/ad_keys.dart';
@@ -12,8 +13,7 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:path_provider/path_provider.dart';
 
 class SplashScreen extends StatefulWidget {
-  final List<String> allEncryptedImagePaths;
-  const SplashScreen({super.key, required this.allEncryptedImagePaths});
+  const SplashScreen({super.key});
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -30,6 +30,12 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     _initHiveAndPreload();
+    Timer.periodic(Duration(seconds: 4), (_) {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (builder) => MainDashboard()),
+      );
+    });
   }
 
   Future<void> _initHiveAndPreload() async {
@@ -38,7 +44,12 @@ class _SplashScreenState extends State<SplashScreen> {
     await Hive.openBox<Uint8List>('imageCache');
 
     final preloader = ImagePreloader(
-      assetPaths: widget.allEncryptedImagePaths,
+      assetPaths: [
+        "assets/encrypted/bulb.png.enc",
+        "assets/encrypted/adspolicy.png.enc",
+        "assets/encrypted/gdpr.png.enc",
+        "assets/encrypted/privacy.png.enc",
+      ],
       base64Key: base24,
       concurrency: 4,
     );
@@ -50,7 +61,6 @@ class _SplashScreenState extends State<SplashScreen> {
         });
       },
     );
-    _goToMainDashboard();
 
     // _loadAndShowInterstitialAd();
   }

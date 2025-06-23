@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/firebase_options.dart';
+import 'package:education/imageloader.dart';
 import 'package:education/service/book_mark_service.dart';
 import 'package:education/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -43,12 +44,7 @@ void main() async {
   await Hive.openBox<Uint8List>('imageCache');
   await Hive.openBox<Uint8List>('pdfCache'); // <--- important
 
-  final encryptedImages = await getEncryptedImagePaths();
+  // Step 1: Preload splash images
 
-  runApp(
-    MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: SplashScreen(allEncryptedImagePaths: encryptedImages),
-    ),
-  );
+  runApp(MaterialApp(debugShowCheckedModeBanner: false, home: SplashScreen()));
 }
