@@ -1,21 +1,19 @@
-import 'package:auto_size_text/auto_size_text.dart';
 import 'package:education/advertisement_pages/ads_policy_page.dart';
 import 'package:education/advertisement_pages/content_license_page.dart';
 import 'package:education/advertisement_pages/gdpr_page.dart';
 import 'package:education/advertisement_pages/privacy_policy_page.dart';
 import 'package:education/constant/ad_keys.dart';
-import 'package:education/imageloader.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
+import 'package:education/newprovider.dart';
 import 'package:education/screens/bookmark.dart';
 import 'package:education/screens/learning_dashboard.dart';
-import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:provider/provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 class MainDashboard extends StatefulWidget {
@@ -30,10 +28,7 @@ class _MainDashboardState extends State<MainDashboard>
   BannerAd? _bannerAd;
   bool _isBannerAdLoaded = false;
 
-  double _progress = 0.0;
   String get screenName => 'MainDashboard';
-  bool _imagesLoaded = false;
-  int _estimatedRemainingSeconds = 0;
 
   @override
   void initState() {
@@ -49,12 +44,9 @@ class _MainDashboardState extends State<MainDashboard>
     );
   }
 
-  Future<void> _initHiveAndPreload() async {
-    final appDocDir = await getApplicationDocumentsDirectory();
-    await Hive.initFlutter(appDocDir.path);
-    await Hive.openBox<Uint8List>('imageCache');
-
-    final preloader = ImagePreloader(
+  void _initHiveAndPreload() async {
+    final controller = context.read<PreloadController>();
+    controller.preloadImages(
       assetPaths: [
         "assets/encrypted/chemxi_Page006.jpg.enc",
         "assets/encrypted/chemxi_Page007.jpg.enc",
@@ -86,26 +78,7 @@ class _MainDashboardState extends State<MainDashboard>
         "assets/encrypted/chemxi_Page033.jpg.enc",
       ],
       base64Key: base24,
-      concurrency: 4,
     );
-    final stopwatch = Stopwatch()..start();
-    await preloader.preloadAllImages(
-      onProgress: (loaded, total) {
-        final elapsed = stopwatch.elapsed.inSeconds;
-        final remaining = (elapsed / (loaded + 1) * (total - loaded)).round();
-        setState(() {
-          _progress = loaded / total;
-          _estimatedRemainingSeconds = remaining;
-        });
-      },
-    );
-
-    setState(() {
-      _imagesLoaded = true;
-      _estimatedRemainingSeconds = 0;
-    });
-
-    stopwatch.stop();
   }
 
   void _loadBannerAd() {
@@ -140,7 +113,7 @@ class _MainDashboardState extends State<MainDashboard>
     final screenWidth = MediaQuery.of(context).size.width;
     double titleFontSize = screenWidth * 0.04; // around 16 on 400px width
     double subtitleFontSize = screenWidth * 0.03; // around 12 on 400px width
-
+    final preload = context.watch<PreloadController>();
     return Scaffold(
       body: Stack(
         children: [
@@ -170,21 +143,21 @@ class _MainDashboardState extends State<MainDashboard>
                   children: [
                     GestureDetector(
                       onTap: () {
-                        if (_imagesLoaded) {
+                        if (preload.imagesLoaded) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) => const LearningDashboard(),
+                              builder: (_) => const LearningDashboard(),
                             ),
                           );
                         } else {
                           showDialog(
                             context: context,
                             builder:
-                                (context) => AlertDialog(
+                                (_) => AlertDialog(
                                   title: const Text("Please Wait"),
                                   content: Text(
-                                    "Learning content is still loading.\nEstimated time: $_estimatedRemainingSeconds seconds.",
+                                    "Learning content is still loading. Estimated time: ${preload.remainingSeconds}s",
                                   ),
                                   actions: [
                                     TextButton(
@@ -197,41 +170,45 @@ class _MainDashboardState extends State<MainDashboard>
                           );
                         }
                       },
-                      child: Container(
-                        width: 160,
-                        height: 130,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20.0),
-                          border: Border.all(
-                            width: 1.0,
-                            color: const Color(0xFFE5E7E9),
-                          ),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 12),
-                              child: Center(
-                                child: EnyrptedImageWidget(
+                      child: Stack(
+                        alignment: Alignment.center,
+                        children: [
+                          Container(
+                            width: 160,
+                            height: 130,
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(20.0),
+                              border: Border.all(
+                                color: const Color(0xFFE5E7E9),
+                              ),
+                            ),
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                EnyrptedImageWidget(
                                   base64Key: base24,
                                   assetPath: "assets/encrypted/books.png.enc",
                                   height: 50,
                                   width: 100,
                                 ),
-                              ),
+                                const SizedBox(height: 12),
+                                Text(
+                                  "LEARNING",
+                                  style: GoogleFonts.poppins(
+                                    fontWeight: FontWeight.bold,
+                                    fontSize: 17,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 12),
-                            Text(
-                              "LEARNING",
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 17,
-                              ),
+                          ),
+                          if (!preload.imagesLoaded)
+                            CircularProgressIndicator(
+                              value: preload.progress,
+                              strokeWidth: 2,
                             ),
-                          ],
-                        ),
+                        ],
                       ),
                     ),
 

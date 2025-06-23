@@ -33,7 +33,7 @@ class StreamedEncryptedImageLoader {
 
   StreamedEncryptedImageLoader(this.assetPath, this.base64Key);
 
-  Stream<Uint8List> decryptStream() async* {
+  Future<Uint8List> decryptStream() async {
     // Safe Hive box access with check and open if necessary
     Box<Uint8List> hiveBox;
     if (Hive.isBoxOpen('imageCache')) {
@@ -44,8 +44,7 @@ class StreamedEncryptedImageLoader {
 
     // Check in-memory cache first
     if (decryptedImageCache.containsKey(assetPath)) {
-      yield decryptedImageCache[assetPath]!;
-      return;
+      return decryptedImageCache[assetPath]!;
     }
 
     // Check Hive persistent cache
@@ -53,8 +52,7 @@ class StreamedEncryptedImageLoader {
       final cached = hiveBox.get(assetPath);
       if (cached != null) {
         decryptedImageCache[assetPath] = cached;
-        yield cached;
-        return;
+        return cached;
       }
     }
 
@@ -69,9 +67,9 @@ class StreamedEncryptedImageLoader {
       decryptedImageCache[assetPath] = decrypted;
       await hiveBox.put(assetPath, decrypted);
 
-      yield decrypted;
+      return decrypted;
     } catch (e) {
-      yield* Stream.error(e);
+      throw e;
     }
   }
 }
@@ -97,8 +95,8 @@ class EnyrptedImageWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     final loader = StreamedEncryptedImageLoader(assetPath, base64Key);
 
-    return StreamBuilder<Uint8List>(
-      stream: loader.decryptStream(),
+    return FutureBuilder<Uint8List>(
+      future: loader.decryptStream(),
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
