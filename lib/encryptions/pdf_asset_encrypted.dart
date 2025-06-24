@@ -1,10 +1,8 @@
-// lib/utils/pdf_loader.dart
-
 import 'dart:io';
 import 'dart:typed_data';
 import 'package:flutter/services.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:hive/hive.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:pointycastle/export.dart';
 
 Future<File> loadAndDecryptPdfFromAssets(
@@ -12,12 +10,24 @@ Future<File> loadAndDecryptPdfFromAssets(
   String cacheKey,
   Uint8List aesKey,
 ) async {
-  final cacheBox = await Hive.openBox('pdfCacheBox');
-  if (cacheBox.containsKey(cacheKey)) {
-    final path = cacheBox.get(cacheKey);
-    return File(path);
+  // ✅ Correct Hive box type
+  Box<String> cacheBox;
+
+  if (Hive.isBoxOpen('pdfCacheBox')) {
+    cacheBox = Hive.box<String>('pdfCacheBox');
+  } else {
+    cacheBox = await Hive.openBox<String>('pdfCacheBox');
   }
 
+  // ✅ Return from cache if exists
+  if (cacheBox.containsKey(cacheKey)) {
+    final path = cacheBox.get(cacheKey);
+    if (path != null && File(path).existsSync()) {
+      return File(path);
+    }
+  }
+
+  // Decrypt and store PDF
   final encryptedBytes = await rootBundle.load(assetPath);
   final encryptedData = encryptedBytes.buffer.asUint8List();
   final decryptedBytes = await decryptAESGCM(encryptedData, aesKey);
@@ -25,8 +35,8 @@ Future<File> loadAndDecryptPdfFromAssets(
   final dir = await getTemporaryDirectory();
   final tempFile = File('${dir.path}/$cacheKey.pdf');
   await tempFile.writeAsBytes(decryptedBytes);
-  await cacheBox.put(cacheKey, tempFile.path);
 
+  await cacheBox.put(cacheKey, tempFile.path);
   return tempFile;
 }
 
