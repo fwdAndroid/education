@@ -1,10 +1,8 @@
 import 'dart:convert';
-import 'dart:io';
-import 'dart:typed_data';
 
 import 'package:education/constant/ad_keys.dart';
+import 'package:education/encryptions/pdf_asset_encrypted.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
-import 'package:education/screens/load.dart';
 import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/screens/webpage.dart';
 import 'package:education/widgets/chatpter_list_tile.dart';
@@ -199,7 +197,7 @@ class _LearningDashboardState extends State<LearningDashboard>
             ),
 
             GestureDetector(
-              onTap: () {},
+              onTap: () => openEncryptedPdf(context),
               child: Container(
                 height: 90,
                 margin: const EdgeInsets.all(8),
@@ -261,20 +259,7 @@ class _LearningDashboardState extends State<LearningDashboard>
                           borderRadius: BorderRadius.circular(2),
                         ),
                       ),
-                      onPressed: () async {
-                        final file = await loadAndDecryptPdfFromAssets(
-                          assetPath,
-                          cacheKey,
-                          base24
-                              as Uint8List, // Add the required third argument here (replace with the correct value if needed)
-                        );
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (_) => PDFViewerFromCache(pdfFile: file),
-                          ),
-                        );
-                      },
+                      onPressed: () => openEncryptedPdf(context),
                       child: const Text(
                         "Open",
                         style: TextStyle(color: Colors.white),
@@ -308,6 +293,19 @@ class _LearningDashboardState extends State<LearningDashboard>
           ],
         ),
       ),
+    );
+  }
+
+  Future<void> openEncryptedPdf(BuildContext context) async {
+    final file = await loadAndDecryptPdfFromAssets(
+      'assets/encrypted/tests.pdf.enc', // already defined in your class
+      'test', // same cacheKey
+      base64.decode(base24),
+    );
+
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => PDFViewerFromCache(pdfFile: file)),
     );
   }
 }
