@@ -10,9 +10,14 @@ Future<File> loadAndDecryptPdfFromAssets(
   String cacheKey,
   Uint8List aesKey,
 ) async {
-  final cacheBox = await Hive.openBox('pdfCache');
-  if (cacheBox.containsKey(cacheKey)) {
-    final path = cacheBox.get(cacheKey);
+  // ✅ Use already opened box if available
+  final Box box =
+      Hive.isBoxOpen('pdfCache')
+          ? Hive.box('pdfCache')
+          : await Hive.openBox('pdfCache');
+
+  if (box.containsKey(cacheKey)) {
+    final path = box.get(cacheKey) as String;
     print('📂 Loaded from cache: $path');
     return File(path);
   }
@@ -20,14 +25,14 @@ Future<File> loadAndDecryptPdfFromAssets(
   print('🔐 Loading asset: $assetPath');
   final encryptedBytes = await rootBundle.load(assetPath);
   final encryptedData = encryptedBytes.buffer.asUint8List();
-  print('📦 Encrypted data size: ${encryptedData.length} bytes');
 
   final decryptedBytes = await decryptAESGCM(encryptedData, aesKey);
 
   final dir = await getTemporaryDirectory();
   final tempFile = File('${dir.path}/$cacheKey.pdf');
   await tempFile.writeAsBytes(decryptedBytes);
-  await cacheBox.put(cacheKey, tempFile.path);
+
+  await box.put(cacheKey, tempFile.path); // ✅ Store as String path
 
   print('✅ PDF decrypted and saved: ${tempFile.path}');
   return tempFile;

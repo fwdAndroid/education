@@ -57,9 +57,7 @@ void main() async {
   if (!Hive.isBoxOpen('imageCache')) {
     await Hive.openBox<Uint8List>('imageCache');
   }
-  if (!Hive.isBoxOpen('pdfCache')) {
-    await Hive.openBox<Uint8List>('pdfCache');
-  }
+  await Hive.openBox<String>('pdfCacheBox');
 
   // Launch app with Providers
   runApp(

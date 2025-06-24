@@ -1,4 +1,6 @@
 import 'dart:convert';
+import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
@@ -22,14 +24,15 @@ class _LearningDashboardState extends State<LearningDashboard>
   String get screenName => 'LearningDashboard';
   BannerAd? _bannerAd;
   bool _isBannerAdLoaded = false;
-  final String assetPath = 'assets/encrypted/tests.pdf.enc';
-  final String cacheKey = 'test';
-  final String base64Key = base24;
+
   @override
   void initState() {
     super.initState();
     _loadBannerAd();
   }
+
+  final String assetPath = 'assets/encrypted/tests.pdf.enc';
+  final String cacheKey = 'test_pdf';
 
   void _loadBannerAd() {
     _bannerAd = BannerAd(
@@ -196,20 +199,7 @@ class _LearningDashboardState extends State<LearningDashboard>
             ),
 
             GestureDetector(
-              onTap: () async {
-                final file = await loadAndDecryptPdfFromAssets(
-                  assetPath,
-                  cacheKey,
-                  base64.decode(base64Key),
-                );
-
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => PDFViewerFromCache(pdfFile: file),
-                  ),
-                );
-              },
+              onTap: () {},
               child: Container(
                 height: 90,
                 margin: const EdgeInsets.all(8),
@@ -275,9 +265,9 @@ class _LearningDashboardState extends State<LearningDashboard>
                         final file = await loadAndDecryptPdfFromAssets(
                           assetPath,
                           cacheKey,
-                          base64.decode(base64Key),
+                          base24
+                              as Uint8List, // Add the required third argument here (replace with the correct value if needed)
                         );
-
                         Navigator.push(
                           context,
                           MaterialPageRoute(

@@ -179,7 +179,7 @@ class _MainDashboardState extends State<MainDashboard>
                                 (context) => AlertDialog(
                                   title: const Text("Please Wait"),
                                   content: Text(
-                                    "Learning content is still loading",
+                                    "Learning content is still loading.",
                                   ),
                                   actions: [
                                     TextButton(
@@ -284,20 +284,23 @@ class _MainDashboardState extends State<MainDashboard>
                   ),
                   padding: const EdgeInsets.all(8.0),
                   child: Card(
-                    child: GestureDetector(
-                      child: Row(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: EnyrptedImageWidget(
-                              base64Key: base24,
-                              assetPath: "assets/encrypted/quiz.png.enc",
-                              height: 60,
-                            ),
+                    child: InkWell(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const QuizDashboard(),
                           ),
-                          AutoSizeText(
+                        );
+                      },
+                      child: Center(
+                        child: ListTile(
+                          leading: EnyrptedImageWidget(
+                            base64Key: base24,
+                            assetPath: "assets/encrypted/quiz.png.enc",
+                            height: 60,
+                          ),
+                          title: AutoSizeText(
                             "Play Quiz Challenge",
                             style: TextStyle(
                               fontSize:
@@ -308,24 +311,13 @@ class _MainDashboardState extends State<MainDashboard>
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
                           ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: EnyrptedImageWidget(
-                              base64Key: base24,
-                              assetPath: "assets/encrypted/quizbutton.png.enc",
-                              height: 50,
-                            ),
+                          trailing: EnyrptedImageWidget(
+                            base64Key: base24,
+                            assetPath: "assets/encrypted/quizbutton.png.enc",
+                            height: 50,
                           ),
-                        ],
+                        ),
                       ),
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const QuizDashboard(),
-                          ),
-                        );
-                      },
                     ),
                   ),
                 ),
