@@ -1,24 +1,9 @@
 import 'dart:convert';
 import 'dart:typed_data';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/services.dart';
 import 'package:hive/hive.dart';
-import 'package:pointycastle/api.dart';
-import 'package:pointycastle/block/aes.dart';
-import 'package:pointycastle/block/modes/gcm.dart';
-
-Uint8List _decrypt(Map<String, dynamic> params) {
-  final Uint8List bytes = params['bytes'];
-  final Uint8List key = params['key'];
-  final nonce = bytes.sublist(0, 12);
-  final ciphertext = bytes.sublist(12);
-
-  final cipher = GCMBlockCipher(AESEngine())
-    ..init(false, AEADParameters(KeyParameter(key), 128, nonce, Uint8List(0)));
-
-  return cipher.process(ciphertext);
-}
+import 'package:encrypt/encrypt.dart' as encrypt;
 
 class ImagePreloader {
   final List<String> assetPaths;
@@ -57,6 +42,7 @@ class ImagePreloader {
             debugPrint('Error decrypting $path: $e');
           }
         }
+
         loadedCount++;
         onProgress(loadedCount, assetPaths.length);
       }
@@ -65,4 +51,25 @@ class ImagePreloader {
     final workers = List.generate(concurrency, (_) => worker());
     await Future.wait(workers);
   }
+}
+
+// Top-level function required for compute()
+Uint8List _decrypt(Map<String, dynamic> args) {
+  final bytes = args['bytes'] as Uint8List;
+  final key = args['key'] as Uint8List;
+
+  final iv = bytes.sublist(0, 12);
+  final tag = bytes.sublist(bytes.length - 16);
+  final cipherText = bytes.sublist(12, bytes.length - 16);
+
+  final aes = encrypt.AES(encrypt.Key(key), mode: encrypt.AESMode.gcm);
+
+  final encrypter = encrypt.Encrypter(aes);
+
+  final decrypted = encrypter.decryptBytes(
+    encrypt.Encrypted(Uint8List.fromList(cipherText + tag)),
+    iv: encrypt.IV(iv),
+  );
+
+  return Uint8List.fromList(decrypted);
 }

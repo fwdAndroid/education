@@ -1,19 +1,22 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:education/advertisement_pages/ads_policy_page.dart';
 import 'package:education/advertisement_pages/content_license_page.dart';
 import 'package:education/advertisement_pages/gdpr_page.dart';
 import 'package:education/advertisement_pages/privacy_policy_page.dart';
 import 'package:education/constant/ad_keys.dart';
+import 'package:education/constant/chapter_constant.dart';
+import 'package:education/imageloader.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
-import 'package:education/newprovider.dart';
 import 'package:education/screens/bookmark.dart';
 import 'package:education/screens/learning_dashboard.dart';
+import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:provider/provider.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 class MainDashboard extends StatefulWidget {
@@ -28,7 +31,10 @@ class _MainDashboardState extends State<MainDashboard>
   BannerAd? _bannerAd;
   bool _isBannerAdLoaded = false;
 
+  double _progress = 0.0;
   String get screenName => 'MainDashboard';
+  bool _imagesLoaded = false;
+  int _estimatedRemainingSeconds = 0;
 
   @override
   void initState() {
@@ -39,46 +45,62 @@ class _MainDashboardState extends State<MainDashboard>
     // Hide only the top status bar
     SystemChrome.setEnabledSystemUIMode(
       SystemUiMode.manual,
-
       overlays: [SystemUiOverlay.bottom],
     );
   }
 
-  void _initHiveAndPreload() async {
-    final controller = context.read<PreloadController>();
-    controller.preloadImages(
-      assetPaths: [
-        "assets/encrypted/chemxi_Page006.jpg.enc",
-        "assets/encrypted/chemxi_Page007.jpg.enc",
-        "assets/encrypted/chemxi_Page008.jpg.enc",
-        "assets/encrypted/chemxi_Page009.jpg.enc",
-        "assets/encrypted/chemxi_Page010.jpg.enc",
-        "assets/encrypted/chemxi_Page011.jpg.enc",
-        "assets/encrypted/chemxi_Page012.jpg.enc",
-        "assets/encrypted/chemxi_Page013.jpg.enc",
-        "assets/encrypted/chemxi_Page014.jpg.enc",
-        "assets/encrypted/chemxi_Page015.jpg.enc",
-        "assets/encrypted/chemxi_Page016.jpg.enc",
-        "assets/encrypted/chemxi_Page017.jpg.enc",
-        "assets/encrypted/chemxi_Page018.jpg.enc",
-        "assets/encrypted/chemxi_Page019.jpg.enc",
-        "assets/encrypted/chemxi_Page020.jpg.enc",
-        "assets/encrypted/chemxi_Page021.jpg.enc",
-        "assets/encrypted/chemxi_Page022.jpg.enc",
-        "assets/encrypted/chemxi_Page023.jpg.enc",
-        "assets/encrypted/chemxi_Page024.jpg.enc",
-        "assets/encrypted/chemxi_Page025.jpg.enc",
-        "assets/encrypted/chemxi_Page026.jpg.enc",
-        "assets/encrypted/chemxi_Page027.jpg.enc",
-        "assets/encrypted/chemxi_Page028.jpg.enc",
-        "assets/encrypted/chemxi_Page029.jpg.enc",
-        "assets/encrypted/chemxi_Page030.jpg.enc",
-        "assets/encrypted/chemxi_Page031.jpg.enc",
-        "assets/encrypted/chemxi_Page032.jpg.enc",
-        "assets/encrypted/chemxi_Page033.jpg.enc",
-      ],
+  Future<void> _initHiveAndPreload() async {
+    final box = Hive.box<Uint8List>('imageCache');
+    final allAssets = chapterImagePaths;
+
+    final uncachedAssets =
+        allAssets.where((path) => !box.containsKey(path)).toList();
+
+    if (uncachedAssets.isEmpty) {
+      // All images already cached; mark as loaded without UI disruption
+      setState(() {
+        _imagesLoaded = true;
+      });
+      return;
+    }
+
+    final preloader = ImagePreloader(
+      assetPaths: uncachedAssets,
       base64Key: base24,
+      concurrency: 2,
     );
+
+    final stopwatch = Stopwatch()..start();
+
+    // Optionally store progress in variables without rebuilding UI
+    double tempProgress = 0.0;
+    int tempEstimated = 0;
+
+    await preloader.preloadAllImages(
+      onProgress: (loaded, total) {
+        final elapsed = stopwatch.elapsed.inSeconds;
+        final remaining =
+            total == 0
+                ? 0
+                : (elapsed / (loaded + 1) * (total - loaded)).round();
+
+        // Store progress, but don't rebuild UI every time
+        tempProgress = loaded / (total == 0 ? 1 : total);
+        tempEstimated = remaining;
+      },
+    );
+
+    final allCached = allAssets.every((path) => box.containsKey(path));
+
+    if (mounted) {
+      setState(() {
+        _progress = tempProgress;
+        _estimatedRemainingSeconds = 0;
+        _imagesLoaded = allCached;
+      });
+    }
+
+    stopwatch.stop();
   }
 
   void _loadBannerAd() {
@@ -113,7 +135,7 @@ class _MainDashboardState extends State<MainDashboard>
     final screenWidth = MediaQuery.of(context).size.width;
     double titleFontSize = screenWidth * 0.04; // around 16 on 400px width
     double subtitleFontSize = screenWidth * 0.03; // around 12 on 400px width
-    final preload = context.watch<PreloadController>();
+
     return Scaffold(
       body: Stack(
         children: [
@@ -143,21 +165,21 @@ class _MainDashboardState extends State<MainDashboard>
                   children: [
                     GestureDetector(
                       onTap: () {
-                        if (preload.imagesLoaded) {
+                        if (_imagesLoaded) {
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => const LearningDashboard(),
+                              builder: (context) => const LearningDashboard(),
                             ),
                           );
                         } else {
                           showDialog(
                             context: context,
                             builder:
-                                (_) => AlertDialog(
+                                (context) => AlertDialog(
                                   title: const Text("Please Wait"),
                                   content: Text(
-                                    "Learning content is still loading. Estimated time: ${preload.remainingSeconds}s",
+                                    "Learning content is still loading",
                                   ),
                                   actions: [
                                     TextButton(
@@ -170,45 +192,41 @@ class _MainDashboardState extends State<MainDashboard>
                           );
                         }
                       },
-                      child: Stack(
-                        alignment: Alignment.center,
-                        children: [
-                          Container(
-                            width: 160,
-                            height: 130,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(20.0),
-                              border: Border.all(
-                                color: const Color(0xFFE5E7E9),
-                              ),
-                            ),
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                EnyrptedImageWidget(
+                      child: Container(
+                        width: 160,
+                        height: 130,
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(20.0),
+                          border: Border.all(
+                            width: 1.0,
+                            color: const Color(0xFFE5E7E9),
+                          ),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Padding(
+                              padding: const EdgeInsets.only(left: 12),
+                              child: Center(
+                                child: EnyrptedImageWidget(
                                   base64Key: base24,
                                   assetPath: "assets/encrypted/books.png.enc",
                                   height: 50,
                                   width: 100,
                                 ),
-                                const SizedBox(height: 12),
-                                Text(
-                                  "LEARNING",
-                                  style: GoogleFonts.poppins(
-                                    fontWeight: FontWeight.bold,
-                                    fontSize: 17,
-                                  ),
-                                ),
-                              ],
+                              ),
                             ),
-                          ),
-                          if (!preload.imagesLoaded)
-                            CircularProgressIndicator(
-                              value: preload.progress,
-                              strokeWidth: 2,
+                            const SizedBox(height: 12),
+                            Text(
+                              "LEARNING",
+                              style: GoogleFonts.poppins(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 17,
+                              ),
                             ),
-                        ],
+                          ],
+                        ),
                       ),
                     ),
 
@@ -255,54 +273,64 @@ class _MainDashboardState extends State<MainDashboard>
                     ),
                   ],
                 ),
-                // const SizedBox(height: 10),
-                // Container(
-                //   alignment: Alignment.center,
-                //   width: 400,
-                //   height: 140,
-                //   decoration: BoxDecoration(
-                //     borderRadius: BorderRadius.circular(20),
-                //     color: const Color(0xFFf9f2ff),
-                //   ),
-                //   padding: const EdgeInsets.all(8.0),
-                //   child: Card(
-                //     child: InkWell(
-                //       onTap: () {
-                //         Navigator.push(
-                //           context,
-                //           MaterialPageRoute(
-                //             builder: (context) => const QuizDashboard(),
-                //           ),
-                //         );
-                //       },
-                //       child: Center(
-                //         child: ListTile(
-                //           leading: EnyrptedImageWidget(
-                //             base64Key: base24,
-                //             assetPath: "assets/encrypted/quiz.png.enc",
-                //             height: 60,
-                //           ),
-                //           title: AutoSizeText(
-                //             "Play Quiz Challenge",
-                //             style: TextStyle(
-                //               fontSize:
-                //                   screenWidth * 0.04, // Responsive font size
-                //               fontWeight: FontWeight.bold,
-                //               color: Colors.black,
-                //             ),
-                //             maxLines: 1,
-                //             overflow: TextOverflow.ellipsis,
-                //           ),
-                //           trailing: EnyrptedImageWidget(
-                //             base64Key: base24,
-                //             assetPath: "assets/encrypted/quizbutton.png.enc",
-                //             height: 50,
-                //           ),
-                //         ),
-                //       ),
-                //     ),
-                //   ),
-                // ),
+                const SizedBox(height: 10),
+                Container(
+                  alignment: Alignment.center,
+                  width: 400,
+                  height: 140,
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(20),
+                    color: const Color(0xFFf9f2ff),
+                  ),
+                  padding: const EdgeInsets.all(8.0),
+                  child: Card(
+                    child: GestureDetector(
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: EnyrptedImageWidget(
+                              base64Key: base24,
+                              assetPath: "assets/encrypted/quiz.png.enc",
+                              height: 60,
+                            ),
+                          ),
+                          AutoSizeText(
+                            "Play Quiz Challenge",
+                            style: TextStyle(
+                              fontSize:
+                                  screenWidth * 0.04, // Responsive font size
+                              fontWeight: FontWeight.bold,
+                              color: Colors.black,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: EnyrptedImageWidget(
+                              base64Key: base24,
+                              assetPath: "assets/encrypted/quizbutton.png.enc",
+                              height: 50,
+                            ),
+                          ),
+                        ],
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const QuizDashboard(),
+                          ),
+                        );
+                      },
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 10),
+
                 Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: Divider(color: const Color(0xffb48ce8), thickness: 1),

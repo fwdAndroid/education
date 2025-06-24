@@ -1,8 +1,10 @@
-import 'dart:async';
 import 'package:education/constant/ad_keys.dart';
+import 'package:education/constant/chapter_constant.dart';
+import 'package:education/newprovider.dart'; // PreloadController
 import 'package:education/screens/main_dashboard.dart';
 import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -12,29 +14,31 @@ class SplashScreen extends StatefulWidget {
 }
 
 class _SplashScreenState extends State<SplashScreen> {
-  bool _loadingComplete = false;
-
-  final List<String> _splashAssets = [
-    "assets/encrypted/bg.png.enc",
-    "assets/encrypted/Screenshot_2025-06-14_092856-removebg-preview.png.enc",
-    "assets/encrypted/bulb.png.enc",
-    "assets/encrypted/adspolicy.png.enc",
-    "assets/encrypted/gdpr.png.enc",
-    "assets/encrypted/privacy.png.enc",
-    "assets/encrypted/logo.png.enc",
-    "assets/encrypted/books.png.enc",
-  ];
+  bool _navigated = false;
 
   @override
   void initState() {
     super.initState();
-    _initAndPreload();
+    _startPreloading();
   }
 
-  Future<void> _initAndPreload() async {
-    await _precacheEncryptedImages();
+  Future<void> _startPreloading() async {
+    final controller = context.read<PreloadController>();
 
-    if (mounted) {
+    // Start both the preloading and the 3-second timer in parallel
+    final preloadFuture = controller.preloadImages(
+      assetPaths: uiImageAssets,
+      base64Key: base24,
+    );
+
+    final delayFuture = Future.delayed(const Duration(seconds: 5));
+
+    // Wait for both to finish
+    await Future.wait([preloadFuture, delayFuture]);
+
+    // Navigate only once
+    if (mounted && !_navigated) {
+      _navigated = true;
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (_) => const MainDashboard()),
@@ -42,20 +46,10 @@ class _SplashScreenState extends State<SplashScreen> {
     }
   }
 
-  Future<void> _precacheEncryptedImages() async {
-    for (final path in _splashAssets) {
-      final loader = StreamedEncryptedImageLoader(path, base24);
-      try {
-        await loader.decryptStream(); // Fills memory + Hive cache
-      } catch (e) {
-        debugPrint("Error preloading $path: $e");
-      }
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       body: Stack(
         children: [
           // Background
@@ -67,22 +61,19 @@ class _SplashScreenState extends State<SplashScreen> {
             ),
           ),
 
-          // Center logo
+          // Centered logo
           Center(
-            child: EnyrptedImageWidget(
-              base64Key: base24,
-              assetPath:
-                  "assets/encrypted/Screenshot_2025-06-14_092856-removebg-preview.png.enc",
-              width: 300,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                EnyrptedImageWidget(
+                  base64Key: base24,
+                  assetPath:
+                      "assets/encrypted/Screenshot_2025-06-14_092856-removebg-preview.png.enc",
+                  width: 300,
+                ),
+              ],
             ),
-          ),
-
-          // Loading indicator
-          const Positioned(
-            bottom: 40,
-            left: 0,
-            right: 0,
-            child: Center(child: CircularProgressIndicator()),
           ),
         ],
       ),

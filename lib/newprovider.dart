@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:education/imageloader.dart';
 import 'package:flutter/foundation.dart';
 
@@ -25,12 +24,17 @@ class PreloadController extends ChangeNotifier {
     );
 
     final stopwatch = Stopwatch()..start();
+
     await preloader.preloadAllImages(
       onProgress: (loaded, total) {
-        final elapsed = stopwatch.elapsed.inSeconds;
-        final remaining = (elapsed / (loaded + 1) * (total - loaded)).round();
+        if (total == 0) return;
+
+        final elapsedMs = stopwatch.elapsed.inMilliseconds;
+        final avgPerImage = elapsedMs / (loaded + 1);
+        final estimatedRemainingMs = (total - loaded) * avgPerImage;
+
         _progress = loaded / total;
-        _remainingSeconds = remaining;
+        _remainingSeconds = (estimatedRemainingMs / 1000).round();
         notifyListeners();
       },
     );
