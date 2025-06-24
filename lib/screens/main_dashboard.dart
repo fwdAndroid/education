@@ -16,7 +16,6 @@ import 'package:flutter/services.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:path_provider/path_provider.dart';
 import 'package:share_plus/share_plus.dart';
 
 class MainDashboard extends StatefulWidget {
@@ -26,15 +25,18 @@ class MainDashboard extends StatefulWidget {
   State<MainDashboard> createState() => _MainDashboardState();
 }
 
+final ValueNotifier<double> progressNotifier = ValueNotifier(0.0);
+final ValueNotifier<int> remainingSecondsNotifier = ValueNotifier(0);
+
 class _MainDashboardState extends State<MainDashboard>
     with AnalyticsScreenTracker<MainDashboard> {
   BannerAd? _bannerAd;
   bool _isBannerAdLoaded = false;
 
-  double _progress = 0.0;
   String get screenName => 'MainDashboard';
   bool _imagesLoaded = false;
   int _estimatedRemainingSeconds = 0;
+  double _progress = 0.0;
 
   @override
   void initState() {
@@ -74,7 +76,6 @@ class _MainDashboardState extends State<MainDashboard>
 
     // Optionally store progress in variables without rebuilding UI
     double tempProgress = 0.0;
-    int tempEstimated = 0;
 
     await preloader.preloadAllImages(
       onProgress: (loaded, total) {
@@ -84,9 +85,8 @@ class _MainDashboardState extends State<MainDashboard>
                 ? 0
                 : (elapsed / (loaded + 1) * (total - loaded)).round();
 
-        // Store progress, but don't rebuild UI every time
-        tempProgress = loaded / (total == 0 ? 1 : total);
-        tempEstimated = remaining;
+        progressNotifier.value = loaded / (total == 0 ? 1 : total);
+        remainingSecondsNotifier.value = remaining;
       },
     );
 
@@ -125,8 +125,11 @@ class _MainDashboardState extends State<MainDashboard>
 
   @override
   void dispose() {
+    progressNotifier.dispose();
+    remainingSecondsNotifier.dispose();
     _bannerAd?.dispose();
     Hive.close();
+    super.dispose();
     super.dispose();
   }
 
@@ -173,23 +176,7 @@ class _MainDashboardState extends State<MainDashboard>
                             ),
                           );
                         } else {
-                          showDialog(
-                            context: context,
-                            builder:
-                                (context) => AlertDialog(
-                                  title: const Text("Please Wait"),
-                                  content: Text(
-                                    "Learning content is still loading.",
-                                  ),
-                                  actions: [
-                                    TextButton(
-                                      onPressed:
-                                          () => Navigator.of(context).pop(),
-                                      child: const Text("OK"),
-                                    ),
-                                  ],
-                                ),
-                          );
+                          _showProgressDialog(context);
                         }
                       },
                       child: Container(
@@ -580,6 +567,42 @@ class _MainDashboardState extends State<MainDashboard>
           ),
         ],
       ),
+    );
+  }
+
+  void _showProgressDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Loading Learning Content"),
+          content: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              ValueListenableBuilder<double>(
+                valueListenable: progressNotifier,
+                builder: (context, value, _) {
+                  return LinearProgressIndicator(value: value);
+                },
+              ),
+              const SizedBox(height: 12),
+              ValueListenableBuilder<int>(
+                valueListenable: remainingSecondsNotifier,
+                builder: (context, value, _) {
+                  return Text("Estimated time remaining: ${value}s");
+                },
+              ),
+            ],
+          ),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.of(context).pop(),
+              child: const Text("Dismiss"),
+            ),
+          ],
+        );
+      },
     );
   }
 }
