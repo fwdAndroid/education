@@ -42,13 +42,19 @@ class _MainDashboardState extends State<MainDashboard>
   void initState() {
     super.initState();
     _initHiveAndPreload();
+    // Hide status bar
 
+    // Set background color behind status bar (important for Android notch areas)
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: Colors.white, // For Android
+        statusBarBrightness: Brightness.light, // For iOS
+        statusBarIconBrightness:
+            Brightness.dark, // For Android icons (dark on white)
+      ),
+    );
     _loadBannerAd();
     // Hide only the top status bar
-    SystemChrome.setEnabledSystemUIMode(
-      SystemUiMode.manual,
-      overlays: [SystemUiOverlay.bottom],
-    );
   }
 
   Future<void> _initHiveAndPreload() async {
@@ -135,474 +141,560 @@ class _MainDashboardState extends State<MainDashboard>
 
   @override
   Widget build(BuildContext context) {
-    final screenWidth = MediaQuery.of(context).size.width;
-    double titleFontSize = screenWidth * 0.04; // around 16 on 400px width
-    double subtitleFontSize = screenWidth * 0.03; // around 12 on 400px width
+    base24 = base24; // Make sure this is set properly
 
     return Scaffold(
-      body: Stack(
-        children: [
-          Positioned.fill(
-            child: EnyrptedImageWidget(
-              base64Key: base24,
-              assetPath: "assets/encrypted/bg.png.enc",
-              fit: BoxFit.cover,
-            ),
-          ),
-          SingleChildScrollView(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const SizedBox(height: 30),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: EnyrptedImageWidget(
-                    base64Key: base24,
-                    assetPath: "assets/encrypted/logo.png.enc",
-                    height: 50,
-                  ),
+      body: OrientationBuilder(
+        builder: (context, orientation) {
+          final screenWidth = MediaQuery.of(context).size.width;
+          final screenHeight = MediaQuery.of(context).size.height;
+
+          // Font sizes based on width (you can tweak these)
+          double titleFontSize = screenWidth * 0.04; // ~16 at 400px width
+          double subtitleFontSize = screenWidth * 0.03; // ~12 at 400px width
+
+          // Responsive widths for buttons (40% width in portrait, 30% in landscape)
+          double buttonWidth =
+              orientation == Orientation.portrait
+                  ? screenWidth * 0.4
+                  : screenWidth * 0.3;
+
+          // Responsive height for buttons
+          double buttonHeight =
+              orientation == Orientation.portrait
+                  ? screenHeight * 0.18
+                  : screenHeight * 0.35;
+
+          return Stack(
+            children: [
+              Positioned.fill(
+                child: EnyrptedImageWidget(
+                  base64Key: base24,
+                  assetPath: "assets/encrypted/bg.png.enc",
+                  fit: BoxFit.cover,
                 ),
-                const SizedBox(height: 16),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        if (_imagesLoaded) {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => const LearningDashboard(),
-                            ),
-                          );
-                        } else {
-                          _showProgressDialog(context);
-                        }
-                      },
-                      child: Container(
-                        width: 160,
-                        height: 130,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20.0),
-                          border: Border.all(
-                            width: 1.0,
-                            color: const Color(0xFFE5E7E9),
+              ),
+              SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      SizedBox(height: 30),
+                      EnyrptedImageWidget(
+                        base64Key: base24,
+                        assetPath: "assets/encrypted/logo.png.enc",
+                        height: 50,
+                      ),
+                      SizedBox(height: 16),
+
+                      // Buttons Row (or Column if landscape is narrow)
+                      orientation == Orientation.portrait
+                          ? Row(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              _buildButton(
+                                context,
+                                base24,
+                                width: buttonWidth,
+                                height: buttonHeight,
+                                assetPath: "assets/encrypted/books.png.enc",
+                                label: "LEARNING",
+                                onTap: () {
+                                  if (_imagesLoaded) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) =>
+                                                const LearningDashboard(),
+                                      ),
+                                    );
+                                  } else {
+                                    _showProgressDialog(context);
+                                  }
+                                },
+                              ),
+                              SizedBox(width: screenWidth * 0.04),
+                              _buildBookmarkButton(
+                                context,
+                                base24,
+                                width: buttonWidth,
+                                height: buttonHeight,
+                              ),
+                            ],
+                          )
+                          : Column(
+                            children: [
+                              _buildButton(
+                                context,
+                                base24,
+                                width: buttonWidth,
+                                height: buttonHeight,
+                                assetPath: "assets/encrypted/books.png.enc",
+                                label: "LEARNING",
+                                onTap: () {
+                                  if (_imagesLoaded) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (context) =>
+                                                const LearningDashboard(),
+                                      ),
+                                    );
+                                  } else {
+                                    _showProgressDialog(context);
+                                  }
+                                },
+                              ),
+                              SizedBox(height: 16),
+                              _buildBookmarkButton(
+                                context,
+                                base24,
+                                width: buttonWidth,
+                                height: buttonHeight,
+                              ),
+                            ],
                           ),
+
+                      SizedBox(height: 10),
+
+                      // Quiz Card
+                      Container(
+                        alignment: Alignment.center,
+                        width:
+                            orientation == Orientation.portrait
+                                ? screenWidth * 0.95
+                                : screenWidth * 0.6,
+                        height: 140,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(20),
+                          color: const Color(0xFFf9f2ff),
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 12),
-                              child: Center(
-                                child: EnyrptedImageWidget(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Card(
+                          child: InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const QuizDashboard(),
+                                ),
+                              );
+                            },
+                            child: Center(
+                              child: ListTile(
+                                leading: EnyrptedImageWidget(
                                   base64Key: base24,
-                                  assetPath: "assets/encrypted/books.png.enc",
+                                  assetPath: "assets/encrypted/quiz.png.enc",
+                                  height: 60,
+                                ),
+                                title: AutoSizeText(
+                                  "Play Quiz Challenge",
+                                  style: TextStyle(
+                                    fontSize:
+                                        screenWidth *
+                                        0.04, // Responsive font size
+                                    fontWeight: FontWeight.bold,
+                                    color: Colors.black,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                                trailing: EnyrptedImageWidget(
+                                  base64Key: base24,
+                                  assetPath:
+                                      "assets/encrypted/quizbutton.png.enc",
                                   height: 50,
-                                  width: 100,
                                 ),
                               ),
                             ),
-                            const SizedBox(height: 12),
-                            Text(
-                              "LEARNING",
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 17,
+                          ),
+                        ),
+                      ),
+                      SizedBox(height: 10),
+
+                      Divider(color: const Color(0xffb48ce8), thickness: 1),
+                      Text(
+                        "Share the app",
+                        style: GoogleFonts.poppins(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          fontSize: 20,
+                        ),
+                      ),
+                      SizedBox(height: 8),
+
+                      GestureDetector(
+                        onTap: () {
+                          Share.share(
+                            'check out my website https://example.com',
+                          );
+                        },
+                        child: Container(
+                          height: 140,
+                          width:
+                              orientation == Orientation.portrait
+                                  ? screenWidth * 0.95
+                                  : screenWidth * 0.6,
+                          padding: const EdgeInsets.symmetric(horizontal: 16),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(20),
+                            gradient: const LinearGradient(
+                              colors: [Color(0xFFFF6F3C), Color(0xFFff3833)],
+                              begin: Alignment.centerLeft,
+                              end: Alignment.centerRight,
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              const Icon(
+                                Icons.share,
+                                size: 100,
+                                color: Colors.white,
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-
-                    const SizedBox(width: 16),
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const Bookmark(),
-                          ),
-                        );
-                      },
-                      child: Container(
-                        width: 160,
-                        height: 130,
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(20.0),
-                          border: Border.all(
-                            width: 1.0,
-                            color: const Color(0xFFE5E7E9),
-                          ),
-                        ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.bookmark,
-                              size: 50,
-                              color: const Color(0xffb48ce8),
-                            ),
-                            const SizedBox(height: 12),
-                            Text(
-                              "BookMark",
-                              style: GoogleFonts.poppins(
-                                fontWeight: FontWeight.bold,
-                                fontSize: 17,
+                              Expanded(
+                                child: Padding(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12.0,
+                                  ),
+                                  child: Column(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Text(
+                                        "Share with Friends",
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.bold,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        "Help your friend fall in love\nwith learning through Alim!",
+                                        style: TextStyle(
+                                          fontSize: 10,
+                                          color: Colors.white,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
-                            ),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 10),
-                Container(
-                  alignment: Alignment.center,
-                  width: 400,
-                  height: 140,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(20),
-                    color: const Color(0xFFf9f2ff),
-                  ),
-                  padding: const EdgeInsets.all(8.0),
-                  child: Card(
-                    child: InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const QuizDashboard(),
-                          ),
-                        );
-                      },
-                      child: Center(
-                        child: ListTile(
-                          leading: EnyrptedImageWidget(
-                            base64Key: base24,
-                            assetPath: "assets/encrypted/quiz.png.enc",
-                            height: 60,
-                          ),
-                          title: AutoSizeText(
-                            "Play Quiz Challenge",
-                            style: TextStyle(
-                              fontSize:
-                                  screenWidth * 0.04, // Responsive font size
-                              fontWeight: FontWeight.bold,
-                              color: Colors.black,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                          trailing: EnyrptedImageWidget(
-                            base64Key: base24,
-                            assetPath: "assets/encrypted/quizbutton.png.enc",
-                            height: 50,
+                              Container(
+                                height: 40,
+                                width: 40,
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  shape: BoxShape.circle,
+                                ),
+                                child: const Padding(
+                                  padding: EdgeInsets.only(left: 4.0),
+                                  child: Icon(
+                                    Icons.arrow_forward_ios,
+                                    color: Colors.orange,
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
                         ),
                       ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 10),
 
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Divider(color: const Color(0xffb48ce8), thickness: 1),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    "Share the app",
-                    style: GoogleFonts.poppins(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-
-                Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: GestureDetector(
-                    onTap: () {
-                      Share.share('check out my website https://example.com');
-                    },
-                    child: Container(
-                      height: 140,
-                      width: 460,
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(20),
-                        gradient: const LinearGradient(
-                          colors: [Color(0xFFFF6F3C), Color(0xFFff3833)],
-                          begin: Alignment.centerLeft,
-                          end: Alignment.centerRight,
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          left: 8.0,
+                          right: 8,
+                          bottom: 8,
+                          top: 16,
+                        ),
+                        child: Divider(
+                          color: const Color(0xffb48ce8),
+                          thickness: 1,
                         ),
                       ),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
+                      const Text(
+                        "We are Secure",
+                        style: TextStyle(
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black,
+                          fontSize: 20,
+                        ),
+                      ),
+
+                      SizedBox(height: 8),
+
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                         children: [
-                          const Icon(
-                            Icons.share,
-                            size: 100,
-                            color: Colors.white,
-                          ),
-
-                          // Main Text Block
-                          Expanded(
-                            child: Padding(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 12.0,
+                          GestureDetector(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (builder) => const PrivacyPolicyPage(),
+                                ),
+                              );
+                            },
+                            child: Container(
+                              height: 60,
+                              width: 170,
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFEBD4FB),
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              child: Column(
-                                mainAxisAlignment: MainAxisAlignment.center,
-                                crossAxisAlignment: CrossAxisAlignment.start,
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(
-                                    "Share with Friends",
-                                    style: TextStyle(
-                                      fontSize: titleFontSize,
-                                      fontWeight: FontWeight.bold,
-                                      color: Colors.white,
+                                  Padding(
+                                    padding: const EdgeInsets.only(left: 8.0),
+                                    child: EnyrptedImageWidget(
+                                      base64Key: base24,
+                                      assetPath:
+                                          "assets/encrypted/privacy.png.enc",
+                                      height: 40,
                                     ),
                                   ),
-                                  const SizedBox(height: 4),
+                                  const SizedBox(width: 5),
                                   Text(
-                                    "Help your friend fall in love\nwith learning through Alim!",
+                                    'Privacy Policy',
                                     style: TextStyle(
-                                      fontSize: subtitleFontSize,
-                                      color: Colors.white,
+                                      color: const Color(0xFF8238C6),
+                                      fontWeight: FontWeight.w600,
                                     ),
                                   ),
                                 ],
                               ),
                             ),
                           ),
-
-                          // Arrow Button
-                          Container(
-                            height: 40,
-                            width: 40,
-                            decoration: const BoxDecoration(
-                              color: Colors.white,
-                              shape: BoxShape.circle,
+                          const SizedBox(width: 5),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const GdprPage(),
+                                ),
+                              );
+                            },
+                            child: EnyrptedImageWidget(
+                              base64Key: base24,
+                              assetPath: "assets/encrypted/gdpr.png.enc",
+                              height: 40,
                             ),
-                            child: const Padding(
-                              padding: EdgeInsets.only(left: 4.0),
-                              child: Icon(
-                                Icons.arrow_forward_ios,
-                                color: Colors.orange,
-                              ),
+                          ),
+                          const SizedBox(width: 5),
+
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder:
+                                      (context) => const ContentLicensePage(),
+                                ),
+                              );
+                            },
+                            child: EnyrptedImageWidget(
+                              base64Key: base24,
+                              assetPath:
+                                  "assets/encrypted/contentpolicy.png.enc",
+                              height: 40,
+                            ),
+                          ),
+                          const SizedBox(width: 5),
+                          InkWell(
+                            onTap: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const AdsPolicyPage(),
+                                ),
+                              );
+                            },
+                            child: EnyrptedImageWidget(
+                              base64Key: base24,
+                              assetPath: "assets/encrypted/adspolicy.png.enc",
+                              height: 40,
                             ),
                           ),
                         ],
                       ),
-                    ),
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 8.0,
-                    right: 8,
-                    bottom: 8,
-                  ),
-                  child: Divider(color: const Color(0xffb48ce8), thickness: 1),
-                ),
 
-                const Padding(
-                  padding: EdgeInsets.only(top: 8.0, left: 8),
-                  child: Text(
-                    "We are Secure",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontSize: 20,
-                    ),
-                  ),
-                ),
-
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                  children: [
-                    GestureDetector(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (builder) => const PrivacyPolicyPage(),
+                      const Padding(
+                        padding: EdgeInsets.only(top: 8.0, left: 8, bottom: 8),
+                        child: Text(
+                          "Advertisements",
+                          style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            color: Colors.black,
+                            fontSize: 20,
                           ),
-                        );
-                      },
-                      child: Container(
-                        height: 60,
-                        width: 150,
-                        decoration: BoxDecoration(
-                          color: const Color(0xFFEBD4FB),
-                          borderRadius: BorderRadius.circular(12),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Padding(
-                              padding: const EdgeInsets.only(left: 8.0),
-                              child: EnyrptedImageWidget(
-                                base64Key: base24,
-                                assetPath: "assets/encrypted/privacy.png.enc",
-                                height: 40,
-                              ),
-                            ),
-                            const SizedBox(width: 5),
-                            Text(
-                              'Privacy Policy',
-                              style: TextStyle(
-                                color: const Color(0xFF8238C6),
-                                fontWeight: FontWeight.w600,
-                              ),
-                            ),
-                          ],
                         ),
                       ),
-                    ),
-                    const SizedBox(width: 5),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const GdprPage(),
-                          ),
-                        );
-                      },
-                      child: EnyrptedImageWidget(
-                        base64Key: base24,
-                        assetPath: "assets/encrypted/gdpr.png.enc",
-                        height: 40,
-                      ),
-                    ),
-                    const SizedBox(width: 5),
 
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const ContentLicensePage(),
-                          ),
-                        );
-                      },
-                      child: EnyrptedImageWidget(
-                        base64Key: base24,
-                        assetPath: "assets/encrypted/contentpolicy.png.enc",
-                        height: 40,
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Center(
+                          child:
+                              _bannerAd != null && _isBannerAdLoaded
+                                  ? Container(
+                                    alignment: Alignment.center,
+                                    width: _bannerAd!.size.width.toDouble(),
+                                    height: _bannerAd!.size.height.toDouble(),
+                                    child: AdWidget(ad: _bannerAd!),
+                                  )
+                                  : Container(
+                                    height: 50,
+                                    alignment: Alignment.center,
+                                    child: const Text(
+                                      "Ad Loading...",
+                                      style: TextStyle(
+                                        color: Colors.black,
+                                        fontSize: 12,
+                                      ),
+                                    ),
+                                  ),
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 5),
-                    InkWell(
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const AdsPolicyPage(),
-                          ),
-                        );
-                      },
-                      child: EnyrptedImageWidget(
-                        base64Key: base24,
-                        assetPath: "assets/encrypted/adspolicy.png.enc",
-                        height: 40,
-                      ),
-                    ),
-                  ],
-                ),
-                const Padding(
-                  padding: EdgeInsets.only(top: 8.0, left: 8, bottom: 8),
-                  child: Text(
-                    "Advertisements",
-                    style: TextStyle(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black,
-                      fontSize: 20,
-                    ),
+                    ],
                   ),
                 ),
-                Padding(
-                  padding: const EdgeInsets.only(
-                    left: 8.0,
-                    right: 8,
-                    bottom: 8,
-                  ),
-                  child: Divider(color: const Color(0xffb48ce8), thickness: 1),
-                ),
-                Center(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child:
-                        _bannerAd != null && _isBannerAdLoaded
-                            ? Container(
-                              alignment: Alignment.center,
-                              width: _bannerAd!.size.width.toDouble(),
-                              height: _bannerAd!.size.height.toDouble(),
-                              child: AdWidget(ad: _bannerAd!),
-                            )
-                            : Container(
-                              height: 50,
-                              alignment: Alignment.center,
-                              child: const Text(
-                                "Ad Loading...",
-                                style: TextStyle(
-                                  color: Colors.black,
-                                  fontSize: 12,
-                                ),
-                              ),
-                            ),
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
-  void _showProgressDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) {
-        return AlertDialog(
-          title: const Text("Loading Learning Content"),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              ValueListenableBuilder<double>(
-                valueListenable: progressNotifier,
-                builder: (context, value, _) {
-                  return LinearProgressIndicator(value: value);
-                },
+  // Helper method to build the "LEARNING" button container
+  Widget _buildButton(
+    BuildContext context,
+    String base64Key, {
+    required double width,
+    required double height,
+    required String assetPath,
+    required String label,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20.0),
+          border: Border.all(width: 1.0, color: const Color(0xFFE5E7E9)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Padding(
+              padding: const EdgeInsets.only(left: 12),
+              child: Center(
+                child: EnyrptedImageWidget(
+                  base64Key: base64Key,
+                  assetPath: assetPath,
+                  height: 50,
+                  width: 100,
+                ),
               ),
-              const SizedBox(height: 12),
-              ValueListenableBuilder<int>(
-                valueListenable: remainingSecondsNotifier,
-                builder: (context, value, _) {
-                  return Text("Estimated time remaining: ${value}s");
-                },
+            ),
+            const SizedBox(height: 12),
+            Text(
+              label,
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.bold,
+                fontSize: 17,
               ),
-            ],
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: const Text("Dismiss"),
             ),
           ],
-        );
-      },
+        ),
+      ),
     );
   }
+
+  // Helper method to build the bookmark button container
+  Widget _buildBookmarkButton(
+    BuildContext context,
+    String base64Key, {
+    required double width,
+    required double height,
+  }) {
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (context) => const Bookmark()),
+        );
+      },
+      child: Container(
+        width: width,
+        height: height,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(20.0),
+          border: Border.all(width: 1.0, color: const Color(0xFFE5E7E9)),
+        ),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(Icons.bookmark, size: 50, color: const Color(0xffb48ce8)),
+            const SizedBox(height: 12),
+            Text(
+              "BookMark",
+              style: GoogleFonts.poppins(
+                fontWeight: FontWeight.bold,
+                fontSize: 17,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+void _showProgressDialog(BuildContext context) {
+  showDialog(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) {
+      return AlertDialog(
+        title: const Text("Loading Learning Content"),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            ValueListenableBuilder<double>(
+              valueListenable: progressNotifier,
+              builder: (context, value, _) {
+                return LinearProgressIndicator(value: value);
+              },
+            ),
+            const SizedBox(height: 12),
+            ValueListenableBuilder<int>(
+              valueListenable: remainingSecondsNotifier,
+              builder: (context, value, _) {
+                return Text("Estimated time remaining: ${value}s");
+              },
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("Dismiss"),
+          ),
+        ],
+      );
+    },
+  );
 }

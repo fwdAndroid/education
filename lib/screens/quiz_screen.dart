@@ -145,6 +145,7 @@ class _QuizPageState extends State<QuizPage>
                       final isSelected = selectedIndex == index;
 
                       return AnimatedContainer(
+                        width: MediaQuery.of(context).size.width * 1,
                         duration: Duration(milliseconds: 300),
                         margin: EdgeInsets.symmetric(vertical: 6),
                         decoration: BoxDecoration(

@@ -1,4 +1,5 @@
 import 'package:education/constant/ad_keys.dart';
+import 'package:education/screens/bookmark.dart';
 import 'package:education/screens/learning_dashboard.dart';
 import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:education/widgets/quiz_list_tile.dart';
@@ -132,9 +133,17 @@ class _QuizDashboardState extends State<QuizDashboard> {
               ),
             ),
           ),
-          const Padding(
-            padding: EdgeInsets.all(8.0),
-            child: Icon(Icons.bookmark, size: 40),
+          GestureDetector(
+            onTap: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(builder: (builder) => const Bookmark()),
+              );
+            },
+            child: const Padding(
+              padding: EdgeInsets.all(8.0),
+              child: Icon(Icons.bookmark, size: 40),
+            ),
           ),
         ],
         iconTheme: const IconThemeData(color: Colors.white),
