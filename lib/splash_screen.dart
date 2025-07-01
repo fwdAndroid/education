@@ -1,9 +1,10 @@
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/constant/chapter_constant.dart';
-import 'package:education/newprovider.dart'; // PreloadController
+import 'package:education/newprovider.dart';
 import 'package:education/screens/main_dashboard.dart';
 import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -15,29 +16,75 @@ class SplashScreen extends StatefulWidget {
 
 class _SplashScreenState extends State<SplashScreen> {
   bool _navigated = false;
+  AppOpenAd? openAd;
 
   @override
   void initState() {
     super.initState();
+    _loadAd();
     _startPreloading();
+  }
+
+  void _loadAd() async {
+    await AppOpenAd.load(
+      adUnitId: 'ca-app-pub-3940256099942544/3419835294', // Test ID
+      request: const AdRequest(),
+      adLoadCallback: AppOpenAdLoadCallback(
+        onAdLoaded: (ad) {
+          print('AppOpenAd loaded');
+          openAd = ad;
+        },
+        onAdFailedToLoad: (error) {
+          print('AppOpenAd failed to load: $error');
+        },
+      ),
+    );
   }
 
   Future<void> _startPreloading() async {
     final controller = context.read<PreloadController>();
 
-    // Start both the preloading and the 3-second timer in parallel
     final preloadFuture = controller.preloadImages(
       assetPaths: uiImageAssets,
       base64Key: base24,
     );
-
     final delayFuture = Future.delayed(const Duration(seconds: 5));
 
-    // Wait for both to finish
     await Future.wait([preloadFuture, delayFuture]);
 
-    // Navigate only once
-    if (mounted && !_navigated) {
+    _showAdOrNavigate();
+  }
+
+  void _showAdOrNavigate() {
+    if (openAd == null) {
+      print('Ad not ready, navigating directly');
+      _navigateToMain();
+      return;
+    }
+
+    openAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (ad) {
+        print('AppOpenAd shown');
+      },
+      onAdFailedToShowFullScreenContent: (ad, error) {
+        ad.dispose();
+        print('Ad failed to show: $error');
+        openAd = null;
+        _navigateToMain();
+      },
+      onAdDismissedFullScreenContent: (ad) {
+        ad.dispose();
+        print('Ad dismissed');
+        openAd = null;
+        _navigateToMain();
+      },
+    );
+
+    openAd!.show();
+  }
+
+  void _navigateToMain() {
+    if (!_navigated && mounted) {
       _navigated = true;
       Navigator.pushReplacement(
         context,
@@ -52,7 +99,6 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: Colors.white,
       body: Stack(
         children: [
-          // Background
           Positioned.fill(
             child: EnyrptedImageWidget(
               base64Key: base24,
@@ -60,8 +106,6 @@ class _SplashScreenState extends State<SplashScreen> {
               fit: BoxFit.cover,
             ),
           ),
-
-          // Centered logo
           Center(
             child: Column(
               mainAxisSize: MainAxisSize.min,
