@@ -111,6 +111,21 @@ class _QuizDashboardState extends State<QuizDashboard> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      bottomNavigationBar: BottomAppBar(
+        color: Colors.transparent,
+        elevation: 0,
+        child:
+            _isBannerAdLoaded && _bannerAd != null
+                ? Container(
+                  alignment: Alignment.center,
+                  height: _bannerAd!.size.height.toDouble(),
+                  child: AdWidget(ad: _bannerAd!),
+                )
+                : const SizedBox(
+                  height: 50,
+                  child: Center(child: Text("Ad loading...")),
+                ),
+      ),
       appBar: AppBar(
         actions: [
           GestureDetector(
@@ -161,27 +176,6 @@ class _QuizDashboardState extends State<QuizDashboard> {
                 imagePath: chapter['imagePath'],
                 chapterNumber: chapter['chapterNumber'],
               ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child:
-                  _bannerAd != null && _isBannerAdLoaded
-                      ? Center(
-                        child: Container(
-                          alignment: Alignment.center,
-                          width: _bannerAd!.size.width.toDouble(),
-                          height: _bannerAd!.size.height.toDouble(),
-                          child: AdWidget(ad: _bannerAd!),
-                        ),
-                      )
-                      : Container(
-                        height: 50,
-                        alignment: Alignment.center,
-                        child: const Text(
-                          "Ad Loading...",
-                          style: TextStyle(color: Colors.black, fontSize: 12),
-                        ),
-                      ),
-            ),
           ],
         ),
       ),

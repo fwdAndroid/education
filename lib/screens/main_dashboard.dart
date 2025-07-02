@@ -43,14 +43,13 @@ class _MainDashboardState extends State<MainDashboard>
     super.initState();
     _initHiveAndPreload();
     // Hide status bar
-
+    SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     // Set background color behind status bar (important for Android notch areas)
     SystemChrome.setSystemUIOverlayStyle(
       const SystemUiOverlayStyle(
-        statusBarColor: Colors.white, // For Android
-        statusBarBrightness: Brightness.light, // For iOS
-        statusBarIconBrightness:
-            Brightness.dark, // For Android icons (dark on white)
+        statusBarColor: Colors.transparent, // Transparent background
+        statusBarBrightness: Brightness.light,
+        statusBarIconBrightness: Brightness.light,
       ),
     );
     _loadBannerAd();
@@ -144,6 +143,18 @@ class _MainDashboardState extends State<MainDashboard>
     base24 = base24; // Make sure this is set properly
 
     return Scaffold(
+      bottomNavigationBar:
+          _isBannerAdLoaded && _bannerAd != null
+              ? Container(
+                alignment: Alignment.center,
+                width: _bannerAd!.size.width.toDouble(),
+                height: _bannerAd!.size.height.toDouble(),
+                child: AdWidget(ad: _bannerAd!),
+              )
+              : const SizedBox(
+                height: 50,
+                child: Center(child: Text("Ad loading...")),
+              ),
       body: OrientationBuilder(
         builder: (context, orientation) {
           final screenWidth = MediaQuery.of(context).size.width;
@@ -536,31 +547,6 @@ class _MainDashboardState extends State<MainDashboard>
                             color: Colors.black,
                             fontSize: 20,
                           ),
-                        ),
-                      ),
-
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Center(
-                          child:
-                              _bannerAd != null && _isBannerAdLoaded
-                                  ? Container(
-                                    alignment: Alignment.center,
-                                    width: _bannerAd!.size.width.toDouble(),
-                                    height: _bannerAd!.size.height.toDouble(),
-                                    child: AdWidget(ad: _bannerAd!),
-                                  )
-                                  : Container(
-                                    height: 50,
-                                    alignment: Alignment.center,
-                                    child: const Text(
-                                      "Ad Loading...",
-                                      style: TextStyle(
-                                        color: Colors.black,
-                                        fontSize: 12,
-                                      ),
-                                    ),
-                                  ),
                         ),
                       ),
                     ],

@@ -71,6 +71,18 @@ class _BookmarkState extends State<Bookmark> {
     final bookmarkedPages = _bookmarkService.bookmarkedPages;
 
     return Scaffold(
+      bottomNavigationBar:
+          _isBannerAdLoaded && _bannerAd != null
+              ? Container(
+                alignment: Alignment.center,
+                width: _bannerAd!.size.width.toDouble(),
+                height: _bannerAd!.size.height.toDouble(),
+                child: AdWidget(ad: _bannerAd!),
+              )
+              : const SizedBox(
+                height: 50,
+                child: Center(child: Text("Ad loading...")),
+              ),
       appBar: AppBar(
         title: const Text("Bookmark"),
         backgroundColor: const Color(0xffab77ff),
@@ -184,25 +196,6 @@ class _BookmarkState extends State<Bookmark> {
                   textAlign: TextAlign.center,
                 ),
               ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child:
-                  _bannerAd != null && _isBannerAdLoaded
-                      ? SizedBox(
-                        width: _bannerAd!.size.width.toDouble(),
-                        height: _bannerAd!.size.height.toDouble(),
-                        child: AdWidget(ad: _bannerAd!),
-                      )
-                      : const SizedBox(
-                        height: 50,
-                        child: Center(
-                          child: Text(
-                            "Ad Loading...",
-                            style: TextStyle(fontSize: 12),
-                          ),
-                        ),
-                      ),
-            ),
           ],
         ),
       ),

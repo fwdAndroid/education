@@ -97,6 +97,18 @@ class _ChapterScreenState extends State<ChapterScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
+      bottomNavigationBar:
+          _isAdLoaded
+              ? Container(
+                alignment: Alignment.center,
+                width: _bannerAd!.size.width.toDouble(),
+                height: _bannerAd!.size.height.toDouble(),
+                child: AdWidget(ad: _bannerAd!),
+              )
+              : const SizedBox(
+                height: 50,
+                child: Center(child: Text("Ad loading...")),
+              ),
       backgroundColor: Colors.white,
       appBar: AppBar(
         iconTheme: const IconThemeData(color: Colors.white),
@@ -215,20 +227,6 @@ class _ChapterScreenState extends State<ChapterScreen> {
           // Loading progress (only show while loading)
 
           // Ad
-          SizedBox(
-            height: screenHeight * 0.08,
-            child:
-                _isAdLoaded
-                    ? SizedBox(
-                      width: _bannerAd.size.width.toDouble(),
-                      height: _bannerAd.size.height.toDouble(),
-                      child: AdWidget(ad: _bannerAd),
-                    )
-                    : const Text(
-                      "Ad Loading...",
-                      style: TextStyle(color: Colors.black, fontSize: 12),
-                    ),
-          ),
         ],
       ),
     );
