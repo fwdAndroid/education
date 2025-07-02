@@ -1,4 +1,4 @@
-import 'package:education/utils/colors.dart';
+import 'package:education/utils_colors/colors.dart';
 import 'package:flutter/material.dart';
 
 class LoadingProgressDisplay extends StatelessWidget {

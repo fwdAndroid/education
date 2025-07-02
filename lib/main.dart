@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'dart:typed_data';
 
 import 'package:education/firebase_options.dart';
-import 'package:education/image_provider.dart';
-import 'package:education/newprovider.dart';
+import 'package:education/provider/image_provider.dart';
+import 'package:education/provider/preload_controller_provider.dart';
 import 'package:education/service/book_mark_service.dart';
 import 'package:education/splash_screen.dart';
 import 'package:firebase_core/firebase_core.dart';

@@ -1,6 +1,6 @@
 import 'package:education/constant/ad_keys.dart';
-import 'package:education/screens/chapter.dart';
-import 'package:education/utils/colors.dart';
+import 'package:education/screens/chapter/chapter.dart';
+import 'package:education/utils_colors/colors.dart';
 import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
 

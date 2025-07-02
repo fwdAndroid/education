@@ -1,4 +1,4 @@
-import 'package:education/imageloader.dart';
+import 'package:education/encryptions/imageloader_encryption.dart';
 import 'package:flutter/foundation.dart';
 
 class PreloadController extends ChangeNotifier {

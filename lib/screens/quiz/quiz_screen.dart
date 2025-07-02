@@ -1,10 +1,10 @@
-import 'package:education/utils/colors.dart';
+import 'package:education/utils_colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:confetti/confetti.dart';
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
-import 'package:education/widgets/quiz_widget.dart';
+import 'package:education/screens/quiz/quiz_widget.dart';
 
 class QuizPage extends StatefulWidget {
   final int chapterNumber;

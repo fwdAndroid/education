@@ -1,6 +1,6 @@
 // lib/screens/pdf_viewer.dart
 import 'dart:io';
-import 'package:education/utils/colors.dart';
+import 'package:education/utils_colors/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 
