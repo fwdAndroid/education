@@ -10,6 +10,7 @@ import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/screens/bookmark.dart';
 import 'package:education/screens/learning_dashboard.dart';
 import 'package:education/screens/quiz_dashboard.dart';
+import 'package:education/utils/colors.dart';
 import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -46,8 +47,8 @@ class _MainDashboardState extends State<MainDashboard>
     SystemChrome.setEnabledSystemUIMode(SystemUiMode.manual, overlays: []);
     // Set background color behind status bar (important for Android notch areas)
     SystemChrome.setSystemUIOverlayStyle(
-      const SystemUiOverlayStyle(
-        statusBarColor: Colors.transparent, // Transparent background
+      SystemUiOverlayStyle(
+        statusBarColor: transparent, // Transparent background
         statusBarBrightness: Brightness.light,
         statusBarIconBrightness: Brightness.light,
       ),
@@ -308,7 +309,7 @@ class _MainDashboardState extends State<MainDashboard>
                                         screenWidth *
                                         0.04, // Responsive font size
                                     fontWeight: FontWeight.bold,
-                                    color: Colors.black,
+                                    color: black,
                                   ),
                                   maxLines: 1,
                                   overflow: TextOverflow.ellipsis,
@@ -326,12 +327,12 @@ class _MainDashboardState extends State<MainDashboard>
                       ),
                       SizedBox(height: 10),
 
-                      Divider(color: const Color(0xffb48ce8), thickness: 1),
+                      Divider(color: dividerColor, thickness: 1),
                       Text(
                         "Share the app",
                         style: GoogleFonts.poppins(
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: black,
                           fontSize: 20,
                         ),
                       ),
@@ -429,11 +430,11 @@ class _MainDashboardState extends State<MainDashboard>
                         ),
                       ),
 
-                      const Text(
+                      Text(
                         "We are Secure",
                         style: TextStyle(
                           fontWeight: FontWeight.bold,
-                          color: Colors.black,
+                          color: black,
                           fontSize: 20,
                         ),
                       ),
@@ -457,7 +458,7 @@ class _MainDashboardState extends State<MainDashboard>
                               height: 60,
                               width: 170,
                               decoration: BoxDecoration(
-                                color: const Color(0xFFEBD4FB),
+                                color: borderColor,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Row(
@@ -476,7 +477,7 @@ class _MainDashboardState extends State<MainDashboard>
                                   Text(
                                     'Privacy Policy',
                                     style: TextStyle(
-                                      color: const Color(0xFF8238C6),
+                                      color: privacyColor,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -538,13 +539,13 @@ class _MainDashboardState extends State<MainDashboard>
                         ],
                       ),
 
-                      const Padding(
+                      Padding(
                         padding: EdgeInsets.only(top: 8.0, left: 8, bottom: 8),
                         child: Text(
                           "Advertisements",
                           style: TextStyle(
                             fontWeight: FontWeight.bold,
-                            color: Colors.black,
+                            color: black,
                             fontSize: 20,
                           ),
                         ),

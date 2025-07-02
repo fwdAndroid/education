@@ -1,3 +1,4 @@
+import 'package:education/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:confetti/confetti.dart';
@@ -79,7 +80,7 @@ class _QuizPageState extends State<QuizPage>
 
     return Scaffold(
       bottomNavigationBar: BottomAppBar(
-        color: Colors.transparent,
+        color: transparent,
         elevation: 0,
         child:
             _isBannerAdLoaded && _bannerAd != null
@@ -96,10 +97,10 @@ class _QuizPageState extends State<QuizPage>
       appBar: AppBar(
         title: Text(
           "Chapter ${widget.chapterNumber} Quiz",
-          style: TextStyle(color: Colors.white),
+          style: TextStyle(color: white),
         ),
-        backgroundColor: Color(0xffab77ff),
-        iconTheme: IconThemeData(color: Colors.white),
+        backgroundColor: backgroundColor,
+        iconTheme: IconThemeData(color: white),
       ),
       body: Column(
         children: [
@@ -138,7 +139,7 @@ class _QuizPageState extends State<QuizPage>
                           child: Text(
                             "${currentQuestionIndex + 1}",
                             style: TextStyle(
-                              color: Colors.white,
+                              color: white,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
@@ -175,10 +176,10 @@ class _QuizPageState extends State<QuizPage>
                           color:
                               isSelected
                                   ? Colors.deepPurple.withOpacity(0.1)
-                                  : Colors.white,
+                                  : white,
                         ),
                         child: Material(
-                          color: Colors.transparent,
+                          color: transparent,
                           child: InkWell(
                             borderRadius: BorderRadius.circular(10),
                             onTap: () {

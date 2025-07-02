@@ -1,5 +1,6 @@
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/screens/chapter.dart';
+import 'package:education/utils/colors.dart';
 import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
 
@@ -48,7 +49,7 @@ class ChapterTile extends StatelessWidget {
           color: Colors.white,
           boxShadow: [
             BoxShadow(
-              color: Colors.grey.withOpacity(0.5),
+              color: grey.withOpacity(0.5),
               spreadRadius: 1,
               blurRadius: 1,
               offset: const Offset(0, 3),
@@ -79,16 +80,13 @@ class ChapterTile extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: 4),
-                  Text(
-                    subtitle,
-                    style: const TextStyle(fontSize: 12, color: Colors.grey),
-                  ),
+                  Text(subtitle, style: TextStyle(fontSize: 12, color: grey)),
                 ],
               ),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color(0xffab77ff),
+                backgroundColor: backgroundColor,
                 minimumSize: const Size(60, 36),
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 shape: RoundedRectangleBorder(

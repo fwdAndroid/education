@@ -1,6 +1,7 @@
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/service/book_mark_service.dart';
+import 'package:education/utils/colors.dart';
 import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -109,13 +110,13 @@ class _ChapterScreenState extends State<ChapterScreen> {
                 height: 50,
                 child: Center(child: Text("Ad loading...")),
               ),
-      backgroundColor: Colors.white,
+      backgroundColor: white,
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: white),
         title: Text(
           widget.title,
-          style: const TextStyle(
-            color: Colors.white,
+          style: TextStyle(
+            color: white,
             fontSize: 12.5,
             fontWeight: FontWeight.bold,
           ),
@@ -145,7 +146,7 @@ class _ChapterScreenState extends State<ChapterScreen> {
                   ? Icons.bookmark
                   : Icons.bookmark_border,
               size: 30,
-              color: Colors.white,
+              color: white,
             ),
             onPressed: () {
               setState(() {
@@ -201,7 +202,7 @@ class _ChapterScreenState extends State<ChapterScreen> {
             child: Center(
               child: Text(
                 '${currentPage + 1}/${widget.imagePaths.length}',
-                style: const TextStyle(fontSize: 16, color: Colors.black),
+                style: TextStyle(fontSize: 16, color: black),
               ),
             ),
           ),
@@ -213,11 +214,11 @@ class _ChapterScreenState extends State<ChapterScreen> {
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 IconButton(
-                  icon: const Icon(Icons.zoom_in, color: Colors.black),
+                  icon: Icon(Icons.zoom_in, color: black),
                   onPressed: _zoomIn,
                 ),
                 IconButton(
-                  icon: const Icon(Icons.zoom_out, color: Colors.black),
+                  icon: Icon(Icons.zoom_out, color: black),
                   onPressed: _zoomOut,
                 ),
               ],

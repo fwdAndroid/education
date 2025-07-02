@@ -1,3 +1,4 @@
+import 'package:education/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class ContentLicensePage extends StatefulWidget {
@@ -14,7 +15,7 @@ class _ContentLicensePageState extends State<ContentLicensePage> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          backgroundColor: Colors.transparent,
+          backgroundColor: transparent,
           insetPadding: const EdgeInsets.all(20),
           child: Stack(
             children: [
@@ -33,11 +34,7 @@ class _ContentLicensePageState extends State<ContentLicensePage> {
                     shape: BoxShape.circle,
                   ),
                   child: IconButton(
-                    icon: const Icon(
-                      Icons.close,
-                      color: Colors.white,
-                      size: 30,
-                    ),
+                    icon: Icon(Icons.close, color: white, size: 30),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ),
@@ -61,12 +58,9 @@ class _ContentLicensePageState extends State<ContentLicensePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text(
-          "Content License",
-          style: TextStyle(color: Colors.white),
-        ),
-        backgroundColor: const Color(0xffab77ff),
+        iconTheme: IconThemeData(color: white),
+        title: Text("Content License", style: TextStyle(color: white)),
+        backgroundColor: backgroundColor,
       ),
       body: Center(
         child: Column(

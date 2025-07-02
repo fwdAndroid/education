@@ -5,6 +5,7 @@ import 'package:education/encryptions/pdf_asset_encrypted.dart';
 import 'package:education/mixin/firebase_analytics_mixin.dart';
 import 'package:education/screens/quiz_dashboard.dart';
 import 'package:education/screens/webpage.dart';
+import 'package:education/utils/colors.dart';
 import 'package:education/widgets/chatpter_list_tile.dart';
 import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
@@ -93,10 +94,10 @@ class _LearningDashboardState extends State<LearningDashboard>
             ),
           ),
         ],
-        iconTheme: IconThemeData(color: Colors.white),
+        iconTheme: IconThemeData(color: white),
 
-        title: Text("Menu", style: TextStyle(color: Colors.white)),
-        backgroundColor: Color(0xffab77ff),
+        title: Text("Menu", style: TextStyle(color: white)),
+        backgroundColor: backgroundColor,
       ),
       body: SingleChildScrollView(
         child: Column(
@@ -216,10 +217,10 @@ class _LearningDashboardState extends State<LearningDashboard>
                 padding: const EdgeInsets.symmetric(horizontal: 12),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: Colors.white,
+                  color: white,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
+                      color: grey.withOpacity(0.5),
                       spreadRadius: 1,
                       blurRadius: 1,
                       offset: const Offset(0, 3),
@@ -253,10 +254,7 @@ class _LearningDashboardState extends State<LearningDashboard>
                           const SizedBox(height: 4),
                           Text(
                             "Chapter 9",
-                            style: const TextStyle(
-                              fontSize: 12,
-                              color: Colors.grey,
-                            ),
+                            style: TextStyle(fontSize: 12, color: grey),
                           ),
                         ],
                       ),
@@ -264,7 +262,7 @@ class _LearningDashboardState extends State<LearningDashboard>
                     const SizedBox(width: 10),
                     ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xffab77ff),
+                        backgroundColor: backgroundColor,
                         minimumSize: const Size(60, 36),
                         padding: const EdgeInsets.symmetric(horizontal: 12),
                         shape: RoundedRectangleBorder(
@@ -272,10 +270,7 @@ class _LearningDashboardState extends State<LearningDashboard>
                         ),
                       ),
                       onPressed: () => openEncryptedPdf(context),
-                      child: const Text(
-                        "Open",
-                        style: TextStyle(color: Colors.white),
-                      ),
+                      child: Text("Open", style: TextStyle(color: white)),
                     ),
                   ],
                 ),

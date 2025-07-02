@@ -1,5 +1,6 @@
 // lib/screens/pdf_viewer.dart
 import 'dart:io';
+import 'package:education/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 
@@ -12,8 +13,8 @@ class PDFViewerFromCache extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("PDF Viewer"),
-        backgroundColor: Color(0xffab77ff),
+        title: Text("PDF Viewer"),
+        backgroundColor: backgroundColor,
       ),
       body: PDFView(
         filePath: pdfFile.path,

@@ -2,6 +2,7 @@ import 'package:education/constant/ad_keys.dart';
 import 'package:education/constant/chapter_constant.dart';
 import 'package:education/newprovider.dart';
 import 'package:education/screens/main_dashboard.dart';
+import 'package:education/utils/colors.dart';
 import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -96,7 +97,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
+      backgroundColor: white,
       body: Stack(
         children: [
           Positioned.fill(

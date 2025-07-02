@@ -1,3 +1,4 @@
+import 'package:education/utils/colors.dart';
 import 'package:flutter/material.dart';
 
 class LoadingProgressDisplay extends StatelessWidget {
@@ -27,7 +28,7 @@ class LoadingProgressDisplay extends StatelessWidget {
                   const SizedBox(height: 6),
                   Text(
                     "Loading content: ${(progress * 100).toStringAsFixed(0)}% • ${remaining}s remaining",
-                    style: const TextStyle(color: Colors.black54),
+                    style: TextStyle(color: black),
                   ),
                 ],
               ),

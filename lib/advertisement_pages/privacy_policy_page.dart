@@ -1,3 +1,4 @@
+import 'package:education/utils/colors.dart';
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -21,9 +22,9 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        iconTheme: IconThemeData(color: Colors.white),
-        title: Text("Privacy Policy", style: TextStyle(color: Colors.white)),
-        backgroundColor: Color(0xffab77ff),
+        iconTheme: IconThemeData(color: white),
+        title: Text("Privacy Policy", style: TextStyle(color: white)),
+        backgroundColor: backgroundColor,
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -36,7 +37,7 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
                 style: TextStyle(
                   fontSize: 22,
                   fontWeight: FontWeight.bold,
-                  color: Colors.black,
+                  color: black,
                   height: 1.4,
                 ),
               ),
@@ -92,6 +93,6 @@ class _PrivacyPolicyPageState extends State<PrivacyPolicyPage> {
   }
 
   TextStyle _paragraphStyle() {
-    return TextStyle(fontSize: 14.5, height: 1.6, color: Colors.black87);
+    return TextStyle(fontSize: 14.5, height: 1.6, color: black);
   }
 }

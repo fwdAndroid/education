@@ -1,3 +1,4 @@
+import 'package:education/utils/colors.dart';
 import 'package:education/widgets/chatpter_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -85,7 +86,7 @@ class _BookmarkState extends State<Bookmark> {
               ),
       appBar: AppBar(
         title: const Text("Bookmark"),
-        backgroundColor: const Color(0xffab77ff),
+        backgroundColor: backgroundColor,
         actions: [
           GestureDetector(
             onTap: () {
@@ -141,10 +142,10 @@ class _BookmarkState extends State<Bookmark> {
                 margin: const EdgeInsets.all(8),
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(8),
-                  color: Colors.white,
+                  color: white,
                   boxShadow: [
                     BoxShadow(
-                      color: Colors.grey.withOpacity(0.5),
+                      color: grey.withOpacity(0.5),
                       spreadRadius: 1,
                       blurRadius: 1,
                       offset: const Offset(0, 3),

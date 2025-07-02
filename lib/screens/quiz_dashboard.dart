@@ -1,6 +1,7 @@
 import 'package:education/constant/ad_keys.dart';
 import 'package:education/screens/bookmark.dart';
 import 'package:education/screens/learning_dashboard.dart';
+import 'package:education/utils/colors.dart';
 import 'package:education/widgets/enyrpted_image_widget.dart';
 import 'package:education/widgets/quiz_list_tile.dart';
 import 'package:education/widgets/quiz_widget.dart';
@@ -112,7 +113,7 @@ class _QuizDashboardState extends State<QuizDashboard> {
   Widget build(BuildContext context) {
     return Scaffold(
       bottomNavigationBar: BottomAppBar(
-        color: Colors.transparent,
+        color: transparent,
         elevation: 0,
         child:
             _isBannerAdLoaded && _bannerAd != null
@@ -161,9 +162,9 @@ class _QuizDashboardState extends State<QuizDashboard> {
             ),
           ),
         ],
-        iconTheme: const IconThemeData(color: Colors.white),
-        title: const Text("Quiz", style: TextStyle(color: Colors.white)),
-        backgroundColor: const Color(0xffab77ff),
+        iconTheme: IconThemeData(color: white),
+        title: Text("Quiz", style: TextStyle(color: white)),
+        backgroundColor: backgroundColor,
       ),
       body: SingleChildScrollView(
         child: Column(
