@@ -34,6 +34,7 @@ class _MainDashboardState extends State<MainDashboard>
   BannerAd? _bannerAd;
   bool _isBannerAdLoaded = false;
 
+  @override
   String get screenName => 'MainDashboard';
   bool _imagesLoaded = false;
   int _estimatedRemainingSeconds = 0;
@@ -109,21 +110,32 @@ class _MainDashboardState extends State<MainDashboard>
     stopwatch.stop();
   }
 
-  void _loadBannerAd() {
+  void _loadBannerAd() async {
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+          MediaQuery.of(context).size.width.truncate(),
+        );
+
+    if (size == null) {
+      print('Unable to get adaptive banner size.');
+      return;
+    }
+
     _bannerAd = BannerAd(
-      adUnitId: bannerKey,
-      size: AdSize.banner,
+      adUnitId: bannerKey, // Replace with your real AdMob unit ID
+      size: size,
       request: const AdRequest(),
       listener: BannerAdListener(
-        onAdLoaded: (ad) {
+        onAdLoaded: (_) {
           setState(() {
             _isBannerAdLoaded = true;
           });
         },
         onAdFailedToLoad: (ad, error) {
           ad.dispose();
-          _bannerAd = null;
-          _isBannerAdLoaded = false;
+          setState(() {
+            _isBannerAdLoaded = false;
+          });
         },
       ),
     )..load();
@@ -148,7 +160,7 @@ class _MainDashboardState extends State<MainDashboard>
           _isBannerAdLoaded && _bannerAd != null
               ? Container(
                 alignment: Alignment.center,
-                width: _bannerAd!.size.width.toDouble(),
+                width: MediaQuery.of(context).size.width,
                 height: _bannerAd!.size.height.toDouble(),
                 child: AdWidget(ad: _bannerAd!),
               )

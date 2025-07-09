@@ -48,7 +48,7 @@ class _ChapterScreenState extends State<ChapterScreen> {
   int currentPage = 0;
   late PageController _pageController;
   late TransformationController _transformationController;
-  late BannerAd _bannerAd;
+  BannerAd? _bannerAd;
   bool _isAdLoaded = false;
 
   @override
@@ -56,22 +56,33 @@ class _ChapterScreenState extends State<ChapterScreen> {
     super.initState();
     _pageController = PageController();
     _transformationController = TransformationController();
-    _loadBannerAd();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadBannerAd());
   }
 
-  void _loadBannerAd() {
+  void _loadBannerAd() async {
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+          MediaQuery.of(context).size.width.truncate(),
+        );
+
+    if (size == null) {
+      print('Failed to get adaptive banner size');
+      return;
+    }
+
     _bannerAd = BannerAd(
-      size: AdSize.banner,
       adUnitId: bannerKey,
+      size: size,
+      request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (ad) {
           setState(() => _isAdLoaded = true);
         },
         onAdFailedToLoad: (ad, error) {
           ad.dispose();
+          setState(() => _isAdLoaded = false);
         },
       ),
-      request: const AdRequest(),
     )..load();
   }
 
@@ -89,7 +100,7 @@ class _ChapterScreenState extends State<ChapterScreen> {
   void dispose() {
     _pageController.dispose();
     _transformationController.dispose();
-    _bannerAd.dispose();
+    _bannerAd?.dispose();
     super.dispose();
   }
 
@@ -99,10 +110,10 @@ class _ChapterScreenState extends State<ChapterScreen> {
 
     return Scaffold(
       bottomNavigationBar:
-          _isAdLoaded
+          _isAdLoaded && _bannerAd != null
               ? Container(
                 alignment: Alignment.center,
-                width: _bannerAd!.size.width.toDouble(),
+                width: MediaQuery.of(context).size.width,
                 height: _bannerAd!.size.height.toDouble(),
                 child: AdWidget(ad: _bannerAd!),
               )
@@ -172,7 +183,6 @@ class _ChapterScreenState extends State<ChapterScreen> {
       ),
       body: Column(
         children: [
-          // Image content
           SizedBox(
             height: screenHeight * 0.7,
             child: PageView.builder(
@@ -195,8 +205,6 @@ class _ChapterScreenState extends State<ChapterScreen> {
               },
             ),
           ),
-
-          // Page indicator
           SizedBox(
             height: screenHeight * 0.04,
             child: Center(
@@ -206,8 +214,6 @@ class _ChapterScreenState extends State<ChapterScreen> {
               ),
             ),
           ),
-
-          // Zoom buttons
           SizedBox(
             height: screenHeight * 0.08,
             child: Row(
@@ -224,10 +230,6 @@ class _ChapterScreenState extends State<ChapterScreen> {
               ],
             ),
           ),
-
-          // Loading progress (only show while loading)
-
-          // Ad
         ],
       ),
     );

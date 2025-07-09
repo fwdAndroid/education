@@ -20,34 +20,47 @@ class LearningDashboard extends StatefulWidget {
 
 class _LearningDashboardState extends State<LearningDashboard>
     with AnalyticsScreenTracker<LearningDashboard> {
+  @override
   String get screenName => 'LearningDashboard';
+
   BannerAd? _bannerAd;
   bool _isBannerAdLoaded = false;
 
   @override
   void initState() {
     super.initState();
-    _loadBannerAd();
+    WidgetsBinding.instance.addPostFrameCallback((_) => _loadBannerAd());
   }
 
   final String assetPath = 'assets/encrypted/tests.pdf.enc';
   final String cacheKey = 'test_pdf';
 
-  void _loadBannerAd() {
+  void _loadBannerAd() async {
+    final AnchoredAdaptiveBannerAdSize? size =
+        await AdSize.getCurrentOrientationAnchoredAdaptiveBannerAdSize(
+          MediaQuery.of(context).size.width.truncate(),
+        );
+
+    if (size == null) {
+      print('Unable to get adaptive banner size.');
+      return;
+    }
+
     _bannerAd = BannerAd(
-      adUnitId: bannerKey,
-      size: AdSize.banner,
+      adUnitId: bannerKey, // Replace with your real AdMob unit ID
+      size: size,
       request: const AdRequest(),
       listener: BannerAdListener(
-        onAdLoaded: (ad) {
+        onAdLoaded: (_) {
           setState(() {
             _isBannerAdLoaded = true;
           });
         },
         onAdFailedToLoad: (ad, error) {
           ad.dispose();
-          _bannerAd = null;
-          _isBannerAdLoaded = false;
+          setState(() {
+            _isBannerAdLoaded = false;
+          });
         },
       ),
     )..load();
@@ -65,9 +78,10 @@ class _LearningDashboardState extends State<LearningDashboard>
       bottomNavigationBar:
           _isBannerAdLoaded && _bannerAd != null
               ? Container(
-                alignment: Alignment.center,
-                width: _bannerAd!.size.width.toDouble(),
+                color: Colors.transparent,
+                width: MediaQuery.of(context).size.width,
                 height: _bannerAd!.size.height.toDouble(),
+                alignment: Alignment.center,
                 child: AdWidget(ad: _bannerAd!),
               )
               : const SizedBox(
@@ -84,7 +98,7 @@ class _LearningDashboardState extends State<LearningDashboard>
               );
             },
             child: Padding(
-              padding: const EdgeInsets.only(top: 8.0, bottom: 8),
+              padding: const EdgeInsets.symmetric(vertical: 8.0),
               child: EnyrptedImageWidget(
                 base64Key: base24,
                 assetPath: "assets/encrypted/bulb.png.enc",
@@ -95,7 +109,6 @@ class _LearningDashboardState extends State<LearningDashboard>
           ),
         ],
         iconTheme: IconThemeData(color: white),
-
         title: Text("Menu", style: TextStyle(color: white)),
         backgroundColor: backgroundColor,
       ),
@@ -114,8 +127,6 @@ class _LearningDashboardState extends State<LearningDashboard>
               ],
               chapterNumber: 1,
             ),
-
-            //2nd
             ChapterTile(
               title: "Atomic Structure",
               subtitle: "Chapter 2",
@@ -128,7 +139,6 @@ class _LearningDashboardState extends State<LearningDashboard>
               ],
               chapterNumber: 2,
             ),
-            //3
             ChapterTile(
               title: "Periodic Table",
               subtitle: "Chapter 3",
@@ -141,7 +151,6 @@ class _LearningDashboardState extends State<LearningDashboard>
               ],
               chapterNumber: 3,
             ),
-            //4
             ChapterTile(
               title: "Chemical Bonding",
               subtitle: "Chapter 4",
@@ -154,8 +163,6 @@ class _LearningDashboardState extends State<LearningDashboard>
               ],
               chapterNumber: 4,
             ),
-
-            //5
             ChapterTile(
               title: "Physical States of Matter",
               subtitle: "Chapter 5",
@@ -168,7 +175,6 @@ class _LearningDashboardState extends State<LearningDashboard>
               ],
               chapterNumber: 5,
             ),
-            //6
             ChapterTile(
               title: "Solutions",
               subtitle: "Chapter 6",
@@ -181,8 +187,6 @@ class _LearningDashboardState extends State<LearningDashboard>
               ],
               chapterNumber: 6,
             ),
-
-            //7
             ChapterTile(
               title: "Electrochemistry",
               subtitle: "Chapter 7",
@@ -195,20 +199,18 @@ class _LearningDashboardState extends State<LearningDashboard>
               ],
               chapterNumber: 7,
             ),
-            //8
             ChapterTile(
               title: "Chemical Reactivity",
               subtitle: "Chapter 8",
               imagePath: "assets/encrypted/abcd.png.enc",
               imagePaths: [
-                "assets/encrypted/chemxi_Page030.jpg.enc",
-                "assets/encrypted/chemxi_Page031.jpg.enc",
-                "assets/encrypted/chemxi_Page032.jpg.enc",
-                "assets/encrypted/chemxi_Page033.jpg.enc",
+                "assets/encrypted/chemxi_Page034.jpg.enc",
+                "assets/encrypted/chemxi_Page035.jpg.enc",
+                "assets/encrypted/chemxi_Page036.jpg.enc",
+                "assets/encrypted/chemxi_Page037.jpg.enc",
               ],
               chapterNumber: 8,
             ),
-
             GestureDetector(
               onTap: () => openEncryptedPdf(context),
               child: Container(
@@ -240,7 +242,6 @@ class _LearningDashboardState extends State<LearningDashboard>
                         mainAxisAlignment: MainAxisAlignment.center,
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // TITLE (single line, clipped if too long)
                           Text(
                             "PDF Book",
                             style: const TextStyle(
@@ -249,7 +250,7 @@ class _LearningDashboardState extends State<LearningDashboard>
                             ),
                             maxLines: 1,
                             softWrap: false,
-                            overflow: TextOverflow.clip, // not ellipsis
+                            overflow: TextOverflow.clip,
                           ),
                           const SizedBox(height: 4),
                           Text(
@@ -284,8 +285,8 @@ class _LearningDashboardState extends State<LearningDashboard>
 
   Future<void> openEncryptedPdf(BuildContext context) async {
     final file = await loadAndDecryptPdfFromAssets(
-      'assets/encrypted/tests.pdf.enc', // already defined in your class
-      'test', // same cacheKey
+      assetPath,
+      cacheKey,
       base64.decode(base24),
     );
 

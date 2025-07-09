@@ -11,6 +11,7 @@ class QuizTile extends StatelessWidget {
   final int chapterNumber;
 
   const QuizTile({
+    super.key,
     required this.title,
     required this.subtitle,
     required this.imagePath,

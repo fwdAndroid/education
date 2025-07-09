@@ -69,7 +69,7 @@ class StreamedEncryptedImageLoader {
 
       return decrypted;
     } catch (e) {
-      throw e;
+      rethrow;
     }
   }
 }
