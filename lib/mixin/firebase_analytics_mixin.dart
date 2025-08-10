@@ -7,6 +7,6 @@ mixin AnalyticsScreenTracker<T extends StatefulWidget> on State<T> {
   @override
   void initState() {
     super.initState();
-    FirebaseAnalytics.instance.setCurrentScreen(screenName: screenName);
+    FirebaseAnalytics.instance.logScreenView(screenName: screenName);
   }
 }

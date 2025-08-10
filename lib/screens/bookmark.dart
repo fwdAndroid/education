@@ -3,7 +3,6 @@ import 'package:education/screens/chapter/chatpter_list_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:education/constant/ad_keys.dart';
-import 'package:education/screens/chapter/chapter.dart';
 import 'package:education/screens/quiz/quiz_dashboard.dart';
 import 'package:education/service/book_mark_service.dart';
 import 'package:education/widgets/enyrpted_image_widget.dart';
