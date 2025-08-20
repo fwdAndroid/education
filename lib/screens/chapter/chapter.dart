@@ -109,18 +109,17 @@ class _ChapterScreenState extends State<ChapterScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
 
     return Scaffold(
-      bottomNavigationBar:
-          _isAdLoaded && _bannerAd != null
-              ? Container(
-                alignment: Alignment.center,
-                width: MediaQuery.of(context).size.width,
-                height: _bannerAd!.size.height.toDouble(),
-                child: AdWidget(ad: _bannerAd!),
-              )
-              : const SizedBox(
-                height: 50,
-                child: Center(child: Text("Ad loading...")),
-              ),
+      bottomNavigationBar: _isAdLoaded && _bannerAd != null
+          ? Container(
+              alignment: Alignment.center,
+              width: MediaQuery.of(context).size.width,
+              height: _bannerAd!.size.height.toDouble(),
+              child: AdWidget(ad: _bannerAd!),
+            )
+          : const SizedBox(
+              height: 50,
+              child: Center(child: Text("Ad loading...")),
+            ),
       backgroundColor: white,
       appBar: AppBar(
         iconTheme: IconThemeData(color: white),
@@ -192,14 +191,31 @@ class _ChapterScreenState extends State<ChapterScreen> {
                 setState(() => currentPage = index);
               },
               itemBuilder: (context, index) {
+                final pageContent = widget.imagePaths[index];
+
+                // ✅ If it's an image path (ends with .jpg.enc, .png.enc, etc.)
+                if (pageContent.endsWith(".enc")) {
+                  return Padding(
+                    padding: const EdgeInsets.all(8.0),
+                    child: EnyrptedImageWidget(
+                      assetPath: pageContent,
+                      base64Key: base24,
+                      height: 200,
+                      width: MediaQuery.of(context).size.width,
+                      fit: BoxFit.cover,
+                    ),
+                  );
+                }
+
+                // ✅ Otherwise, treat it as text content
                 return Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: EnyrptedImageWidget(
-                    assetPath: widget.imagePaths[index],
-                    base64Key: base24,
-                    height: 200,
-                    width: MediaQuery.of(context).size.width,
-                    fit: BoxFit.cover,
+                  padding: const EdgeInsets.all(16.0),
+                  child: SingleChildScrollView(
+                    child: Text(
+                      pageContent,
+                      style: TextStyle(fontSize: 16, color: black, height: 1.5),
+                      textAlign: TextAlign.left,
+                    ),
                   ),
                 );
               },
